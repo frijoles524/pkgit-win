@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+muon setup build
+clear
+muon build build

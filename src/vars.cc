@@ -1,0 +1,75 @@
+#ifndef vars
+#define vars
+
+#include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
+
+struct Pkg {
+  std::string url;
+  std::string name;
+  std::string ver;
+  fs::path src;
+};
+
+const std::string home_dir = std::getenv("HOME");
+
+const std::string bin = home_dir + "/.local/bin";
+const std::string lib = home_dir + "/.local/lib";
+const std::string include = home_dir + "/.local/include";
+const std::string pkgblds = home_dir + "/.local/share/pkgit";
+
+const std::string all_dirs[] = {
+  bin,
+  lib,
+  include,
+  pkgblds
+};
+
+// version
+const std::string version = "0.1.0-breakout";
+
+// colors
+const std::string red = "\e[0;31m";
+const std::string green = "\e[0;32m";
+const std::string yellow = "\e[0;33m";
+const std::string blue = "\e[0;34m";
+const std::string magenta = "\e[0;35m";
+const std::string cyan = "\e[0;36m";
+const std::string gray = "\e[0;37m";
+// bright
+const std::string bright_red = "\e[0;91m";
+const std::string bright_green = "\e[0;92m";
+const std::string bright_yellow = "\e[0;93m";
+const std::string bright_blue = "\e[0;94m";
+const std::string bright_magenta = "\e[0;95m";
+const std::string bright_cyan = "\e[0;96m";
+const std::string bright_gray = "\e[0;97m";
+// bold
+const std::string bold_red = "\e[1;31m";
+const std::string bold_green = "\e[1;32m";
+const std::string bold_yellow = "\e[1;33m";
+const std::string bold_blue = "\e[1;34m";
+const std::string bold_magenta = "\e[1;35m";
+const std::string bold_cyan = "\e[1;36m";
+const std::string bold_gray = "\e[1;37m";
+const std::string bold_white = "\e[1;38m";
+// bold bright
+const std::string bold_bright_red = "\e[1;91m";
+const std::string bold_bright_green = "\e[1;92m";
+const std::string bold_bright_yellow = "\e[1;93m";
+const std::string bold_bright_blue = "\e[1;94m";
+const std::string bold_bright_magenta = "\e[1;95m";
+const std::string bold_bright_cyan = "\e[1;96m";
+const std::string bold_bright_gray = "\e[1;97m";
+// italic
+const std::string italic = "\e[3m";
+// reset
+const std::string color_reset = "\e[0m";
+
+const std::string print_pkgit = bold_yellow + "[" + bold_magenta + "pkgit" + bold_yellow + "]\t" + color_reset;
+const std::string print_skipped = print_pkgit + blue + "[SKIPPED]\t" + color_reset;
+const std::string print_error = print_pkgit + red + "[ERROR]\t" + color_reset;
+
+#endif
