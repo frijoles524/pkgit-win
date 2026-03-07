@@ -1,6 +1,6 @@
 #include <filesystem>
 
-#include "toml.hh"
+#include "../include/toml.hh"
 
 #include "vars.cc"
 
