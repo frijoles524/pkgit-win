@@ -12,3 +12,8 @@ pkgit: src/main.cc
 install: pkgit
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m 755 pkgit $(DESTDIR)$(PREFIX)/bin/pkgit
+
+
+luatest: src/lua_build.cc
+	$(CC) -o luatest src/lua_build.cc -I"./include" $(CXXFLAGS)
+	chmod +x luatest

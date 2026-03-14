@@ -1,36 +1,17 @@
 #include <functional>
 
-#include "build_systems.cc"
-
-const std::map<std::string, std::function<void()>> builds = {
-  {"bldit",           bldit_build},
-  {"compile.sh",      compilesh_build},
-  {"build.sh",        buildsh_build},
-  {"autogen.sh",      autogen_build},
-  {"configure",       autotools_build},
-  {"configure.ac",    autotools_build},
-  {"Makefile",        make_build},
-  {"Makefile.am",     make_build},
-  {"CMakeLists.txt",  cmake_build},
-  {"meson.build",     meson_build},
-  {"build.ninja",     ninja_build},
-  {"Cargo.toml",      cargo_build},
-  {"go.mod",          go_build},
-  {"gradle.build",    gradle_build},
-  {"pnpm-lock.yaml",  pnpm_build},
-  {"pyproject.toml",  python_build},
-  {"build.zig",       zig_build}
-};
+#include "build_map.cc"
 
 void build_pkg(std::filesystem::path build_dir) {
   if (build_dir != fs::current_path().string()) {
     fs::current_path(build_dir);
   }
-  for (auto const& dir_entry : fs::directory_iterator(fs::current_path().string())) {
+  for (auto const &dir_entry :
+       fs::directory_iterator(fs::current_path().string())) {
     for (auto build : builds) {
       if (dir_entry.path().filename() == build.first) {
         build.second();
       }
-    } 
+    }
   }
 }

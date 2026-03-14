@@ -14,9 +14,9 @@ int main(int argc, char *argv[]) {
   if (argv[1]) {
     if (strcmp(argv[1], "build") == 0 || strcmp(argv[1], "b") == 0) {
       if (argv[2]) {
-        build_pkg(argv[2]);
+        build(argv[2]);
       } else {
-        build_pkg(fs::current_path().string());
+        build(fs::current_path().string().c_str());
       }
     } else if (strcmp(argv[1], "install") == 0 || strcmp(argv[1], "i") == 0) {
       pkg = create_pkg(argv[2]);

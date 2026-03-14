@@ -15,6 +15,8 @@ struct Pkg {
 
 const std::string home_dir = std::getenv("HOME");
 
+const std::string config_file = home_dir + "/.config/pkgit/init.lua";
+
 const std::string bin = home_dir + "/.local/bin";
 const std::string lib = home_dir + "/.local/lib";
 const std::string include = home_dir + "/.local/include";
