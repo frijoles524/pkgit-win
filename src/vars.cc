@@ -1,21 +1,18 @@
-#ifndef vars
-#define vars
-
+#include <map>
 #include <string>
-#include <filesystem>
 
-namespace fs = std::filesystem;
+#include "vars.hh"
 
-struct Pkg {
-  std::string url;
-  std::string name;
-  std::string ver;
-  fs::path src;
-};
+std::map<std::string, std::string> repos;
+
+bool is_symlink_install = false;
+bool is_verbose = false;
 
 const std::string home_dir = std::getenv("HOME");
 
+const std::string config_dir = home_dir + "/.config/pkgit";
 const std::string config_file = home_dir + "/.config/pkgit/init.lua";
+const std::string repo_file = config_dir + "/repos.lua";
 
 const std::string bin = home_dir + "/.local/bin";
 const std::string lib = home_dir + "/.local/lib";
@@ -23,6 +20,7 @@ const std::string include = home_dir + "/.local/include";
 const std::string pkgblds = home_dir + "/.local/share/pkgit";
 
 const std::string all_dirs[] = {
+  config_dir,
   bin,
   lib,
   include,
@@ -73,5 +71,3 @@ const std::string color_reset = "\e[0m";
 const std::string print_pkgit = bold_yellow + "[" + bold_magenta + "pkgit" + bold_yellow + "]\t" + color_reset;
 const std::string print_skipped = print_pkgit + blue + "[SKIPPED]\t" + color_reset;
 const std::string print_error = print_pkgit + red + "[ERROR]\t" + color_reset;
-
-#endif

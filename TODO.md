@@ -1,0 +1,18 @@
+- [x] add pkg repo
+- [x] build pkg
+- [x] install pkg repo
+- [x] install pkg name
+- [x] remove pkg
+- [x] lua build systems
+- [x] lua repos
+- [ ] lua dependency listing
+- [ ] lua config primary(/etc) / secondary(.config) checks
+- [ ] lua variables for install paths
+- [ ] lua custom source fetching methods
+- [ ] CLA parsing
+- [ ] version management
+    - [ ] (maybe) diffs to change versions
+- [ ] (maybe) lua custom install methods for sandboxed builds
+- [ ] (maybe) branch selection
+- [ ] (maybe) install to store directory
+- [ ] (maybe) git commit signature checks

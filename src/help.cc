@@ -1,6 +1,7 @@
 #include <iostream>
 
-#include "vars.cc"
+#include "vars.hh"
+#include "help.hh"
 
 void help() {
   std::cout << ""+bold_magenta+"                              ,          \n";
@@ -26,8 +27,7 @@ void help() {
   std::cout << ""+color_reset+"│├── "+green+"-v"+color_reset+", "+yellow+"--verbose"+blue+"[tag]        "+gray+"# give full output of install\n";
   std::cout << ""+color_reset+"│├── "+green+"-t:"+color_reset+", "+yellow+"--tag:"+blue+"[tag]          "+gray+"# specify a version\n";
   std::cout << ""+color_reset+"│└── "+green+"-l:"+color_reset+", "+yellow+"--list:"+blue+"[filename]    "+gray+"# install from a package list\n";
-  std::cout << ""+color_reset+"├┬ "+green+"r"+color_reset+",   "+yellow+"remove "+blue+"[pkgs]          "+gray+"# remove an installed package\n";
-  std::cout << ""+color_reset+"│└── "+green+"-r:"+color_reset+", "+yellow+"--repo:"+blue+"[repo]        "+gray+"# remove a repo\n";
+  std::cout << ""+color_reset+"├─ "+green+"r"+color_reset+",   "+yellow+"remove "+blue+"[pkgs]          "+gray+"# remove an installed package\n";
   std::cout << ""+color_reset+"├─ "+green+"f"+color_reset+",   "+yellow+"files "+blue+"[pkgs]           "+gray+"# list all files of a package\n";
   std::cout << ""+color_reset+"├─ "+green+"s"+color_reset+",   "+yellow+"search "+blue+"[pkgs]          "+gray+"# search for packages\n";
   std::cout << ""+color_reset+"├─ "+green+"l"+color_reset+",   "+yellow+"list                   "+gray+"# list installed packages\n";

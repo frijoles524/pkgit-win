@@ -5,11 +5,12 @@
 #include <lua5.1/lauxlib.h>
 #include <lua5.1/lualib.h>
 
-#include "vars.cc"
+#include "lua_build.hh"
+#include "vars.hh"
 
 std::map<std::string, int> build_files;
 
-void lua_build (const char *path) {
+bool lua_build(const char *path) {
   lua_State *L = lua_open();
   luaL_openlibs(L);
 
@@ -47,12 +48,11 @@ void lua_build (const char *path) {
       std::cout << "calling lua build function according to key filename '"<< key << "'...\n";
       if (lua_pcall(L, 1, 0, 0) != 0) {
         std::cout << print_error << "lua build function failed to run\n";
+        break;
       }
       if (build_found) { break; }
     }
     lua_pop(L, 1);
   }
-  if (!build_found) {
-    std::cout << print_error << "no usable build system was found\n";
-  }
+  return build_found;
 }

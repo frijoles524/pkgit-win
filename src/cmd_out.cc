@@ -4,6 +4,8 @@
 #include <string>
 #include <array>
 
+#include "cmd_out.hh"
+
 std::string cmd_out(const char* cmd) {
   std::array<char, 128> buffer;
   std::string result;
