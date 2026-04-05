@@ -1,9 +1,11 @@
 #include <iostream>
 #include <filesystem>
 #include <map>
-#include <lua5.1/lua.h>
-#include <lua5.1/lauxlib.h>
-#include <lua5.1/lualib.h>
+extern "C" {
+#include <luajit-2.1/lua.h>
+#include <luajit-2.1/lauxlib.h>
+#include <luajit-2.1/lualib.h>
+}
 
 #include "lua_build.hh"
 #include "vars.hh"

@@ -1,7 +1,7 @@
 CC       = clang++
 RM       = rm -f
 PREFIX   ?= /usr/local
-CXXFLAGS += $(shell pkg-config --cflags --libs luajit ) -I./include
+CXXFLAGS += $(shell pkg-config --cflags --libs luajit ) -I./include -L/usr/lib
 
 default: pkgit
 

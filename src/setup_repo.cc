@@ -1,7 +1,9 @@
 #include <iostream>
-#include <lua5.1/lua.h>
-#include <lua5.1/lauxlib.h>
-#include <lua5.1/lualib.h>
+extern "C" {
+#include <luajit-2.1/lua.h>
+#include <luajit-2.1/lauxlib.h>
+#include <luajit-2.1/lualib.h>
+}
 
 #include "setup_repo.hh"
 #include "ensure_repo.hh"
@@ -15,6 +17,7 @@ void setup_repo() {
 
   if (luaL_loadfile(L, config_file.c_str()) || lua_pcall(L, 0, 0, 0)){
     std::cout << print_error << "cannot run configuration script: " << lua_tostring(L, -1) << "\n";
+    return;
   }
 
   lua_getglobal(L, "repos");
