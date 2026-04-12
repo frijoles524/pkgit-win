@@ -12,12 +12,3 @@ pkgit: src/main.cc
 install: pkgit
 	install -d ${DESTDIR}${PREFIX}/bin
 	install -m 755 pkgit ${DESTDIR}${PREFIX}/bin/pkgit
-
-
-luatest: src/lua_build.cc
-	${CC} -o luatest src/lua_build.cc ${CXXFLAGS}
-	chmod +x luatest
-
-repotest: src/setup_repo.cc
-	${CC} -o repotest src/setup_repo.cc ${CXXFLAGS}
-	chmod +x repotest

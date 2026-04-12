@@ -5,11 +5,11 @@
 - [x] remove pkg
 - [x] lua build systems
 - [x] lua repos
+- [x] CLA parsing
 - [ ] lua dependency listing
 - [ ] lua config primary(/etc) / secondary(.config) checks
 - [ ] lua variables for install paths
 - [ ] lua custom source fetching methods
-- [ ] CLA parsing
 - [ ] version management
     - [ ] (maybe) diffs to change versions
 - [ ] (maybe) lua custom install methods for sandboxed builds
