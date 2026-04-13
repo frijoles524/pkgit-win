@@ -1,4 +1,5 @@
 CompileFlags:
   Add: [-I/usr/include/luajit-2.1]
+  Add: [-I./include]
 Completion:
   HeaderInsertion: IWYU
