@@ -20,6 +20,8 @@
 void cla_parse(int argc, char** argv) {
   Pkg pkg;
 
+  if (!argv[1]) { help(); return; }
+
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "--link") == 0 || strcmp(argv[i], "-l") == 0) {
       is_symlink_install = true;
