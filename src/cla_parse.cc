@@ -35,8 +35,10 @@ void cla_parse(int argc, char** argv) {
       for (int j = i+1; i < argc; j++) {
         if (argv[j]) {
           add_repo(argv[j], name_from_url(argv[j]));
+          return;
         } else {
           std::cout << print_error << "Not enough arguments! Try: `pkgit add [url]`";
+          return;
         }
       }
 
@@ -44,8 +46,10 @@ void cla_parse(int argc, char** argv) {
       for (int j = i+1; i < argc; j++) {
         if (argv[j]) {
           build(argv[j]);
+          return;
         } else {
           build(std::filesystem::current_path().string().c_str());
+          return;
         }
       }
 
@@ -54,8 +58,10 @@ void cla_parse(int argc, char** argv) {
         pkg = create_pkg(argv[j]);
         if (argv[j]) {
           install_pkg(pkg);
+          return;
         } else {
           std::cout << print_error << "Not enough arguments! Try: `pkgit install [url/pkg]`";
+          return;
         }
       }
 
@@ -64,22 +70,28 @@ void cla_parse(int argc, char** argv) {
         pkg = create_pkg(argv[j]);
         if (argv[j]) {
           remove_pkg(pkg);
+          return;
         } else {
           std::cout << print_error << "Not enough arguments! Try: `pkgit remove [url/pkg]`";
+          return;
         }
       }
 
     } else if (strcmp(argv[i], "update") == 0 || strcmp(argv[i], "u") == 0) {
       update_all();
+      return;
 
     } else if (strcmp(argv[i], "list") == 0 || strcmp(argv[i], "l") == 0) {
       list_pkgs();
+      return;
 
     } else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "h") == 0) {
       help();
+      return;
 
     } else {
       help();
+      return;
     }
   }
 }

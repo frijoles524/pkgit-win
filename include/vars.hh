@@ -19,6 +19,8 @@ struct Pkg {
 
 extern const std::string home_dir;
 
+extern const std::string root_config;
+extern bool is_root_config;
 extern const std::string config_dir;
 extern const std::string config_file;
 extern const std::string repo_file;

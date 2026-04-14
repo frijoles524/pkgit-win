@@ -1,10 +1,6 @@
-#include <string>
-#include <cstring>
-#include <filesystem>
-#include <iostream>
-
 #include "cla_parse.hh"
 #include "setup_pkgit.hh"
+#include "vars.hh"
 
 int main(int argc, char *argv[]) {
   setup_pkgit();

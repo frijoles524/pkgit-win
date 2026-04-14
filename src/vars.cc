@@ -1,18 +1,26 @@
+#include <filesystem>
 #include <map>
 #include <string>
 
 #include "vars.hh"
 
 std::map<std::string, std::string> repos;
+std::map<std::string, std::string> install_directories;
 
 bool is_symlink_install = false;
 bool is_verbose = false;
 
 const std::string home_dir = std::getenv("HOME");
 
-const std::string config_dir = home_dir + "/.config/pkgit";
-const std::string config_file = home_dir + "/.config/pkgit/init.lua";
+const std::string root_config = "/etc/pkgit/init.lua";
+const std::string home_config = home_dir + "/.config/pkgit";
+bool is_root_config = std::filesystem::exists(root_config);
+
+const std::string config_dir = is_root_config ? "/etc/pkgit" : home_dir + "/.config/pkgit";
+const std::string config_file = config_dir + "/init.lua";
 const std::string repo_file = config_dir + "/repos.lua";
+
+bool config_exists = std::filesystem::exists(root_config) || std::filesystem::exists(home_config);
 
 const std::string bin = home_dir + "/.local/bin";
 const std::string lib = home_dir + "/.local/lib";

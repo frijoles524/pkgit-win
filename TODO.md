@@ -6,7 +6,7 @@
 - [x] lua build systems
 - [x] lua repos
 - [x] CLA parsing
-- [ ] lua config primary(/etc) / secondary(.config) checks
+- [x] lua config primary(/etc) / secondary(.config) checks
 - [ ] lua variables for install paths
 - [ ] lua dependency listing
 - [ ] lua custom source fetching methods

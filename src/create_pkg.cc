@@ -24,7 +24,7 @@ Pkg create_pkg(std::string arg) {
     pkg.url = repos[arg];
     pkg.name = arg;
   } else {
-    std::cout << print_error << "'" << arg << "'" << " is not a valid package";
+    std::cout << print_error << "'" << arg << "'" << " is not a valid package" << std::endl;
     exit(1);
   }
 
