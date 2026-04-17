@@ -6,9 +6,11 @@
 #include <map>
 
 extern std::map<std::string, std::string> repos;
+extern std::map<std::string, std::string> install_directories;
 
 extern bool is_symlink_install;
 extern bool is_verbose;
+extern bool config_exists;
 
 struct Pkg {
   std::string url;
@@ -29,7 +31,6 @@ extern const std::string bin;
 extern const std::string lib;
 extern const std::string include;
 extern const std::string pkgblds;
-
 extern const std::string all_dirs[5];
 
 // version

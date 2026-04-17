@@ -22,14 +22,12 @@ void help() {
   std::cout << ""+red+"subcommands"+color_reset+":\n";
   std::cout << ""+color_reset+"├─ "+green+"a"+color_reset+",   "+yellow+"add "+blue+"[url, file]        "+gray+"# add a repo/repopkg\n";
   std::cout << ""+color_reset+"├─ "+green+"b"+color_reset+",   "+yellow+"build "+blue+"[path]           "+gray+"# build a package\n";
-  std::cout << ""+color_reset+"│└── "+green+"-v"+color_reset+", "+yellow+"--verbose"+blue+"[tag]        "+gray+"# give full output of build\n";
   std::cout << ""+color_reset+"├┬ "+green+"i"+color_reset+",   "+yellow+"install "+blue+"[pkgs, urls]   "+gray+"# install a package/repo\n";
-  std::cout << ""+color_reset+"│├── "+green+"-v"+color_reset+", "+yellow+"--verbose"+blue+"[tag]        "+gray+"# give full output of install\n";
-  std::cout << ""+color_reset+"│├── "+green+"-t:"+color_reset+", "+yellow+"--tag:"+blue+"[tag]          "+gray+"# specify a version\n";
-  std::cout << ""+color_reset+"│└── "+green+"-l:"+color_reset+", "+yellow+"--list:"+blue+"[filename]    "+gray+"# install from a package list\n";
+  //std::cout << ""+color_reset+"│├── "+green+"-t:"+color_reset+", "+yellow+"--tag:"+blue+"[tag]          "+gray+"# specify a version\n";
+  //std::cout << ""+color_reset+"│└── "+green+"-l:"+color_reset+", "+yellow+"--list:"+blue+"[filename]    "+gray+"# install from a package list\n";
   std::cout << ""+color_reset+"├─ "+green+"r"+color_reset+",   "+yellow+"remove "+blue+"[pkgs]          "+gray+"# remove an installed package\n";
-  std::cout << ""+color_reset+"├─ "+green+"f"+color_reset+",   "+yellow+"files "+blue+"[pkgs]           "+gray+"# list all files of a package\n";
-  std::cout << ""+color_reset+"├─ "+green+"s"+color_reset+",   "+yellow+"search "+blue+"[pkgs]          "+gray+"# search for packages\n";
+  //std::cout << ""+color_reset+"├─ "+green+"f"+color_reset+",   "+yellow+"files "+blue+"[pkgs]           "+gray+"# list all files of a package\n";
+  //std::cout << ""+color_reset+"├─ "+green+"s"+color_reset+",   "+yellow+"search "+blue+"[pkgs]          "+gray+"# search for packages\n";
   std::cout << ""+color_reset+"├─ "+green+"l"+color_reset+",   "+yellow+"list                   "+gray+"# list installed packages\n";
   std::cout << ""+color_reset+"└─ "+green+"u"+color_reset+",   "+yellow+"update                 "+gray+"# update all installed packages\n";
   std::cout << "\n";

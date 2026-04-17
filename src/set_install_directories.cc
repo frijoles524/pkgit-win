@@ -1,10 +1,13 @@
+#include <iostream>
+
 extern "C" {
 #include <luajit-2.1/lua.h>
 #include <luajit-2.1/lauxlib.h>
 #include <luajit-2.1/lualib.h>
 }
 
-#include <vars.hh>
+#include "set_install_directories.hh"
+#include "vars.hh"
 
 void set_install_directories() {
   lua_State *L = lua_open();
@@ -27,14 +30,8 @@ void set_install_directories() {
     const char *key = lua_tostring(L, -2);
     const char *value = lua_tostring(L, -1);
 
-    install_dirs[key] = value;
+    install_directories[key] = value;
 
     lua_pop(L, 1);
   }
-
-  bin = install_dirs["bin"];
-  lib = install_dirs["lib"];
-  include = install_dirs["include"];
-  pkgblds = install_dirs["pkgblds"];
-
 }

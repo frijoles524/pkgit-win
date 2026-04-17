@@ -27,10 +27,6 @@ void cla_parse(int argc, char** argv) {
       is_symlink_install = true;
     }
 
-    if (strcmp(argv[i], "--verbose") == 0 || strcmp(argv[i], "-v") == 0) {
-      is_verbose = true;
-    }
-
     if (strcmp(argv[i], "add") == 0 || strcmp(argv[i], "a") == 0) {
       for (int j = i+1; i < argc; j++) {
         if (argv[j]) {
@@ -85,7 +81,11 @@ void cla_parse(int argc, char** argv) {
       list_pkgs();
       return;
 
-    } else if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "h") == 0) {
+    } else if (strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
+      std::cout << version << std::endl;
+      return;
+
+    } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
       help();
       return;
 

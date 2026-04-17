@@ -5,9 +5,11 @@ CXXFLAGS += $(shell pkg-config --cflags --libs luajit ) -I./include -L/usr/lib
 
 default: pkgit
 
-pkgit: src/main.cc
+pkgit: src/*.cc
 	${CC} -o pkgit src/*.cc ${CXXFLAGS}
-	chmod +x pkgit
+
+debug: src/*.cc
+	${CC} -o pkgit src/*.cc ${CXXFLAGS} -g -O0
 
 install: pkgit
 	install -d ${DESTDIR}${PREFIX}/bin

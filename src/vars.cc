@@ -22,21 +22,20 @@ const std::string repo_file = config_dir + "/repos.lua";
 
 bool config_exists = std::filesystem::exists(root_config) || std::filesystem::exists(home_config);
 
-const std::string bin = home_dir + "/.local/bin";
-const std::string lib = home_dir + "/.local/lib";
-const std::string include = home_dir + "/.local/include";
-const std::string pkgblds = home_dir + "/.local/share/pkgit";
-
+const std::string bin = config_exists ? install_directories["bin"] : home_dir + "/.local/bin";
+const std::string lib = config_exists ? install_directories["lib"] : home_dir + "/.local/lib";
+const std::string include = config_exists ? install_directories["include"] : home_dir + "/.local/include";
+const std::string pkgblds = config_exists ? install_directories["pkgblds"] : home_dir + "/.local/share/pkgit";
 const std::string all_dirs[] = {
-  config_dir,
-  bin,
-  lib,
-  include,
-  pkgblds
+	config_dir,
+	install_directories["bin"],
+	install_directories["lib"],
+	install_directories["include"],
+	install_directories["pkgblds"]
 };
 
 // version
-const std::string version = "0.1.0-breakout";
+const std::string version = "0.0.0";
 
 // colors
 const std::string red = "\e[0;31m";

@@ -30,7 +30,7 @@ Pkg create_pkg(std::string arg) {
 
   pkg.ver = "HEAD";
 
-  pkg.src = pkgblds + "/" + pkg.name + "/" + pkg.ver;
+  pkg.src = install_directories["pkgblds"] + "/" + pkg.name + "/" + pkg.ver;
 
   return pkg;
 }
