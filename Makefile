@@ -14,3 +14,10 @@ debug: src/*.cc
 install: pkgit
 	install -d ${DESTDIR}${PREFIX}/bin
 	install -m 755 pkgit ${DESTDIR}${PREFIX}/bin/pkgit
+
+defconfig:
+	@echo "Installing default config to ~/.config/pkgit ..."
+	@mkdir -p ~/.config/pkgit
+	@cp -r config/pkgit/* ~/.config/pkgit
+	@sed 's|\[placeholder\]|$HOME|g' config/pkgit/dirs.lua > ~/.config/pkgit/dirs.lua
+	@echo "default config installed"
