@@ -17,7 +17,7 @@ void help() {
   std::cout << "\n";
   std::cout << "                            pkgit\n";
   std::cout << "                       "+italic+""+gray+"- package it! -"+color_reset+"\n";
-  std::cout << "                       "+magenta+"v"+version+""+color_reset+"\n";
+  std::cout << "                           "+magenta+"v"+version+""+color_reset+"\n";
   std::cout << "\n";
   std::cout << ""+red+"subcommands"+color_reset+":\n";
   std::cout << ""+color_reset+"├─ "+green+"a"+color_reset+",   "+yellow+"add "+blue+"[url, file]        "+gray+"# add a repo/repopkg\n";
