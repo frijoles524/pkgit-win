@@ -1,10 +1,5 @@
 #include <iostream>
-extern "C" {
-#include <luajit-2.1/lua.h>
-#include <luajit-2.1/lauxlib.h>
-#include <luajit-2.1/lualib.h>
-}
-
+#include "lua_state.hh"
 #include "setup_repo.hh"
 #include "ensure_repo.hh"
 #include "vars.hh"
@@ -12,13 +7,8 @@ extern "C" {
 void setup_repo() {
   ensure_repo();
 
-  lua_State *L = lua_open();
-  luaL_openlibs(L);
-
-  if (luaL_loadfile(L, config_file.c_str()) || lua_pcall(L, 0, 0, 0)){
-    std::cout << print_error << "cannot run configuration script: " << lua_tostring(L, -1) << "\n";
-    return;
-  }
+  init_lua_state();
+  lua_State *L = get_lua_state();
 
   lua_getglobal(L, "repos");
 

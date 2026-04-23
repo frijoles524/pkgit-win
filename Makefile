@@ -1,15 +1,24 @@
 CC       = clang++
 RM       = rm -f
 PREFIX   ?= /usr/local
-CXXFLAGS += $(shell pkg-config --cflags --libs luajit ) -I./include -L/usr/lib
+OBJDIR   = obj
+SRCS     = $(wildcard src/*.cc)
+OBJS     = $(SRCS:src/%.cc=$(OBJDIR)/%.o)
+CXXFLAGS += $(shell pkg-config --cflags luajit ) -I./include
 
 default: pkgit
 
-pkgit: src/*.cc
-	${CC} -o pkgit src/*.cc ${CXXFLAGS}
+pkgit: $(OBJS)
+	${CC} -o pkgit $^ $(shell pkg-config --libs luajit)
+
+$(OBJDIR):
+	@mkdir -p $(OBJDIR)
+
+$(OBJDIR)/%.o: src/%.cc | $(OBJDIR)
+	${CC} $(CXXFLAGS) -c -o $@ $<
 
 debug: src/*.cc
-	${CC} -o pkgit src/*.cc ${CXXFLAGS} -g -O0
+	${CC} -o pkgit src/*.cc ${CXXFLAGS} ${LDFLAGS} -g -O0
 
 install: pkgit
 	install -d ${DESTDIR}${PREFIX}/bin
@@ -18,6 +27,8 @@ install: pkgit
 defconfig:
 	@echo "Installing default config to ~/.config/pkgit ..."
 	@mkdir -p ~/.config/pkgit
-	@cp -r config/pkgit/* ~/.config/pkgit
-	@sed 's|\[placeholder\]|$HOME|g' config/pkgit/dirs.lua > ~/.config/pkgit/dirs.lua
+	@cp -r config/* ~/.config/pkgit
 	@echo "default config installed"
+
+clean:
+	${RM} -r $(OBJDIR) pkgit

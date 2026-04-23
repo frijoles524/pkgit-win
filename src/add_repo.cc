@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include <string>
 
 #include "add_repo.hh"
@@ -23,4 +24,6 @@ void add_repo(std::string repo, std::string repo_name) {
   wfile.open(repo_file);
   wfile << previous_repos << "repos[\"" << repo_name << "\"] = \"" << repo << "\"" << std::endl;
   wfile.close();
+
+  std::cout << print_pkgit << green << "Added " << repo_name << color_reset << std::endl;
 }

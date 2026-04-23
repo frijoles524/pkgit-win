@@ -1,24 +1,15 @@
 #include <iostream>
 #include <filesystem>
-#include <map>
-extern "C" {
-#include <luajit-2.1/lua.h>
-#include <luajit-2.1/lauxlib.h>
-#include <luajit-2.1/lualib.h>
-}
-
+#include <unordered_map>
+#include "lua_state.hh"
 #include "lua_build.hh"
 #include "vars.hh"
 
-std::map<std::string, int> build_files;
+std::unordered_map<std::string, int> build_files;
 
 bool lua_build(const char *path) {
-  lua_State *L = lua_open();
-  luaL_openlibs(L);
-
-  if (luaL_loadfile(L, config_file.c_str()) || lua_pcall(L, 0, 0, 0)){
-    std::cout << print_error << "cannot run configuration script: " << lua_tostring(L, -1) << "\n";
-  }
+  init_lua_state();
+  lua_State *L = get_lua_state();
 
   lua_getglobal(L, "build_systems");
 

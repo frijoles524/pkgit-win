@@ -28,7 +28,7 @@ void cla_parse(int argc, char** argv) {
     }
 
     if (strcmp(argv[i], "add") == 0 || strcmp(argv[i], "a") == 0) {
-      for (int j = i+1; i < argc; j++) {
+      for (int j = i+1; j < argc; j++) {
         if (argv[j]) {
           add_repo(argv[j], name_from_url(argv[j]));
           return;
@@ -39,7 +39,7 @@ void cla_parse(int argc, char** argv) {
       }
 
     } else if (strcmp(argv[i], "build") == 0 || strcmp(argv[i], "b") == 0) {
-      for (int j = i+1; i < argc; j++) {
+      for (int j = i+1; j < argc; j++) {
         if (argv[j]) {
           build(argv[j]);
           return;
@@ -50,7 +50,7 @@ void cla_parse(int argc, char** argv) {
       }
 
     } else if (strcmp(argv[i], "install") == 0 || strcmp(argv[i], "i") == 0) {
-      for (int j = i+1; i < argc; j++) {
+      for (int j = i+1; j < argc; j++) {
         pkg = create_pkg(argv[j]);
         if (argv[j]) {
           install_pkg(pkg);
@@ -62,7 +62,7 @@ void cla_parse(int argc, char** argv) {
       }
 
     } else if (strcmp(argv[i], "remove") == 0 || strcmp(argv[i], "r") == 0) {
-      for (int j = i+1; i < argc; j++) {
+      for (int j = i+1; j < argc; j++) {
         pkg = create_pkg(argv[j]);
         if (argv[j]) {
           remove_pkg(pkg);

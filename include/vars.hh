@@ -3,10 +3,10 @@
 
 #include <string>
 #include <filesystem>
-#include <map>
+#include <unordered_map>
 
-extern std::map<std::string, std::string> repos;
-extern std::map<std::string, std::string> install_directories;
+extern std::unordered_map<std::string, std::string> repos;
+extern std::unordered_map<std::string, std::string> install_directories;
 
 extern bool is_symlink_install;
 extern bool is_verbose;

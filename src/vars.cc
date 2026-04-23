@@ -1,11 +1,11 @@
 #include <filesystem>
-#include <map>
+#include <unordered_map>
 #include <string>
 
 #include "vars.hh"
 
-std::map<std::string, std::string> repos;
-std::map<std::string, std::string> install_directories;
+std::unordered_map<std::string, std::string> repos;
+std::unordered_map<std::string, std::string> install_directories;
 
 bool is_symlink_install = false;
 bool is_verbose = false;
