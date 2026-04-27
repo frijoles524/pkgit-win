@@ -62,15 +62,15 @@ void cache_install_directories() {
 
 void cache_repos() {
   if (!config_loaded) {
-    lua_getglobal(L, "repos");
+    lua_getglobal(L, "repositories");
   } else if (!lua_istable(L, -1)) {
-    lua_getglobal(L, "repos");
+    lua_getglobal(L, "repositories");
   }
 
   if (!lua_istable(L, -1)) {
-    std::cout << print_error << "lua variable 'repos' is not a table.\n";
+    std::cout << print_error << "lua variable 'repositories' is not a table.\n";
     return;
-  }
+	}
 
   lua_pushnil(L);
   while (lua_next(L, -2) != 0) {
