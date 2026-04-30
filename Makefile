@@ -1,3 +1,5 @@
+.PHONY: debug install defconfig clean
+
 CC       = clang++
 RM       = rm -f
 PREFIX   ?= /usr/local
@@ -17,8 +19,8 @@ $(OBJDIR):
 $(OBJDIR)/%.o: src/%.cc | $(OBJDIR)
 	${CC} $(CXXFLAGS) -c -o $@ $<
 
-debug: src/*.cc
-	${CC} -o pkgit src/*.cc ${CXXFLAGS} ${LDFLAGS} -g -O0
+debug: CXXFLAGS += -g -O0
+debug: pkgit
 
 install: pkgit
 	install -d ${DESTDIR}${PREFIX}/bin
