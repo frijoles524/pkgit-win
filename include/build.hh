@@ -1,7 +1,7 @@
 #ifndef BUILD
 #define BUILD
 
-#include <filesystem>
-void build(std::filesystem::path build_dir);
+#include "vars.hh"
+void build(Pkg pkg);
 
 #endif

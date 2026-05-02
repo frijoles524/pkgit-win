@@ -5,14 +5,14 @@ global_dependencies = {}
 
 targets = {
 	default = {
-		dependencies = {}
-		compile = function(name)
+		dependencies = {},
+		build = function(name)
 			os.execute("make")
-		end
-		pre_install = function() end
+		end,
+		pre_install = function() end,
 		install = function(prefix)
 			os.execute("make install")
-		end
-		post_install = function() end
+		end,
+		post_install = function() end,
 	}
 }

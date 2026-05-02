@@ -15,6 +15,7 @@ extern bool config_exists;
 struct Pkg {
   std::string url;
   std::string name;
+  const char* target;
   std::string ver;
   std::filesystem::path src;
 };
@@ -76,6 +77,7 @@ extern const std::string color_reset;
 
 extern const std::string print_pkgit;
 extern const std::string print_skipped;
+extern const std::string print_warning;
 extern const std::string print_error;
 
 #endif

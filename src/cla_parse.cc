@@ -1,7 +1,7 @@
-#include <string>
 #include <cstring>
 #include <filesystem>
 #include <iostream>
+#include <string>
 
 #include "cla_parse.hh"
 
@@ -13,85 +13,71 @@
 #include "list_pkgs.hh"
 #include "name_from_url.hh"
 #include "remove_pkg.hh"
-#include "setup_pkgit.hh"
 #include "update_all.hh"
 #include "vars.hh"
 
-void cla_parse(int argc, char** argv) {
+#define COMMAND(large, small, code)                                            \
+  if (strcmp(argv[i], large) == 0 || strcmp(argv[i], small) == 0)              \
+  code
+#define NOT_ENOUGH_ARGS(arg, next)                                             \
+  std::cout << print_error << "Not enough arguments! Try: `pkgit " << arg      \
+	    << " [" << next << "]`"
+
+void cla_parse(int argc, char **argv) {
   Pkg pkg;
 
-  if (!argv[1]) { help(); return; }
+  if (!argv[1]) {
+    help();
+    return;
+  }
 
   for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--link") == 0 || strcmp(argv[i], "-l") == 0) {
-      is_symlink_install = true;
-    }
-
-    if (strcmp(argv[i], "add") == 0 || strcmp(argv[i], "a") == 0) {
-      for (int j = i+1; j < argc; j++) {
-        if (argv[j]) {
-          add_repo(argv[j], name_from_url(argv[j]));
-          return;
-        } else {
-          std::cout << print_error << "Not enough arguments! Try: `pkgit add [url]`";
-          return;
-        }
+    COMMAND("--large", "-l", { is_symlink_install = true; });
+    COMMAND("add", "a", {
+      if (argv[i + 1]) {
+        add_repo(argv[i + 1], name_from_url(argv[i + 1]));
+      } else {
+        NOT_ENOUGH_ARGS(argv[i], "url");
       }
-
-    } else if (strcmp(argv[i], "build") == 0 || strcmp(argv[i], "b") == 0) {
-      for (int j = i+1; j < argc; j++) {
-        if (argv[j]) {
-          build(argv[j]);
-          return;
+    });
+    COMMAND("build", "b", {
+      if (argv[i + 1]) {
+        if (argv[i + 2]) {
+          pkg = create_pkg(argv[i + 1], argv[i + 2]);
+          build(pkg);
         } else {
-          build(std::filesystem::current_path().string().c_str());
-          return;
+          pkg = create_pkg(argv[i + 1], "default");
+          build(pkg);
         }
+      } else {
+        pkg = create_pkg(".", "default");
+        build(pkg);
       }
-
-    } else if (strcmp(argv[i], "install") == 0 || strcmp(argv[i], "i") == 0) {
-      for (int j = i+1; j < argc; j++) {
-        pkg = create_pkg(argv[j]);
-        if (argv[j]) {
+    });
+    COMMAND("install", "i", {
+      if (argv[i + 1]) {
+        if (argv[i + 2]) {
+          pkg = create_pkg(argv[i + 1], argv[i + 2]);
           install_pkg(pkg);
-          return;
         } else {
-          std::cout << print_error << "Not enough arguments! Try: `pkgit install [url/pkg]`";
-          return;
+          pkg = create_pkg(argv[i + 1], "default");
+          install_pkg(pkg);
         }
+      } else {
+        NOT_ENOUGH_ARGS(argv[i], "url/pkg");
       }
-
-    } else if (strcmp(argv[i], "remove") == 0 || strcmp(argv[i], "r") == 0) {
-      for (int j = i+1; j < argc; j++) {
-        pkg = create_pkg(argv[j]);
-        if (argv[j]) {
-          remove_pkg(pkg);
-          return;
-        } else {
-          std::cout << print_error << "Not enough arguments! Try: `pkgit remove [url/pkg]`";
-          return;
-        }
+    });
+    COMMAND("remove", "r", {
+      pkg = create_pkg(argv[i + 1]);
+      if (argv[i + 1]) {
+        remove_pkg(pkg);
+      } else {
+        NOT_ENOUGH_ARGS(argv[i], "url/pkg");
       }
-
-    } else if (strcmp(argv[i], "update") == 0 || strcmp(argv[i], "u") == 0) {
-      update_all();
-      return;
-
-    } else if (strcmp(argv[i], "list") == 0 || strcmp(argv[i], "l") == 0) {
-      list_pkgs();
-      return;
-
-    } else if (strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
-      std::cout << version << std::endl;
-      return;
-
-    } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
-      help();
-      return;
-
-    } else {
-      help();
-      return;
-    }
+    });
+    COMMAND("update", "u", { update_all(); });
+    COMMAND("list", "l", { list_pkgs(); });
+    COMMAND("--version", "-v", { std::cout << version << std::endl; });
+    COMMAND("--help", "-h", { help(); });
   }
 }

@@ -6,6 +6,8 @@
 #include "copy_install.hh"
 #include "install_pkg.hh"
 #include "link_install.hh"
+#include "lua_state.hh"
+#include "name_from_url.hh"
 #include "vars.hh"
 
 void install_pkg(Pkg pkg) {
@@ -13,15 +15,15 @@ void install_pkg(Pkg pkg) {
   fetch_src(pkg);
 
   std::cout << print_pkgit << "building..." << std::endl;
-  build(pkg.src.c_str());
+  build(pkg);
 
   std::cout << print_pkgit << "installing..." << std::endl;
   if (is_symlink_install) { link_install(pkg.src); }
   else { copy_install(pkg.src); }
 
   bool repo_exists = false;
-  for (auto repo : repos) {
-    if (repo.first == pkg.name) {
+  for (auto repo : cached_repos) {
+    if (name_from_url(repo.second.source.value) == pkg.name) {
       repo_exists = true;
     }
   }

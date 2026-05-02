@@ -6,7 +6,7 @@ PREFIX   ?= /usr/local
 OBJDIR   = obj
 SRCS     = $(wildcard src/*.cc)
 OBJS     = $(SRCS:src/%.cc=$(OBJDIR)/%.o)
-CXXFLAGS += $(shell pkg-config --cflags luajit ) -I./include
+CXXFLAGS += $(shell pkg-config --cflags luajit) -I./include
 
 default: pkgit
 

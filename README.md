@@ -1,8 +1,7 @@
 <div align="center">
 
-  ![logo](./assets/logo.png)
-  
-*(package it!)*
+<h1>pkgit</h1>
+(package it!)
 
 </div>
 
@@ -23,9 +22,9 @@ Enter the project directory, and follow one of the following procedures.
 make
 ```
 
-## Using bldit
+## Using pkgit
 ```
-./bldit
+pkgit build
 ```
 Both methods will create an executable in the root directory of the project.
 
@@ -46,6 +45,9 @@ Or you can use the short command:
 ```
 pkgit i [pkg_name]
 ```
+
+> ***[DISCLAIMER]***
+> NOT WORKING YET
 
 If you want to specify a version other than the latest, you can use `--tag:` or `-t:`:
 ```

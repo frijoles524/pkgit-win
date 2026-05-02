@@ -4,7 +4,7 @@
 
 #include "vars.hh"
 
-std::unordered_map<std::string, std::string> repos;
+//std::unordered_map<std::string, std::string> repos;
 std::unordered_map<std::string, std::string> install_directories;
 
 bool is_symlink_install = false;
@@ -76,5 +76,6 @@ const std::string italic = "\e[3m";
 const std::string color_reset = "\e[0m";
 
 const std::string print_pkgit = bold_yellow + "[" + bold_magenta + "pkgit" + bold_yellow + "]\t" + color_reset;
-const std::string print_skipped = print_pkgit + blue + "[SKIPPED]\t" + color_reset;
+const std::string print_skipped = print_pkgit + blue + "[SKIP]\t" + color_reset;
+const std::string print_warning = print_pkgit + yellow + "[WARN]\t" + color_reset;
 const std::string print_error = print_pkgit + red + "[ERROR]\t" + color_reset;
