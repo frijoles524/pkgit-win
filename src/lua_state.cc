@@ -207,7 +207,7 @@ void cache_repos() {
     cached_repos[repo_name].source.value = url ? url : "";
     lua_getfield(L, -1, "dependencies");
     if (!lua_istable(L, -1)) {
-      std::cout << print_warning << repo_name << ": \tlua variable 'dependencies' is not a table.\n";
+      //std::cout << print_warning << repo_name << ": \tlua variable 'dependencies' is not a table.\n";
       lua_pop(L, 2);
       continue;
     }
