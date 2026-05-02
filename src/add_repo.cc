@@ -22,7 +22,7 @@ void add_repo(std::string repo, std::string repo_name) {
 
   std::ofstream wfile;
   wfile.open(repo_file);
-  wfile << previous_repos << "repos." << repo_name << ".url = \"" << repo << "\"" << std::endl;
+  wfile << previous_repos << "repositories." << repo_name << " = { url = \"" << repo << "\" }" << std::endl;
   wfile.close();
 
   std::cout << print_pkgit << green << "Added " << repo_name << color_reset << std::endl;

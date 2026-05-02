@@ -33,6 +33,7 @@ extern std::unordered_map<std::string, repo> cached_repos;
 extern std::unordered_map<std::string, int> cached_build_systems;
 
 
+void push_lua_path(lua_State *L, const char *new_path);
 void init_lua_state();
 void free_lua_state();
 lua_State* get_lua_state();
