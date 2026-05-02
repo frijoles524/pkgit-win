@@ -52,43 +52,11 @@ Or you can use the short command:
 pkgit i [pkg_name]
 ```
 
-> ***[DISCLAIMER]***
-> NOT WORKING YET
-
-If you want to specify a version other than the latest, you can use `--tag:` or `-t:`:
-```
-pkgit install [pkg_name] --tag:[tag]
-```
-
 ### Repo install
 If you haven't added the package's repository yet, or you just want to be specific, you can install the package using its git URL:
 ```
 pkgit install [url.git]
 ```
-
-Installing specific versions works the same as with the package name:
-```
-pkgit install [url.git] --tag:[tag]
-```
-
-### List install
-If you have multiple packages you want to install at once, you have a couple options.
-1. The one-liner:
-```
-pkgit install [pkg1Name] [pkg2Name] --tag:[tag] [url1.git] [url2.git] --tag:[tag]
-```
-2. The package list:
-    - Create a file with all the packages you want to install. The following is that file's syntax:
-    ```
-    [pkg_name]
-    [pkg_name] [tag]
-    [url.git]
-    [url.git] [tag]
-    ```
-    - Run the install command with `--list:` or `-l:`:
-    ```
-    pkgit install --list:[filename]
-    ```
 
 ## Removal
 ### Packages
@@ -101,82 +69,157 @@ Or the short command:
 pkgit r [pkg_name]
 ```
 
-### Repositories
-Removing a repository is also relatively simple. Run the following command:
-```
-pkgit remove --repo:[pkg_name]
-```
-It will then prompt you with every URL in your repo that matches this package's name. Select the index of the one you want to remove.
-
 ## Dependency Management
-As it is, pkgit is capable of dependency management, but you will likely have to determine the dependency URLs for each package you install (`/etc/pkgit/deps/[pkg-name].pkgdeps`). There's not a universal way to check for dependencies without using an existing package manager (unless the repo you're installing has a pkgdeps file).
+As it is, pkgit is capable of dependency management, but you will likely have to specify the dependency URLs for each package you install in `<config_directory>/pkgit/init.lua`. There's not a universal way to check for dependencies without using an existing package manager (unless the package you're installing has a bldit.lua).
 
-### [USER]: Creating a .pkgdeps file
+### Configuring pkgit
 Thankfully, this is a very simple process.
 
-For each dependency, all you need to do in the .pkgdeps file is paste the dependency's remote git URL in its own line.
+To configure pkgit, you have one centralized configuration file: `<config_directory>/pkgit/init.lua`
+Thanks to liblua, pkgit pushes a package.path variable directly to your configuration file.
+This means that you can require any sub-file/directory, without wrestling with `require()`.
 
-Here's an example for `/etc/pkgit/deps/mush.pkgdeps`:
+The overall structure of the configuration file looks like this:
+```lua
+--[[
+  - install directories -
+  this is where every package you
+  get with pkgit is installed,
+  with respect to each of it's
+  files' types:
+
+  install_directories = {
+    bin     = "...",
+    include = "...",
+    lib     = "...",
+    src     = "...",
+  }
+
+  it is recommended that you create
+  a prefix variable to prepend to
+  these directories, like so:
+]]
+local prefix = os.getenv("HOME").."/.local" -- for user-level installs
+install_directories = {
+  bin     = prefix.."/bin",
+  include = prefix.."/include",
+  lib     = prefix.."/lib",
+  src     = prefix.."/src",
+}
+
+--[[
+  - your repositories -
+  this is where you store your
+  own custom urls, dependencies,
+  and functions to install
+  whatever programs you desire.
+]]
+repositories = {
+  example_name = {
+    url = "https://...",
+    dependencies = {
+      ...
+    },
+    build = function() ... end
+    pre_install = function() ... end
+    install = function() ... end
+    post_install = function() ... end
+  }
+}
+--[[
+  pkgit also creates a 'repos.lua' file in
+  your config directory,  which you can
+  require here to automatically add repos
+  that you install from.
+]]
+require('repos')
+
+--[[
+  - standard build systems -
+  will be auto-detected if required
+  functions aren't in 'repositories'
+  or a repo's 'bldit.lua'
+]]
+build_systems = {
+  ["filename.extension"] = {
+    build = function() ... end
+    pre_install = function() ... end
+    install = function() ... end
+    post_install = function() ... end
+  }
+}
 ```
-https://github.com/mpv-player/mpv
-https://github.com/yt-dlp/yt-dlp
-https://github.com/FFmpeg/FFmpeg
-https://github.com/curl/curl
-https://github.com/quodlibet/mutagen
+
+For each dependency, all you need to do is paste the dependency's remote git URL in its own url variable.
+
+Here's an example for mush:
+```lua
+repositories = {
+  mush = {
+    url = "https://github.com/dacctal/mush",
+    dependencies = {
+      mpv = { url = "https://github.com/mpv-player/mpv" },
+
+      ["yt-dlp"] = { url = "https://github.com/yt-dlp/yt-dlp" },
+      --[[
+        for dependencies with names that contain illegal
+        characters in lua, you'll want to wrap them in
+        [""] to avoid problems.
+      ]]
+
+      ffmpeg = { url = "https://github.com/FFmpeg/FFmpeg" },
+      curl = { url = "https://github.com/curl/curl" },
+      mutagen = { url = "https://github.com/quodlibet/mutagen" }
+    }
+  }
+}
 ```
 
-That's it! pkgit will read from this file and resolve these dependencies automatically.
+That's it! pkgit will read from this file and resolve these
+dependencies automatically.
 
-### [DEVELOPER]: Pkgdeps in your package
-If you want your own package's dependencies to be resolved in pkgit, you can create a `pkgdeps` file in the root directory of your project's git repo.
+### [DEVELOPER]: bldit.lua
+If you want your own package's dependencies, version, compilation,
+and other aspects to be properly resolved in pkgit, you can create a
+`bldit.lua` file in the root directory of your project's git repo.
 
-Do not name it anything other than `pkgdeps`, or pkgit will not find the file.
-
-The syntax displayed above applies to this file.
+Do not name it anything other than `bldit.lua`, otherwise pkgit
+will not find the file.
 
 > [!WARNING]
 > Recursive dependency management does NOT work in pkgit, so you may want to list your dependencies accordingly.
 
-## Custom Compile Instructions - bldit
-The bldit file is a very basic shell script, and is meant exclusively to COMPILE the program.
+Example `bldit.lua` that works for pkgit:
+```lua
+bldit_version = "0.0.0"
+package_version = "0.0.0"
+--[[
+  versions have to be strings, 
+  because some devs like to
+  have fun and whimsical
+  version numbers :D
+]]
 
-NOT to install the program.
+global_dependencies = {}
+-- dependencies for all targets
 
-Creating a custom bldit file is useful for those comfortable with going through compile steps manually.
-
-The file is stored in `/etc/pkgit/bldit/` and is named after the package exactly (all lowercase).
-
-It is also a very simple process to create a bldit file. A great example of a bldit file
-is right here in the pkgit repository:
+targets = {
+	default = {
+		dependencies = {},
+		-- target-specific dependencies
+		build = function(name)
+			os.execute("make")
+		end,
+		pre_install = function() end,
+		install = function(prefix)
+			os.execute("make install")
+		end,
+		post_install = function() end,
+	}
+	--[[
+    could also have targets for 'client'
+    or 'server.' useful for monorepos
+    and related use-cases.
+	]]
+}
 ```
-make
-```
-Basically, this contains the steps to compile the program.
-
-### [USER]: Creating a bldit file
-If you wanted to create your own custom bldit file for pkgit,
-you would make a file: `/etc/pkgit/bldit/pkgit` and create your own bldit script in there.
-
-### [DEVELOPER]: Bldit in your package
-If your package doesn't build correctly using pkgit, you can create a `bldit` file in the root directory of your project's repo.
-
-Do not name it anything other than `bldit`, or pkgit will not find the file.
-
-The syntax displayed above applies to this file.
-
-## Custom Repositories
-A custom repository is as simple to create as a `pkgdeps` file.
-
-All you need is URLs separated by new lines. Each URL must correspond to a remote git repository of a package.
-
-The file name doesn't matter in this case, because you will add this repository by running:
-`pkgit a [filename]`
-
-You can also add repositories from a URL by running:
-`pkgit a [URL]`
-> [!NOTE]
-> This only works if the URL leads to the RAW file.
-
-From here, pkgit will add all the URLs into its own local repository in `/usr/pkgit/repos/repos`.
-
-Because of this simplistic format, you can easily create and share repositories on your own, or using existing larger repos like the AUR and GURU repos.
