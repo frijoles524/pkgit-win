@@ -23,14 +23,11 @@ Pkg create_pkg(std::string arg, const char* target) {
   if (arg.rfind("http", 0) == 0) {
     pkg.url = arg;
     pkg.name = name_from_url(arg);
-  } else if (std::filesystem::exists(arg) || arg == ".") {
+  } else if (arg == ".") {
+    std::cout << "this pkg is local" << std::endl;
     pkg.url = "";
-    if (std::filesystem::exists(arg)) {
-      pkg.src = arg;
-    } else {
-      pkg.src = std::filesystem::current_path().string();
-    }
-    pkg.name = name_from_url(arg);
+    pkg.src = std::filesystem::current_path().string();
+    pkg.name = name_from_url(std::filesystem::current_path().string());
     is_local = true;
   } else if (is_in_repos) {
     pkg.url = cached_repos[arg].source.value;

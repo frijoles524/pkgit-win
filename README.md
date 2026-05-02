@@ -34,6 +34,12 @@ After compiling, run the following with root privilages:
 make install
 ```
 
+## Don't have root?
+You can specify any install location with `PREFIX=<path>`:
+```
+make install PREFIX="/path/to/install"
+```
+
 # Usage
 ## Installing Packages
 ### Basic install

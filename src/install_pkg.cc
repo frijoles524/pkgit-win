@@ -13,13 +13,16 @@
 void install_pkg(Pkg pkg) {
   std::cout << print_pkgit << "fetching source..." << std::endl;
   fetch_src(pkg);
+  std::cout << print_pkgit << "source fetched!" << std::endl;
 
   std::cout << print_pkgit << "building..." << std::endl;
   build(pkg);
+  std::cout << print_pkgit << "build complete!" << std::endl;
 
   std::cout << print_pkgit << "installing..." << std::endl;
   if (is_symlink_install) { link_install(pkg.src); }
   else { copy_install(pkg.src); }
+  std::cout << print_pkgit << "installed!" << std::endl;
 
   bool repo_exists = false;
   for (auto repo : cached_repos) {
