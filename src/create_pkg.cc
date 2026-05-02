@@ -11,8 +11,8 @@ Pkg create_pkg(std::string arg, const char* target) {
   Pkg pkg;
   pkg.target = target;
   pkg.ver = "HEAD";
+  pkg.is_local = false;
   bool is_in_repos = false;
-  bool is_local = false;
 
   init_lua_state();
   cache_repos();
@@ -27,7 +27,7 @@ Pkg create_pkg(std::string arg, const char* target) {
     pkg.url = "";
     pkg.src = std::filesystem::current_path().string();
     pkg.name = name_from_url(std::filesystem::current_path().string());
-    is_local = true;
+    pkg.is_local = true;
   } else if (is_in_repos) {
     pkg.url = cached_repos[arg].source.value;
     pkg.name = arg;
@@ -37,7 +37,7 @@ Pkg create_pkg(std::string arg, const char* target) {
   }
 
   cache_install_directories();
-  if (!is_local) {
+  if (!pkg.is_local) {
     pkg.src = install_directories["src"] + "/" + pkg.name + "/" + pkg.ver;
   }
 

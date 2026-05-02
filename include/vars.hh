@@ -18,6 +18,7 @@ struct Pkg {
   const char* target;
   std::string ver;
   std::filesystem::path src;
+  bool is_local;
 };
 
 extern const std::string home_dir;

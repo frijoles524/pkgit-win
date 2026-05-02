@@ -11,9 +11,11 @@
 #include "vars.hh"
 
 void install_pkg(Pkg pkg) {
-  std::cout << print_pkgit << "fetching source..." << std::endl;
-  fetch_src(pkg);
-  std::cout << print_pkgit << "source fetched!" << std::endl;
+  if (!pkg.is_local) {
+    std::cout << print_pkgit << "fetching source..." << std::endl;
+    fetch_src(pkg);
+    std::cout << print_pkgit << "source fetched!" << std::endl;
+  }
 
   std::cout << print_pkgit << "building..." << std::endl;
   build(pkg);

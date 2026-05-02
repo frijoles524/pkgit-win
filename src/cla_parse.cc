@@ -21,7 +21,7 @@
   code
 #define NOT_ENOUGH_ARGS(arg, next)                                             \
   std::cout << print_error << "Not enough arguments! Try: `pkgit " << arg      \
-	    << " [" << next << "]`"
+	    << " [" << next << "]`" << std::endl
 
 void cla_parse(int argc, char **argv) {
   Pkg pkg;
