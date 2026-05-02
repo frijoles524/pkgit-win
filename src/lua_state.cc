@@ -106,7 +106,7 @@ bool repo_build(const char *repository) {
 }
 
 bool bldit(const char *target) {
-  lua_State *B = luaL_newstate();
+  lua_State* B = luaL_newstate();
   luaL_openlibs(B);
   if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
     std::cout << print_warning << "cannot run bldit script: " << lua_tostring(B, -1) << "\n";
@@ -119,18 +119,15 @@ bool bldit(const char *target) {
   }
   std::cout << print_pkgit << "bldit variable 'targets' used successfully.\n";
   lua_getfield(B, -1, target);
-  if (!lua_istable(L, -1)) {
-    std::cout << print_warning << "bldit variable '" << target
-	      << "' is not a table.\n";
+  if (!lua_istable(B, -1)) {
+    std::cout << print_warning << "bldit variable '" << target << "' is not a table.\n";
     lua_pop(B, 2);
     return false;
   }
-  std::cout << print_pkgit << "bldit variable '" << target
-	    << "' used successfully.\n";
+  std::cout << print_pkgit << "bldit variable '" << target << "' used successfully.\n";
   lua_getfield(B, -1, "build");
   if (!lua_isfunction(B, -1)) {
-    std::cout << "'repositories' lua variable 'build' is not a function."
-	      << std::endl;
+    std::cout << "'repositories' lua variable 'build' is not a function." << std::endl;
     lua_pop(B, 3);
     return false;
   }

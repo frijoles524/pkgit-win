@@ -24,7 +24,6 @@ Pkg create_pkg(std::string arg, const char* target) {
     pkg.url = arg;
     pkg.name = name_from_url(arg);
   } else if (arg == ".") {
-    std::cout << "this pkg is local" << std::endl;
     pkg.url = "";
     pkg.src = std::filesystem::current_path().string();
     pkg.name = name_from_url(std::filesystem::current_path().string());
