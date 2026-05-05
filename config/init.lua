@@ -1,12 +1,13 @@
-local prefix = "/home/dacc/pkgit"
-local install_directories = {
+local home = os.getenv("HOME")
+local prefix = home.."/pkgit"
+install_directories = {
 	bin			= prefix.."/bin",
 	include	= prefix.."/include",
 	lib			= prefix.."/lib",
 	src			= prefix.."/src",
 }
 
-local repositories = {
+repositories = {
 	pkgit = { "https://git.symlinx.net/pkgit" },
 	beaker = {
 		"https://git.symlinx.net/pkgit",
@@ -15,14 +16,14 @@ local repositories = {
 			os.execute("make")
 		end,
 		pre_install = function() end
-		install = funciton()
+		install = function()
 			os.execute("make install INSTALL_PREFIX="..prefix)
 		end,
 		post_install = function() end
 	},
 }
 
-local build_systems = {
+build_systems = {
 	Makefile = {
 		build = function()
 			os.execute("make")
