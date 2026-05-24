@@ -1,25 +1,25 @@
-.PHONY: debug install defconfig clean
+.PHONY: default debug install defconfig clean
 
-CC       = clang++
+CC       = gcc
 RM       = rm -f
 PREFIX   ?= /usr/local
 OBJDIR   = obj
-SRCS     = $(wildcard src/*.cc)
-OBJS     = $(SRCS:src/%.cc=$(OBJDIR)/%.o)
-CXXFLAGS += $(shell pkg-config --cflags luajit) -I./include
+SRCS     = $(wildcard src/*.c)
+OBJS     = $(SRCS:src/%.c=$(OBJDIR)/%.o)
+CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation
 
 default: pkgit
 
 pkgit: $(OBJS)
-	${CC} -o pkgit $^ $(shell pkg-config --libs luajit)
+	${CC} -o $@ $^ $(shell pkg-config --libs luajit)
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 
-$(OBJDIR)/%.o: src/%.cc | $(OBJDIR)
-	${CC} $(CXXFLAGS) -c -o $@ $<
+$(OBJDIR)/%.o: src/%.c | $(OBJDIR)
+	${CC} $(CFLAGS) -c -o $@ $<
 
-debug: CXXFLAGS += -g -O0
+debug: CFLAGS += -g -O0
 debug: pkgit
 
 install: pkgit
@@ -29,7 +29,7 @@ install: pkgit
 defconfig:
 	@echo "Installing default config to ~/.config/pkgit ..."
 	@mkdir -p ~/.config/pkgit
-	@cp -r config/* ~/.config/pkgit
+	@cp -r ./config/* ~/.config/pkgit/
 	@echo "default config installed"
 
 clean:
