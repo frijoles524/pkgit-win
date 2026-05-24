@@ -1,25 +1,20 @@
 local home = os.getenv("HOME")
-local prefix = home.."/pkgit"
+local prefix = home.."/.local"
 install_directories = {
-	bin			= prefix.."/bin",
+	bin		= prefix.."/bin",
 	include	= prefix.."/include",
-	lib			= prefix.."/lib",
-	src			= prefix.."/src",
+	lib		= prefix.."/lib",
+	src		= prefix.."/src",
+	pkgblds	= home.."/.local/share/pkgit",
 }
 
 repositories = {
-	pkgit = { "https://git.symlinx.net/pkgit" },
+	pkgit = {
+		url = "https://git.symlinx.net/pkgit",
+	},
 	beaker = {
-		"https://git.symlinx.net/pkgit",
-		dependencies = {}
-		build = function()
-			os.execute("make")
-		end,
-		pre_install = function() end
-		install = function()
-			os.execute("make install INSTALL_PREFIX="..prefix)
-		end,
-		post_install = function() end
+		url = "https://git.symlinx.net/beaker",
+		dependencies = {},
 	},
 }
 
@@ -28,8 +23,11 @@ build_systems = {
 		build = function()
 			os.execute("make")
 		end,
-		install = function()
-			os.execute("make install")
+	},
+	["CMakeLists.txt"] = {
+		build = function()
+			os.execute("cmake -B build")
+			os.execute("cmake --build build")
 		end,
 	},
 }
