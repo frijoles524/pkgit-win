@@ -26,6 +26,9 @@ install: pkgit
 	install -d ${DESTDIR}${PREFIX}/bin
 	install -m 755 pkgit ${DESTDIR}${PREFIX}/bin/pkgit
 
+uninstall: ${DESTDIR}${PREFIX}/bin/pkgit
+	${RM} ${DESTDIR}${PREFIX}/bin/pkgit
+
 defconfig:
 	@echo "Installing default config to ~/.config/pkgit ..."
 	@mkdir -p ~/.config/pkgit
