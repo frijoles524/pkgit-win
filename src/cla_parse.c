@@ -81,7 +81,7 @@ void cla_parse(int argc, char **argv) {
         COMMAND("update", "u", { update_all(); });
         COMMAND("declare", "d", { declare(); });
         COMMAND("list", "l", { list_pkgs(); });
-        COMMAND("find", "f", { find(); });
+        COMMAND("find", "f", { find(argv[i + 1]); });
         COMMAND("--version", "-v", { printf("%s\n", version); });
         COMMAND("--help", "-h", { help(); });
         COMMAND("--check", "-c", { resolve_deps(); return; });

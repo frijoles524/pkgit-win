@@ -1,4 +1,4 @@
 #ifndef FIND
 #define FIND
-void find();
+void find(const char* arg);
 #endif

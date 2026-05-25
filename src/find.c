@@ -1,23 +1,20 @@
-#include <dirent.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
 
+#include "list_pkgs.h"
 #include "lua_state.h"
-#include "vars.h"
 
-void find() {
-  char* src_code = map_get(&cached_install_directories, "src");
-  struct dirent* dirent_ptr;
-  DIR* dir_ptr = opendir(src_code);
-
-  if (dir_ptr == NULL) {
-    fprintf(stderr, "%scould not open %s\n", print_pkgit, src_code);
+void find(const char* arg) {
+  init_lua_state();
+  cache_repos();
+  if (!arg) {
+    for (size_t i = 0; i < cached_repos_count; i++) {
+      printf("%s\n", cached_repos[i].source_key);
+    }
     return;
   }
-
-  while ((dirent_ptr = readdir(dir_ptr)) != NULL) {
-    if (strcmp(dirent_ptr->d_name, "..") == 0 || strcmp(dirent_ptr->d_name, ".") == 0) { continue; }
-    printf("%s\n", dirent_ptr->d_name);
+  for (size_t i = 0; i < cached_repos_count; i++) {
+    if (!strstr(cached_repos[i].source_key, arg)) continue;
+    printf("%s\n", cached_repos[i].source_key);
   }
 }
