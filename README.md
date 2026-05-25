@@ -28,6 +28,12 @@ pkgit build
 ```
 Both methods will create an executable in the root directory of the project.
 
+You'll probably also want to generate a base configuration file if you don't already have one.
+Run this as a user to generate the config:
+```
+make defconfig
+```
+
 # Install pkgit
 After compiling, run the following with root privilages:
 ```
@@ -117,6 +123,7 @@ install_directories = {
 repositories = {
   example_name = {
     url = "https://...",
+    version = "v0.0.0",
     dependencies = {
       ...
     },
