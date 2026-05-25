@@ -23,7 +23,6 @@ int fetch_git(Pkg pkg) {
         argv[i++] = pkg.url;
         argv[i++] = pkg.src;
         argv[i] = NULL;
-
         execvp("git", (char *const *)argv);
         _exit(127);
     }
@@ -31,7 +30,6 @@ int fetch_git(Pkg pkg) {
     int status;
     waitpid(pid, &status, 0);
     int result = WIFEXITED(status) ? WEXITSTATUS(status) : -1;
-
     if (result != 0) {
         printf("clone failed\n");
     }

@@ -21,11 +21,12 @@
 //    FILE* file_ptr = fopen(dirent_ptr->d_name, "r");
 //    if (!file_ptr) { continue; }
 //    if (strcmp(get_filename_ext(dirent_ptr->d_name), ".so") == 0) {
-//      remove(strcat(install_directories[], dirent_ptr->d_name));
-//    } else if (!access(dir_entry.path().c_str(), X_OK) && !is_directory(dir_entry.path())) {
-//      std::filesystem::remove(install_directories["bin"]+"/"+dir_entry.path().filename().string());
-//    } else if (dir_entry.path().extension() == ".h") {
-//      std::filesystem::remove(install_directories["include"]+"/"+dir_entry.path().filename().string());
+//    remove(strcat(map_get(&cached_install_directories, "lib"), strcat("/", dirent_ptr->d_name)));
+//    } else if (!access(dirent_ptr->d_name, X_OK) && stat_buf.st_mode != S_IFDIR) {
+//    remove(strcat(map_get(&cached_install_directories, "bin"), strcat("/", dirent_ptr->d_name)));
+//    } else if (strcmp(get_filename_ext(dirent_ptr->d_name), ".h") == 0) {
+//    remove(strcat(map_get(&cached_install_directories, "include"), strcat("/", dirent_ptr->d_name)));
+//    }
 //    }
 //  }
 //}

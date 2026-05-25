@@ -7,6 +7,7 @@
 #include "add_repo.h"
 #include "build.h"
 #include "create_pkg.h"
+#include "declare.h"
 #include "help.h"
 #include "install_pkg.h"
 #include "list_pkgs.h"
@@ -77,6 +78,7 @@ void cla_parse(int argc, char **argv) {
             }
         });
         COMMAND("update", "u", { update_all(); });
+        COMMAND("declare", "d", { declare(); });
         COMMAND("list", "l", { list_pkgs(); });
         COMMAND("--version", "-v", { printf("%s\n", version); });
         COMMAND("--help", "-h", { help(); });

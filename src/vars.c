@@ -23,7 +23,7 @@ char repo_file[MAX_PATH_LEN] = {0};
 char bin[MAX_PATH_LEN] = {0};
 char lib[MAX_PATH_LEN] = {0};
 char inc[MAX_PATH_LEN] = {0};
-char pkgblds[MAX_PATH_LEN] = {0};
+char src[MAX_PATH_LEN] = {0};
 
 char *install_directories[5] = {NULL};
 
@@ -151,13 +151,13 @@ void init_vars() {
     snprintf(bin, MAX_PATH_LEN, "%s/.local/bin", home_dir);
     snprintf(lib, MAX_PATH_LEN, "%s/.local/lib", home_dir);
     snprintf(inc, MAX_PATH_LEN, "%s/.local/include", home_dir);
-    snprintf(pkgblds, MAX_PATH_LEN, "%s/.local/share/pkgit", home_dir);
+    snprintf(src, MAX_PATH_LEN, "%s/.local/share/pkgit", home_dir);
 
     install_directories[0] = config_dir;
-    install_directories[1] = bin;
-    install_directories[2] = lib;
-    install_directories[3] = inc;
-    install_directories[4] = pkgblds;
+    install_directories[1] = strdup(get_install_dir("bin"));
+    install_directories[2] = strdup(get_install_dir("lib"));
+    install_directories[3] = strdup(get_install_dir("inc"));
+    install_directories[4] = strdup(get_install_dir("src"));
 
     static char print_pkgit_buf[256];
     snprintf(print_pkgit_buf, sizeof(print_pkgit_buf), "%s[%s%s%s]\t%s",

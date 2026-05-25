@@ -179,7 +179,6 @@ void cache_repos() {
         lua_pop(L, 1);
         return;
     }
-
     lua_pushnil(L);
     while (lua_next(L, -2) != 0) {
         const char *repo_name = lua_tostring(L, -2);
@@ -188,22 +187,18 @@ void cache_repos() {
             lua_pop(L, 1);
             continue;
         }
-
         Repo *repo = &cached_repos[cached_repos_count];
         repo->source_key = strdup(repo_name);
-
         lua_getfield(L, -1, "url");
         const char *url = lua_tostring(L, -1);
         repo->source_value = url ? strdup(url) : strdup("");
         lua_pop(L, 1);
-
         lua_getfield(L, -1, "dependencies");
         if (!lua_istable(L, -1)) {
             lua_pop(L, 2);
             cached_repos_count++;
             continue;
         }
-
         lua_pushnil(L);
         while (lua_next(L, -2) != 0) {
             const char *depname = lua_tostring(L, -2);
@@ -211,11 +206,9 @@ void cache_repos() {
                 lua_getfield(L, -1, "url");
                 const char *dep_url = lua_tostring(L, -1);
                 lua_pop(L, 1);
-
                 lua_getfield(L, -1, "version");
                 const char *dep_version = lua_tostring(L, -1);
                 lua_pop(L, 1);
-
                 Dependency *dep = realloc(repo->dependencies, (repo->dep_count + 1) * sizeof(Dependency));
                 if (dep) {
                     repo->dependencies = dep;
@@ -267,7 +260,6 @@ bool config_build(const char *path) {
         lua_pop(L, 1);
         return false;
     }
-
     lua_pushnil(L);
     while (lua_next(L, -2) != 0) {
         const char *key = lua_tostring(L, -2);
@@ -275,25 +267,21 @@ bool config_build(const char *path) {
             lua_pop(L, 1);
             continue;
         }
-
         char file_path[MAX_PATH_LEN];
         snprintf(file_path, sizeof(file_path), "%s/%s", path, key);
         if (access(file_path, F_OK) != 0) {
             lua_pop(L, 1);
             continue;
         }
-
         lua_getfield(L, -1, "build");
         if (!lua_isfunction(L, -1)) {
             lua_pop(L, 1);
             continue;
         }
-
         if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
             lua_pop(L, 1);
             continue;
         }
-
         lua_pop(L, 1);
         lua_pop(L, 1);
         return true;

@@ -9,9 +9,8 @@
 - [x] lua config primary(/etc) / secondary(.config) checks
 - [x] lua variables for install paths
 - [x] lua dependency listing
-- [ ] lua custom source fetching methods
 - [ ] version management
-    - [ ] (maybe) diffs to change versions
+- [ ] (maybe) lua custom source fetching methods
 - [ ] (maybe) lua custom install methods for sandboxed builds
 - [ ] (maybe) branch selection
 - [ ] (maybe) install to store directory
