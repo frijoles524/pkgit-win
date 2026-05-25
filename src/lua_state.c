@@ -98,7 +98,6 @@ bool repo_build(const char *repository) {
         lua_pop(L, 2);
         return false;
     }
-
     printf("%s'repositories' lua variable '%s' used successfully.\n", print_pkgit, repository);
 
     lua_getfield(L, -1, "build");
@@ -107,16 +106,49 @@ bool repo_build(const char *repository) {
         lua_pop(L, 3);
         return false;
     }
-
+    printf("%s'repositories' lua variable 'build' used successfully.\n", print_pkgit);
     if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
         printf("'repositories' build failed: %s\n", lua_tostring(L, -1));
         lua_pop(L, 1);
         lua_pop(L, 2);
         return false;
     }
-
-    lua_pop(L, 2);
     printf("%s'repositories' lua function 'build' ran successfully.\n", print_pkgit);
+
+    lua_getfield(L, -1, "pre_install");
+    if (!lua_isfunction(L, -1)) {
+        printf("%s'repositories' lua variable 'pre_install' is not a function.\n", print_warning);
+    }
+    printf("%s'repositories' lua variable 'pre_install' used successfully.\n", print_pkgit);
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        printf("'repositories' pre_install failed: %s\n", lua_tostring(L, -1));
+    }
+    printf("%s'repositories' lua function 'pre_install' ran successfully.\n", print_pkgit);
+
+    lua_getfield(L, -1, "install");
+    if (!lua_isfunction(L, -1)) {
+        printf("%s'repositories' lua variable 'install' is not a function.\n", print_warning);
+    } else {
+      is_auto_installed = false;
+    }
+    printf("%s'repositories' lua variable 'install' used successfully.\n", print_pkgit);
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        printf("'repositories' install failed: %s\n", lua_tostring(L, -1));
+    }
+    printf("%s'repositories' lua function 'install' ran successfully.\n", print_pkgit);
+    lua_pop(L, 1);
+
+    lua_getfield(L, -1, "post_install");
+    if (!lua_isfunction(L, -1)) {
+        printf("%s'repositories' lua variable 'post_install' is not a function.\n", print_warning);
+    }
+    printf("%s'repositories' lua variable 'post_install' used successfully.\n", print_pkgit);
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        printf("'repositories' post_install failed: %s\n", lua_tostring(L, -1));
+    }
+    lua_pop(L, 2);
+    printf("%s'repositories' lua function 'post_install' ran successfully.\n", print_pkgit);
+
     return true;
 }
 

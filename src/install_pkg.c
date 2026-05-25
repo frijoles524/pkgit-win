@@ -25,10 +25,12 @@ void install_pkg(Pkg pkg) {
     printf("%sbuild complete!\n", print_pkgit);
 
     printf("%sinstalling...\n", print_pkgit);
-    if (is_symlink_install) {
-        link_install(pkg.src);
-    } else {
-        copy_install(pkg.src);
+    if (is_auto_installed) {
+      if (is_symlink_install) {
+          link_install(pkg.src);
+      } else {
+          copy_install(pkg.src);
+      }
     }
     printf("%sinstalled!\n", print_pkgit);
 

@@ -10,6 +10,7 @@
 
 bool is_symlink_install = false;
 bool is_verbose = false;
+bool is_auto_installed = true;
 bool config_exists = false;
 
 char home_dir[MAX_PATH_LEN] = {0};

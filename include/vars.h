@@ -52,6 +52,7 @@ typedef struct {
 
 extern bool is_symlink_install;
 extern bool is_verbose;
+extern bool is_auto_installed;
 extern bool config_exists;
 
 extern char home_dir[MAX_PATH_LEN];
