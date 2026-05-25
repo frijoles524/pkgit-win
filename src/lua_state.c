@@ -193,6 +193,10 @@ void cache_repos() {
         const char *url = lua_tostring(L, -1);
         repo->source_value = url ? strdup(url) : strdup("");
         lua_pop(L, 1);
+        lua_getfield(L, -1, "version");
+        const char* version = lua_tostring(L, -1);
+        repo->version = version ? strdup(version) : strdup("HEAD");
+        lua_pop(L, 1);
         lua_getfield(L, -1, "dependencies");
         if (!lua_istable(L, -1)) {
             lua_pop(L, 2);

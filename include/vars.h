@@ -32,6 +32,7 @@ typedef struct {
 typedef struct {
     char *source_key;
     char *source_value;
+    char *version;
     Dependency *dependencies;
     size_t dep_count;
     int build_ref;
