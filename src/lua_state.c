@@ -24,38 +24,29 @@ void push_lua_path(lua_State *L, const char *new_path) {
 }
 
 void init_lua_state() {
-    if (L != NULL)
-        return;
-
+    if (L != NULL) return;
     L = luaL_newstate();
     luaL_openlibs(L);
-
     char lua_path[MAX_PATH_LEN + 20];
     snprintf(lua_path, sizeof(lua_path), "%s/?.lua", config_dir);
     push_lua_path(L, lua_path);
-
     if (luaL_loadfile(L, config_file) || lua_pcall(L, 0, 0, 0)) {
         printf("%scannot run configuration script: %s\n", print_error, lua_tostring(L, -1));
         return;
     }
-
     if (file_exists(repo_file)) {
         if (luaL_loadfile(L, repo_file) || lua_pcall(L, 0, 0, 0)) {
             printf("%scannot load repository file: %s\n", print_error, lua_tostring(L, -1));
             lua_pop(L, 1);
         }
     }
-
     config_loaded = true;
 }
 
 void init_bldit() {
-    if (B != NULL)
-        return;
-
+    if (B != NULL) return;
     B = luaL_newstate();
     luaL_openlibs(B);
-
     if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
         printf("%scannot run bldit script: %s\n", print_warning, lua_tostring(B, -1));
         return;
@@ -71,29 +62,23 @@ void free_lua_state() {
     config_loaded = false;
 }
 
-lua_State* get_lua_state() {
-    return L;
-}
+lua_State* get_lua_state() { return L; }
 
 void cache_install_directories() {
     if (!config_loaded || !lua_istable(L, -1)) {
         lua_getglobal(L, "install_directories");
     }
-
     if (!lua_istable(L, -1)) {
         printf("%slua variable 'install_directories' is not a table.\n", print_error);
         return;
     }
-
     lua_pushnil(L);
     while (lua_next(L, -2) != 0) {
         const char *key = lua_tostring(L, -2);
         const char *value = lua_tostring(L, -1);
-
         if (key && value) {
             map_put(&cached_install_directories, strdup(key), strdup(value));
         }
-
         lua_pop(L, 1);
     }
     lua_pop(L, 1);
@@ -106,9 +91,7 @@ bool repo_build(const char *repository) {
         lua_pop(L, 1);
         return false;
     }
-
     printf("%slua variable 'repositories' used successfully.\n", print_pkgit);
-
     lua_getfield(L, -1, repository);
     if (!lua_istable(L, -1)) {
         printf("%s'repositories' lua variable '%s' is not a table.\n", print_warning, repository);

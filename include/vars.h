@@ -64,7 +64,7 @@ extern char repo_file[MAX_PATH_LEN];
 extern char bin[MAX_PATH_LEN];
 extern char lib[MAX_PATH_LEN];
 extern char inc[MAX_PATH_LEN];
-extern char pkgblds[MAX_PATH_LEN];
+extern char src[MAX_PATH_LEN];
 
 extern char *install_directories[5];
 

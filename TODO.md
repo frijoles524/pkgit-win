@@ -8,7 +8,7 @@
 - [x] CLA parsing
 - [x] lua config primary(/etc) / secondary(.config) checks
 - [x] lua variables for install paths
-- [ ] lua dependency listing
+- [x] lua dependency listing
 - [ ] lua custom source fetching methods
 - [ ] version management
     - [ ] (maybe) diffs to change versions
