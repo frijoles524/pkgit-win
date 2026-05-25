@@ -8,6 +8,7 @@
 #include "build.h"
 #include "create_pkg.h"
 #include "declare.h"
+#include "find.h"
 #include "help.h"
 #include "install_pkg.h"
 #include "list_pkgs.h"
@@ -34,7 +35,7 @@ void cla_parse(int argc, char **argv) {
     }
 
     for (int i = 1; i < argc; i++) {
-        COMMAND("--large", "-l", { is_symlink_install = true; });
+        COMMAND("--link", "-l", { is_symlink_install = true; });
         COMMAND("add", "a", {
             if (argv[i + 1]) {
                 add_repo(argv[i + 1], name_from_url(argv[i + 1]));
@@ -80,6 +81,7 @@ void cla_parse(int argc, char **argv) {
         COMMAND("update", "u", { update_all(); });
         COMMAND("declare", "d", { declare(); });
         COMMAND("list", "l", { list_pkgs(); });
+        COMMAND("find", "f", { find(); });
         COMMAND("--version", "-v", { printf("%s\n", version); });
         COMMAND("--help", "-h", { help(); });
         COMMAND("--check", "-c", { resolve_deps(); return; });

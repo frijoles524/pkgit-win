@@ -18,7 +18,6 @@ Pkg create_pkg(const char *arg, const char *target) {
     for (int i = 0; i < cached_repos_count; i++) {
       if (strcmp(cached_repos[i].source_key, arg) == 0) {
         pkg.ver = cached_repos[i].version;
-        printf("THIS IS THE VERSION NUMBER: %s\n", pkg.ver);
       }
     }
 

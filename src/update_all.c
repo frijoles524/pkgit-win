@@ -19,11 +19,12 @@ void update_all() {
   cache_repos();
   struct dirent* dirent_ptr;
   DIR* dir_ptr;
-  if ((dir_ptr = opendir(src)) == NULL) {
-    fprintf(stderr, "%scould not open %s\n", print_pkgit, src);
+  if ((dir_ptr = opendir(get_install_dir("src"))) == NULL) {
+    fprintf(stderr, "%scould not open %s\n", print_pkgit, get_install_dir("src"));
   }
   while ((dirent_ptr = readdir(dir_ptr)) != NULL) {
     if (strcmp(dirent_ptr->d_name, "..") == 0 || strcmp(dirent_ptr->d_name, ".") == 0) continue;
+    printf("%sUpdating package: %s\n", print_pkgit, dirent_ptr->d_name);
     struct stat stat_buf;
     FILE* file_ptr = fopen(dirent_ptr->d_name, "r");
     if (!file_ptr) { continue; }
