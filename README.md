@@ -58,6 +58,12 @@ Or you can use the short command:
 pkgit i [pkg_name]
 ```
 
+### Specific version install
+You can specify a version of any package based on its tags with '@' separating the name from the version:
+```
+pkgit install [pkg_name]@[version]
+```
+
 ### Repo install
 If you haven't added the package's repository yet, or you just want to be specific, you can install the package using its git URL:
 ```
