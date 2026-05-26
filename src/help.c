@@ -23,9 +23,11 @@ void help() {
   printf("%ssubcommands%s:\n", red, color_reset);
   printf("%s...... %sa%s,   %sadd %s[url, file]        %s# add a repo/repopkg\n", color_reset, green, color_reset, yellow, blue, gray);
   printf("%s...... %sb%s,   %sbuild %s[path]           %s# build a package\n", color_reset, green, color_reset, yellow, blue, gray);
+  printf("%s...... %sd%s,   %sdeclare                %s# install all packages\n", color_reset, green, color_reset, yellow, gray);
+  printf("%s...... %sf%s,   %sfind %s[pkgs]            %s# find a package from your repos\n", color_reset, green, color_reset, yellow, blue, gray);
   printf("%s...... %si%s,   %sinstall %s[pkgs, urls]   %s# install a package/repo\n", color_reset, green, color_reset, yellow, blue, gray);
   printf("%s...... %sr%s,   %sremove %s[pkgs]          %s# remove an installed package\n", color_reset, green, color_reset, yellow, blue, gray);
-  printf("%s...... %sl%s,   %slist                   %s# list installed packages\n", color_reset, green, color_reset, yellow, gray);
+  printf("%s...... %sl%s,   %slist                   %s# list all installed packages\n", color_reset, green, color_reset, yellow, gray);
   printf("%s...... %su%s,   %supdate                 %s# update all installed packages\n", color_reset, green, color_reset, yellow, gray);
   printf("\n");
   printf("%sflags%s:\n", red, color_reset);
