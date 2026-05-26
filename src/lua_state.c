@@ -188,7 +188,6 @@ bool bldit(const char *target) {
         lua_close(B);
         return false;
     }
-
     if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
         printf("build failed: %s\n", lua_tostring(B, -1));
         lua_pop(B, 1);
@@ -196,9 +195,38 @@ bool bldit(const char *target) {
         lua_close(B);
         return false;
     }
+    printf("%sbldit function 'build' ran successfully.\n", print_pkgit);
+
+    lua_getfield(B, -1, "pre_install");
+    if (!lua_isfunction(B, -1)) {
+        printf("%s'repositories' lua variable 'pre_install' is not a function.\n", print_warning);
+    }
+    if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
+        printf("build failed: %s\n", lua_tostring(B, -1));
+    }
+    printf("%sbldit function 'pre_install' ran successfully.\n", print_pkgit);
+
+    lua_getfield(B, -1, "install");
+    if (!lua_isfunction(B, -1)) {
+        printf("%s'repositories' lua variable 'install' is not a function.\n", print_warning);
+    } else {
+      is_auto_installed = false;
+    }
+    if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
+        printf("build failed: %s\n", lua_tostring(B, -1));
+    }
+    printf("%sbldit function 'install' ran successfully.\n", print_pkgit);
+
+    lua_getfield(B, -1, "post_install");
+    if (!lua_isfunction(B, -1)) {
+        printf("%s'repositories' lua variable 'post_install' is not a function.\n", print_warning);
+    }
+    if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
+        printf("build failed: %s\n", lua_tostring(B, -1));
+    }
+    printf("%sbldit function 'post_install' ran successfully.\n", print_pkgit);
 
     lua_pop(B, 2);
-    printf("%sbldit function 'build' ran successfully.\n", print_pkgit);
     lua_close(B);
     return true;
 }
