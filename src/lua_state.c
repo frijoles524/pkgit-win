@@ -129,6 +129,7 @@ bool repo_build(const char *repository) {
       lua_pop(L, 1);
     }
   }
+  lua_pop(L, 1);
 
   lua_getfield(L, -1, "build");
   if (!lua_isfunction(L, -1)) {
@@ -189,8 +190,7 @@ bool bldit(const char *target) {
   luaL_openlibs(B);
 
   if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
-    printf("%scannot run bldit script: %s\n", print_warning,
-           lua_tostring(B, -1));
+    printf("%scannot run bldit script: %s\n", print_warning, lua_tostring(B, -1));
     lua_close(B);
     return false;
   }
@@ -211,7 +211,7 @@ bool bldit(const char *target) {
 
   lua_getglobal(B, "global_dependencies");
   if (!lua_istable(B, -1)) {
-    printf("%sbldit variable 'package_version' is not a table.\n", print_warning);
+    printf("%sbldit variable 'global_dependencies' is not a table.\n", print_warning);
   } else {
     printf("%sbldit variable 'global_dependencies' used successfully.\n", print_pkgit);
     Repo *repo;
