@@ -1,19 +1,15 @@
 local home = os.getenv("HOME")
 local prefix = home.."/.local"
 install_directories = {
-  bin		  = prefix.."/bin",
+  bin	    = prefix.."/bin",
   include	= prefix.."/include",
-  lib		  = prefix.."/lib",
-  src		  = prefix.."/.local/share/pkgit",
+  lib	    = prefix.."/lib",
+  src     = prefix.."/.local/share/pkgit",
 }
 
 repositories = {
   pkgit = {
     url = "https://git.symlinx.net/pkgit",
-  },
-  beaker = {
-    url = "https://git.symlinx.net/beaker",
-    dependencies = {},
   },
 }
 

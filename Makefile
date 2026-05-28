@@ -30,10 +30,11 @@ uninstall: ${DESTDIR}${PREFIX}/bin/pkgit
 	${RM} ${DESTDIR}${PREFIX}/bin/pkgit
 
 defconfig:
-	@echo "Installing default config to ~/.config/pkgit ..."
-	@mkdir -p ~/.config/pkgit
-	@cp -r ./config/* ~/.config/pkgit/
-	@echo "default config installed"
+	@if [ "$$(id -u)" -eq 0 ]; then dir=/etc/pkgit; else dir=~/.config/pkgit; fi; \
+	echo "installing default config to $$dir ..."; \
+	mkdir -p $$dir; \
+	cp -r ./config/* $$dir/; \
+	echo "default config installed"
 
 clean:
 	${RM} -r $(OBJDIR) pkgit
