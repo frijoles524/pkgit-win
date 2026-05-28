@@ -236,3 +236,6 @@ targets = {
 	]]
 }
 ```
+
+# Contributing to pkgit
+To contribute to pkgit, you should go to the xmpp muc *pkgit@muc.symlinx.net* and drop your patch file which *should* contain the commits you made.
