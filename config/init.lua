@@ -4,7 +4,7 @@ install_directories = {
   bin	    = prefix.."/bin",
   include	= prefix.."/include",
   lib	    = prefix.."/lib",
-  src     = prefix.."/.local/share/pkgit",
+  src     = prefix.."/share/pkgit",
 }
 
 repositories = {
