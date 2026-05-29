@@ -48,8 +48,8 @@ void install_pkg(Pkg pkg) {
         if (pkg.url && strlen(pkg.url) > 0) {
             add_repo(pkg.url, pkg.name);
         }
-        printf("%sdone!\n", print_pkgit);
+        printf("%sadded repository\n", print_pkgit);
     } else {
-        printf("%srepo already exists, done!\n", print_pkgit);
+        if (is_verbose) printf("%srepo already exists, done!\n", print_pkgit);
     }
 }
