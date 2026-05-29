@@ -162,7 +162,7 @@ void init_vars() {
     install_directories[4] = strdup(get_install_dir("src"));
 
     static char print_pkgit_buf[256];
-    snprintf(print_pkgit_buf, sizeof(print_pkgit_buf), "%s[%s%s%s]\t%s",
+    snprintf(print_pkgit_buf, sizeof(print_pkgit_buf), "%s[%s%s%s] %s",
              bold_yellow, bold_magenta, "pkgit", bold_yellow, color_reset);
     print_pkgit = print_pkgit_buf;
 
@@ -172,17 +172,17 @@ void init_vars() {
     print_success = print_success_buf;
 
     static char print_skipped_buf[256];
-    snprintf(print_skipped_buf, sizeof(print_skipped_buf), "%s%s[SKIP]\t%s",
+    snprintf(print_skipped_buf, sizeof(print_skipped_buf), "%s%s[SKIP] %s",
              print_pkgit, blue, color_reset);
     print_skipped = print_skipped_buf;
 
     static char print_warning_buf[256];
-    snprintf(print_warning_buf, sizeof(print_warning_buf), "%s%s[WARN]\t%s",
+    snprintf(print_warning_buf, sizeof(print_warning_buf), "%s%s[WARN] %s",
              print_pkgit, yellow, color_reset);
     print_warning = print_warning_buf;
 
     static char print_error_buf[256];
-    snprintf(print_error_buf, sizeof(print_error_buf), "%s%s[ERROR]\t%s",
+    snprintf(print_error_buf, sizeof(print_error_buf), "%s%s[ERROR]%s",
              print_pkgit, red, color_reset);
     print_error = print_error_buf;
 }

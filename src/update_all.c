@@ -24,12 +24,11 @@ void update_all() {
   }
   while ((dirent_ptr = readdir(dir_ptr)) != NULL) {
     if (strcmp(dirent_ptr->d_name, "..") == 0 || strcmp(dirent_ptr->d_name, ".") == 0) continue;
-    printf("%sUpdating package: %s\n", print_pkgit, dirent_ptr->d_name);
-    struct stat stat_buf;
-    FILE* file_ptr = fopen(dirent_ptr->d_name, "r");
-    if (!file_ptr) { continue; }
-    Pkg pkg = create_pkg(dirent_ptr->d_name, "default");
-    update_pkg(pkg);
+    for (size_t i = 0; i < cached_repos_count; i++) {
+      if (!strcmp(dirent_ptr->d_name, cached_repos[i].source_key) == 0) continue;
+      Pkg pkg = create_pkg(cached_repos[i].source_value, "default");
+      update_pkg(pkg);
+    }
   }
   closedir(dir_ptr);
 }

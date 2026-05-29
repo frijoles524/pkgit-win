@@ -15,16 +15,16 @@
 
 void install_pkg(Pkg pkg) {
     if (!pkg.is_local) {
-        printf("%sfetching source...\n", print_pkgit);
+        printf("%sfetching %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
         fetch_src(pkg);
-        printf("%ssource fetched!\n", print_pkgit);
+        if (is_verbose) printf("%sfetched %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
     }
 
-    printf("%sbuilding...\n", print_pkgit);
+    printf("%sbuilding %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
     build(pkg);
-    printf("%sbuild complete!\n", print_pkgit);
+    if (is_verbose) printf("%sbuilt %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
 
-    printf("%sinstalling...\n", print_pkgit);
+    printf("%sinstalling %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
     if (is_auto_installed) {
       if (is_symlink_install) {
           link_install(pkg.src);
@@ -32,7 +32,7 @@ void install_pkg(Pkg pkg) {
           copy_install(pkg.src);
       }
     }
-    printf("%s%s installed!\n", print_success, pkg.name);
+    printf("%sinstalled %s%s%s\n", print_success, green, pkg.name, color_reset);
 
     bool repo_exists = false;
     for (size_t i = 0; i < cached_repos_count; i++) {
@@ -44,12 +44,12 @@ void install_pkg(Pkg pkg) {
     }
 
     if (!repo_exists) {
-        printf("%sadding repository...\n", print_pkgit);
+        printf("%sadding %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
         if (pkg.url && strlen(pkg.url) > 0) {
             add_repo(pkg.url, pkg.name);
         }
-        printf("%sadded repository\n", print_pkgit);
+        printf("%sadded %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
     } else {
-        if (is_verbose) printf("%srepo already exists, done!\n", print_pkgit);
+        if (is_verbose) printf("%srepo already exists, done\n", print_pkgit);
     }
 }
