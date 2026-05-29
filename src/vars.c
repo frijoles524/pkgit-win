@@ -83,6 +83,7 @@ const char *italic = "\e[3m";
 const char *color_reset = "\e[0m";
 
 const char *print_pkgit;
+const char *print_success;
 const char *print_skipped;
 const char *print_warning;
 const char *print_error;
@@ -164,6 +165,11 @@ void init_vars() {
     snprintf(print_pkgit_buf, sizeof(print_pkgit_buf), "%s[%s%s%s]\t%s",
              bold_yellow, bold_magenta, "pkgit", bold_yellow, color_reset);
     print_pkgit = print_pkgit_buf;
+
+    static char print_success_buf[256];
+    snprintf(print_success_buf, sizeof(print_success_buf), "%s%s[SUCCESS] %s",
+             print_pkgit, green, color_reset);
+    print_success = print_success_buf;
 
     static char print_skipped_buf[256];
     snprintf(print_skipped_buf, sizeof(print_skipped_buf), "%s%s[SKIP]\t%s",

@@ -32,7 +32,7 @@ void install_pkg(Pkg pkg) {
           copy_install(pkg.src);
       }
     }
-    printf("%sinstalled!\n", print_pkgit);
+    printf("%s%s installed!\n", print_success, pkg.name);
 
     bool repo_exists = false;
     for (size_t i = 0; i < cached_repos_count; i++) {

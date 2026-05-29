@@ -105,6 +105,7 @@ extern const char *italic;
 extern const char *color_reset;
 
 extern const char *print_pkgit;
+extern const char *print_success;
 extern const char *print_skipped;
 extern const char *print_warning;
 extern const char *print_error;
