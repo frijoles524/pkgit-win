@@ -49,6 +49,9 @@ void cla_parse(int argc, char **argv) {
                 if (argv[i + 2]) {
                     pkg = create_pkg(argv[i + 1], argv[i + 2]);
                     build(pkg);
+                } else if (!is_verbose) {
+                    pkg = create_pkg(argv[i + 1], "quiet");
+                    build(pkg);
                 } else {
                     pkg = create_pkg(argv[i + 1], "default");
                     build(pkg);
