@@ -35,6 +35,6 @@ void fetch_src(Pkg pkg) {
         if (is_verbose) printf("%scloned into %s...\n", print_pkgit, pkg.src);
         return;
     }
-    printf("%sno fetch methods worked.\n", print_error);
+    printf("%s no fetch methods worked.\n", print_error);
     exit(EXIT_FAILURE);
 }
