@@ -36,5 +36,11 @@ defconfig:
 	cp -r ./config/* $$dir/; \
 	echo "default config installed"
 
+rmconfig:
+	@if [ "$$(id -u)" -eq 0 ]; then dir=/etc/pkgit; else dir=~/.config/pkgit; fi; \
+	echo "removing config from $$dir ..."; \
+	rm -rf $$dir; \
+	echo "config successfully removed"
+
 clean:
 	${RM} -r $(OBJDIR) pkgit
