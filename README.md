@@ -84,8 +84,7 @@ pkgit build [/path/to/project]
 ```
 This can also be done without specifying the path (`pkgit build`) if you're in the project's root directory
 
-## Removal
-### Packages
+## Removing Packages
 Removing (uninstalling) a package is as simple as it seems:
 ```
 pkgit remove [pkg_name]
@@ -93,6 +92,27 @@ pkgit remove [pkg_name]
 Or the short command:
 ```
 pkgit r [pkg_name]
+```
+
+## Updating Packages
+You can easily update your installed packages by running:
+```
+pkgit update
+```
+Or the short command:
+```
+pkgit u
+```
+
+## Declaring Packages
+If you prefer a declarative approach, you can use the config file (read below) as a package declaration file.
+When you're ready, you can declare all your packages at once with:
+```
+pkgit declare
+```
+Or the short command:
+```
+pkgit d
 ```
 
 ## Dependency Management
