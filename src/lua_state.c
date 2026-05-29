@@ -273,7 +273,7 @@ bool bldit(const char *target) {
            print_warning);
   }
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
-    printf("%sbuild failed: %s\n", print_error, lua_tostring(B, -1));
+    if (is_verbose) printf("%spre_install failed: %s\n", print_warning, lua_tostring(B, -1));
   }
   if (is_verbose) printf("%sbldit function 'pre_install' ran successfully.\n", print_pkgit);
 
@@ -285,7 +285,7 @@ bool bldit(const char *target) {
     is_auto_installed = false;
   }
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
-    printf("%sbuild failed: %s\n", print_error, lua_tostring(B, -1));
+    if (is_verbose) printf("%sinstall failed: %s\n", print_warning, lua_tostring(B, -1));
   }
   if (is_verbose) printf("%sbldit function 'install' ran successfully.\n", print_pkgit);
 
@@ -295,7 +295,7 @@ bool bldit(const char *target) {
            print_warning);
   }
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
-    printf("%sbuild failed: %s\n", print_error, lua_tostring(B, -1));
+    if (is_verbose) printf("%spost_install failed: %s\n", print_warning, lua_tostring(B, -1));
   }
   if (is_verbose) printf("%sbldit function 'post_install' ran successfully.\n", print_pkgit);
 
