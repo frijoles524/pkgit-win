@@ -70,6 +70,20 @@ If you haven't added the package's repository yet, or you just want to be specif
 pkgit install [url.git]
 ```
 
+### Local install
+If you want to install a package from a local code repository, and want to take advantage of pkgit's build system autodetection, you can enter that repository's root directory and install it from there:
+```
+pkgit install .
+```
+
+## Building packages
+*FOR DEVELOPERS*
+You can also use pkgit as a sort of meta-build-system to automatically compile any supported project with the build command:
+```
+pkgit build [/path/to/project]
+```
+This can also be done without specifying the path (`pkgit build`) if you're in the project's root directory
+
 ## Removal
 ### Packages
 Removing (uninstalling) a package is as simple as it seems:
