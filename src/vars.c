@@ -9,7 +9,7 @@
 #include "vars.h"
 
 bool is_symlink_install = false;
-bool is_verbose = false;
+bool is_verbose = true;
 bool is_auto_installed = true;
 bool config_exists = false;
 

@@ -32,6 +32,7 @@ void help() {
   printf("\n");
   printf("%sflags%s:\n", red, color_reset);
   printf("%s...... %s-h%s,  %s--help                 %s# display this help message\n", color_reset, green, color_reset, yellow, gray);
+  printf("%s...... %s-q%s,  %s--quiet                %s# run without logging to terminal\n", color_reset, green, color_reset, yellow, gray);
   printf("%s...... %s-v%s,  %s--version              %s# display version number\n", color_reset, green, color_reset, yellow, gray);
   printf("%s...... %s-c%s,  %s--check                %s# run package checks\n", color_reset, green, color_reset, yellow, gray);
 }

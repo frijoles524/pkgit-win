@@ -36,6 +36,7 @@ void cla_parse(int argc, char **argv) {
 
     for (int i = 1; i < argc; i++) {
         COMMAND("--link", "-l", { is_symlink_install = true; });
+        COMMAND("--quiet", "-q", { is_verbose = false; });
         COMMAND("add", "a", {
             if (argv[i + 1]) {
                 add_repo(argv[i + 1], name_from_url(argv[i + 1]));
