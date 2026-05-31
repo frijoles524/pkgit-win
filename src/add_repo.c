@@ -26,7 +26,7 @@ void add_repo(const char *repo, const char *repo_name) {
 
     FILE *wfile = fopen(repo_file, "w");
     if (wfile) {
-        fprintf(wfile, "%srepositories.%s = { url = \"%s\" }\n", previous_repos, repo_name, repo);
+        fprintf(wfile, "%srepositories[\"%s\"] = { url = \"%s\" }\n", previous_repos, repo_name, repo);
         fclose(wfile);
     }
 
