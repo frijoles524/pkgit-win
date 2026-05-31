@@ -48,6 +48,18 @@ make install PREFIX="/path/to/install"
 
 # Usage
 ## Installing Packages
+### Pre-installation
+Before you use any programs that you installed with pkgit, you need to specify the path of the binaries in your shell's configuration.
+```sh
+export PATH="$HOME/.local/bin:$PATH"
+```
+```fish
+fish_add_path $HOME/.local/bin
+```
+```csh
+setenv PATH $HOME/.local/bin:$PATH
+```
+
 ### Basic install
 Assuming you have already added its respective repo, you can install a package by specifying its name:
 ```
