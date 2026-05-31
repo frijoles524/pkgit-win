@@ -99,20 +99,17 @@ bool repo_build(const char *repository) {
     lua_pop(L, 1);
     return false;
   }
-  if (is_verbose) printf("%slua variable 'repositories' used successfully.\n", print_pkgit);
   lua_getfield(L, -1, repository);
   if (!lua_istable(L, -1)) {
     if (is_verbose) printf("%s'repositories' lua variable '%s' is not a table.\n", print_warning, repository);
     lua_pop(L, 2);
     return false;
   }
-  if (is_verbose) printf("%s'repositories' lua variable '%s' used successfully.\n", print_pkgit, repository);
 
   lua_getfield(L, -1, "dependencies");
   if (!lua_istable(L, -1)) {
     if (is_verbose) printf("%sbldit variable 'dependencies' is not a table.\n", print_warning);
   } else {
-    if (is_verbose) printf("%sbldit variable 'dependencies' used successfully.\n", print_pkgit);
     Repo *repo;
     while (lua_next(L, -2) != 0) {
       const char *depname = lua_tostring(L, -2);
@@ -138,25 +135,20 @@ bool repo_build(const char *repository) {
     lua_pop(L, 3);
     return false;
   }
-  if (is_verbose) printf("%s'repositories' lua variable 'build' used successfully.\n",
-         print_pkgit);
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
     printf("%s'repositories' build failed: %s\n", print_warning, lua_tostring(L, -1));
     lua_pop(L, 1);
     lua_pop(L, 2);
     return false;
   }
-  if (is_verbose) printf("%s'repositories' lua function 'build' ran successfully.\n", print_pkgit);
 
   lua_getfield(L, -1, "pre_install");
   if (!lua_isfunction(L, -1)) {
     if (is_verbose) printf("%s'repositories' lua variable 'pre_install' is not a function.\n", print_warning);
   }
-  if (is_verbose) printf("%s'repositories' lua variable 'pre_install' used successfully.\n", print_pkgit);
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%s'repositories' pre_install failed: %s\n", print_warning, lua_tostring(L, -1));
   }
-  if (is_verbose) printf("%s'repositories' lua function 'pre_install' ran successfully.\n", print_pkgit);
 
   lua_getfield(L, -1, "install");
   if (!lua_isfunction(L, -1)) {
@@ -164,24 +156,20 @@ bool repo_build(const char *repository) {
   } else {
     is_auto_installed = false;
   }
-  if (is_verbose) printf("%s'repositories' lua variable 'install' used successfully.\n", print_pkgit);
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%s'repositories' install failed: %s\n", print_warning, lua_tostring(L, -1));
   }
-  if (is_verbose) printf("%s'repositories' lua function 'install' ran successfully.\n", print_pkgit);
   lua_pop(L, 1);
 
   lua_getfield(L, -1, "post_install");
   if (!lua_isfunction(L, -1)) {
     if (is_verbose) printf("%s'repositories' lua variable 'post_install' is not a function.\n", print_warning);
   }
-  if (is_verbose) printf("%s'repositories' lua variable 'post_install' used successfully.\n", print_pkgit);
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%s'repositories' post_install failed: %s\n", print_warning, lua_tostring(L, -1));
   }
 
   lua_pop(L, 2);
-  if (is_verbose) printf("%s'repositories' lua function 'post_install' ran successfully.\n", print_pkgit);
   return true;
 }
 
@@ -198,22 +186,17 @@ bool bldit(const char *target) {
   lua_getglobal(B, "bldit_version");
   if (!lua_isstring(B, -1)) {
     if (is_verbose) printf("%sbldit variable 'bldit_version' is not a string.\n", print_warning);
-  } else {
-    if (is_verbose) printf("%sbldit variable 'bldit_version' used successfully.\n", print_pkgit);
   }
 
   lua_getglobal(B, "package_version");
   if (!lua_isstring(B, -1)) {
     if (is_verbose) printf("%sbldit variable 'package_version' is not a string.\n", print_warning);
-  } else {
-    if (is_verbose) printf("%sbldit variable 'package_version' used successfully.\n", print_pkgit);
   }
 
   lua_getglobal(B, "global_dependencies");
   if (!lua_istable(B, -1)) {
     if (is_verbose) printf("%sbldit variable 'global_dependencies' is not a table.\n", print_warning);
   } else {
-    if (is_verbose) printf("%sbldit variable 'global_dependencies' used successfully.\n", print_pkgit);
     Repo *repo;
     while (lua_next(B, -2) != 0) {
       const char *depname = lua_tostring(B, -2);
@@ -238,8 +221,6 @@ bool bldit(const char *target) {
     return false;
   }
 
-  if (is_verbose) printf("%sbldit variable 'targets' used successfully.\n", print_pkgit);
-
   lua_getfield(B, -1, target);
   if (!lua_istable(B, -1)) {
     if (is_verbose) printf("%sbldit variable '%s' is not a table.\n", print_warning, target);
@@ -247,8 +228,6 @@ bool bldit(const char *target) {
     lua_close(B);
     return false;
   }
-
-  if (is_verbose) printf("%sbldit variable '%s' used successfully.\n", print_pkgit, target);
 
   lua_getfield(B, -1, "build");
   if (!lua_isfunction(B, -1)) {
@@ -265,7 +244,6 @@ bool bldit(const char *target) {
     lua_close(B);
     return false;
   }
-  if (is_verbose) printf("%sbldit function 'build' ran successfully.\n", print_pkgit);
 
   lua_getfield(B, -1, "pre_install");
   if (!lua_isfunction(B, -1)) {
@@ -275,7 +253,6 @@ bool bldit(const char *target) {
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%spre_install failed: %s\n", print_warning, lua_tostring(B, -1));
   }
-  if (is_verbose) printf("%sbldit function 'pre_install' ran successfully.\n", print_pkgit);
 
   lua_getfield(B, -1, "install");
   if (!lua_isfunction(B, -1)) {
@@ -287,7 +264,6 @@ bool bldit(const char *target) {
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%sinstall failed: %s\n", print_warning, lua_tostring(B, -1));
   }
-  if (is_verbose) printf("%sbldit function 'install' ran successfully.\n", print_pkgit);
 
   lua_getfield(B, -1, "post_install");
   if (!lua_isfunction(B, -1)) {
@@ -297,7 +273,6 @@ bool bldit(const char *target) {
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%spost_install failed: %s\n", print_warning, lua_tostring(B, -1));
   }
-  if (is_verbose) printf("%sbldit function 'post_install' ran successfully.\n", print_pkgit);
 
   lua_pop(B, 2);
   lua_close(B);
