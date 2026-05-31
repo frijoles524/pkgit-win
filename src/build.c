@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -18,5 +19,6 @@ void build(Pkg pkg) {
         return;
     }
 
-    printf("%sno usable build system was found\n", print_error);
+    printf("%s no usable build system was found\n", print_error);
+    exit(EXIT_FAILURE);
 }
