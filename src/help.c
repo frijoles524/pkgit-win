@@ -18,7 +18,7 @@ void help() {
   printf("\n");
   printf("                            pkgit\n");
   printf("                       %s%s- package it! -%s\n", italic, gray, color_reset);
-  printf("                    %sgizmodic_version_%s%s\n", magenta, version, color_reset);
+  printf("                        %sgizver_%s%s\n", magenta, version, color_reset);
   printf("\n");
   printf("%ssubcommands%s:\n", red, color_reset);
   printf("%s...... %sa%s,   %sadd %s[url, file]        %s# add a repo/repopkg\n", color_reset, green, color_reset, yellow, blue, gray);
