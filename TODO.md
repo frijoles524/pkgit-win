@@ -10,6 +10,7 @@
 - [x] lua variables for install paths
 - [x] lua dependency listing
 - [x] version management
+- [-] lua uninstall function
 - [ ] (maybe) lua custom install methods for sandboxed builds
 - [ ] (maybe) install to store directory
 - [ ] (maybe) git commit signature checks

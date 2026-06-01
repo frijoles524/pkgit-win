@@ -175,7 +175,7 @@ install_directories = {
 repositories = {
   example_name = {
     url = "https://...",
-    version = "v0.0.0",
+    version = "v0.0.0", -- can be a tag or branch
     dependencies = {
       ...
     },
