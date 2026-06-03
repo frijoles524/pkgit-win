@@ -18,6 +18,23 @@ build_systems = {
     build = function()
       os.execute("make")
     end,
+    install = function()
+      os.execute("make install PREFIX="..prefix)
+    end,
+    uninstall = function()
+      os.execute("make uninstall PREFIX="..prefix)
+    end,
+  },
+  ["meson.build"] = {
+    build = function()
+      os.execute("meson setup build --prefix "..prefix.." && meson compile -C build")
+    end,
+    install = function()
+      os.execute("cd build && meson install")
+    end,
+    uninstall = function()
+      os.execute("cd build && ninja uninstall")
+    end,
   },
   ["CMakeLists.txt"] = {
     build = function()

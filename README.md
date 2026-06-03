@@ -183,6 +183,7 @@ repositories = {
     pre_install = function() ... end
     install = function() ... end
     post_install = function() ... end
+    uninstall = function() ... end
   }
 }
 --[[
@@ -205,6 +206,7 @@ build_systems = {
     pre_install = function() ... end
     install = function() ... end
     post_install = function() ... end
+    uninstall = function() ... end
   }
 }
 ```
@@ -274,6 +276,7 @@ targets = {
 			os.execute("make install")
 		end,
 		post_install = function() end,
+		uninstall = function() end,
 	}
 	--[[
     could also have targets for 'client'
@@ -284,4 +287,4 @@ targets = {
 ```
 
 # Contributing to pkgit
-To contribute to pkgit, you should go to the xmpp muc *pkgit@muc.symlinx.net* and drop your patch file which *should* contain the commits you made.
+If you want to contribute to pkgit, please refer to CONTRIBUTING.md
