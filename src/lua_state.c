@@ -142,6 +142,24 @@ bool repo_build(const char *repository) {
     return false;
   }
 
+  lua_pop(L, 2);
+  return true;
+}
+
+bool repo_install(const char *repository) {
+  lua_getglobal(L, "repositories");
+  if (!config_loaded || !lua_istable(L, -1)) {
+    if (is_verbose) printf("%slua variable 'repositories' is not a table.\n", print_warning);
+    lua_pop(L, 1);
+    return false;
+  }
+  lua_getfield(L, -1, repository);
+  if (!lua_istable(L, -1)) {
+    if (is_verbose) printf("%s'repositories' lua variable '%s' is not a table.\n", print_warning, repository);
+    lua_pop(L, 2);
+    return false;
+  }
+
   lua_getfield(L, -1, "pre_install");
   if (!lua_isfunction(L, -1)) {
     if (is_verbose) printf("%s'repositories' lua variable 'pre_install' is not a function.\n", print_warning);
@@ -154,7 +172,7 @@ bool repo_build(const char *repository) {
   if (!lua_isfunction(L, -1)) {
     if (is_verbose) printf("%s'repositories' lua variable 'install' is not a function.\n", print_warning);
   } else {
-    is_auto_installed = false;
+    return false;
   }
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%s'repositories' install failed: %s\n", print_warning, lua_tostring(L, -1));
@@ -168,6 +186,35 @@ bool repo_build(const char *repository) {
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%s'repositories' post_install failed: %s\n", print_warning, lua_tostring(L, -1));
   }
+
+  lua_pop(L, 2);
+  return true;
+}
+
+bool repo_uninstall(const char *repository) {
+  lua_getglobal(L, "repositories");
+  if (!config_loaded || !lua_istable(L, -1)) {
+    if (is_verbose) printf("%slua variable 'repositories' is not a table.\n", print_warning);
+    lua_pop(L, 1);
+    return false;
+  }
+  lua_getfield(L, -1, repository);
+  if (!lua_istable(L, -1)) {
+    if (is_verbose) printf("%s'repositories' lua variable '%s' is not a table.\n", print_warning, repository);
+    lua_pop(L, 2);
+    return false;
+  }
+
+  lua_getfield(L, -1, "uninstall");
+  if (!lua_isfunction(L, -1)) {
+    if (is_verbose) printf("%s'repositories' lua variable 'uninstall' is not a function.\n", print_warning);
+    return false;
+  }
+  if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+    if (is_verbose) printf("%s'repositories' uninstall failed: %s\n", print_warning, lua_tostring(L, -1));
+    return false;
+  }
+  lua_pop(L, 1);
 
   lua_pop(L, 2);
   return true;
@@ -245,6 +292,37 @@ bool bldit(const char *target) {
     return false;
   }
 
+  lua_pop(B, 2);
+  lua_close(B);
+  return true;
+}
+
+bool bldit_install(const char *target) {
+  lua_State *B = luaL_newstate();
+  luaL_openlibs(B);
+
+  if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
+    if (is_verbose) printf("%scannot run bldit script: %s\n", print_warning, lua_tostring(B, -1));
+    lua_close(B);
+    return false;
+  }
+
+  lua_getglobal(B, "targets");
+  if (!lua_istable(B, -1)) {
+    if (is_verbose) printf("%sbldit variable 'targets' is not a table.\n", print_warning);
+    lua_pop(B, 1);
+    lua_close(B);
+    return false;
+  }
+
+  lua_getfield(B, -1, target);
+  if (!lua_istable(B, -1)) {
+    if (is_verbose) printf("%sbldit variable '%s' is not a table.\n", print_warning, target);
+    lua_pop(B, 2);
+    lua_close(B);
+    return false;
+  }
+
   lua_getfield(B, -1, "pre_install");
   if (!lua_isfunction(B, -1)) {
     if (is_verbose) printf("%s'repositories' lua variable 'pre_install' is not a function.\n",
@@ -259,7 +337,7 @@ bool bldit(const char *target) {
     if (is_verbose) printf("%s'repositories' lua variable 'install' is not a function.\n",
            print_warning);
   } else {
-    is_auto_installed = false;
+    return false;
   }
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%sinstall failed: %s\n", print_warning, lua_tostring(B, -1));
@@ -272,6 +350,47 @@ bool bldit(const char *target) {
   }
   if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
     if (is_verbose) printf("%spost_install failed: %s\n", print_warning, lua_tostring(B, -1));
+  }
+
+  lua_pop(B, 2);
+  lua_close(B);
+  return true;
+}
+
+bool bldit_uninstall(const char *target) {
+  lua_State *B = luaL_newstate();
+  luaL_openlibs(B);
+
+  if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
+    if (is_verbose) printf("%scannot run bldit script: %s\n", print_warning, lua_tostring(B, -1));
+    lua_close(B);
+    return false;
+  }
+
+  lua_getglobal(B, "targets");
+  if (!lua_istable(B, -1)) {
+    if (is_verbose) printf("%sbldit variable 'targets' is not a table.\n", print_warning);
+    lua_close(B);
+    return false;
+  }
+
+  lua_getfield(B, -1, target);
+  if (!lua_istable(B, -1)) {
+    if (is_verbose) printf("%sbldit variable '%s' is not a table.\n", print_warning, target);
+    lua_pop(B, 2);
+    lua_close(B);
+    return false;
+  }
+
+  lua_getfield(B, -1, "uninstall");
+  if (!lua_isfunction(B, -1)) {
+    if (is_verbose) printf("%s'repositories' lua variable 'uninstall' is not a function.\n",
+           print_warning);
+    return false;
+  }
+  if (lua_pcall(B, 0, 0, 0) != LUA_OK) {
+    if (is_verbose) printf("%suninstall failed: %s\n", print_warning, lua_tostring(B, -1));
+    return false;
   }
 
   lua_pop(B, 2);
@@ -397,6 +516,95 @@ bool config_build(const char *path) {
       lua_pop(L, 1);
       continue;
     }
+    lua_pop(L, 1);
+    lua_pop(L, 1);
+    return true;
+  }
+  lua_pop(L, 1);
+  return false;
+}
+
+bool config_install(const char *path) {
+  lua_getglobal(L, "build_systems");
+  if (!config_loaded || !lua_istable(L, -1)) {
+    lua_pop(L, 1);
+    return false;
+  }
+  lua_pushnil(L);
+  while (lua_next(L, -2) != 0) {
+    const char *key = lua_tostring(L, -2);
+    if (!lua_istable(L, -1)) {
+      lua_pop(L, 1);
+      continue;
+    }
+    char file_path[MAX_PATH_LEN];
+    snprintf(file_path, sizeof(file_path), "%s/%s", path, key);
+    if (access(file_path, F_OK) != 0) {
+      lua_pop(L, 1);
+      continue;
+    }
+    lua_getfield(L, -1, "pre_install");
+    if (lua_isfunction(L, -1)) {
+      if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        if (is_verbose) printf("%slua function 'pre_install' is not available\n",
+          print_warning);
+      }
+    } else { lua_pop(L, 1); }
+
+    lua_getfield(L, -1, "install");
+    if (lua_isfunction(L, -1)) {
+      if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        if (is_verbose) printf("%s lua function 'install' is not available\n",
+          print_warning);
+      }
+    } else { lua_pop(L, 1); }
+    
+    lua_getfield(L, -1, "post_install");
+    if (!lua_isfunction(L, -1)) {
+      if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        if (is_verbose) printf("%slua function 'post_install' is not available\n",
+          print_warning);
+      }
+    } else { lua_pop(L, 1); }
+
+    lua_pop(L, 1);
+    lua_pop(L, 1);
+    return true;
+  }
+  lua_pop(L, 1);
+  return false;
+}
+
+bool config_uninstall(const char *path) {
+  lua_getglobal(L, "build_systems");
+  if (!config_loaded || !lua_istable(L, -1)) {
+    lua_pop(L, 1);
+    return false;
+  }
+  lua_pushnil(L);
+  while (lua_next(L, -2) != 0) {
+    const char *key = lua_tostring(L, -2);
+    if (!lua_istable(L, -1)) {
+      lua_pop(L, 1);
+      continue;
+    }
+    char file_path[MAX_PATH_LEN];
+    snprintf(file_path, sizeof(file_path), "%s/%s", path, key);
+    if (access(file_path, F_OK) != 0) {
+      lua_pop(L, 1);
+      continue;
+    }
+
+    lua_getfield(L, -1, "uninstall");
+    if (!lua_isfunction(L, -1)) {
+      lua_pop(L, 1);
+      continue;
+    }
+    if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+      lua_pop(L, 1);
+      continue;
+    }
+
     lua_pop(L, 1);
     lua_pop(L, 1);
     return true;

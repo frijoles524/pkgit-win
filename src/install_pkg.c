@@ -7,8 +7,8 @@
 #include "add_repo.h"
 #include "fetch_src.h"
 #include "build.h"
-#include "copy_install.h"
-#include "link_install.h"
+//#include "copy_install.h"
+//#include "link_install.h"
 #include "lua_state.h"
 #include "name_from_url.h"
 #include "vars.h"
@@ -25,13 +25,23 @@ void install_pkg(Pkg pkg) {
     if (is_verbose) printf("%sbuilt %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
 
     printf("%sinstalling %s%s%s\n", print_pkgit, green, pkg.name, color_reset);
-    if (is_auto_installed) {
-      if (is_symlink_install) {
-          link_install(pkg.src);
-      } else {
-          copy_install(pkg.src);
-      }
+    bool install_success = false;
+    if (!install_success && repo_install(pkg.url)) install_success = true;
+    if (!install_success && bldit_install(pkg.target)) install_success = true;
+    if (!install_success && config_install(pkg.src)) install_success = true;
+    if (!install_success) {
+      printf("%sno install function availible for package: %s\n",
+        print_error, pkg.name);
+      return;
     }
+    //is_auto_installed = true;
+    //if (is_auto_installed) {
+    //  if (is_symlink_install) {
+    //      link_install(pkg.src);
+    //  } else {
+    //      copy_install(pkg.src);
+    //  }
+    //}
     printf("%sinstalled %s%s%s\n", print_success, green, pkg.name, color_reset);
 
     bool repo_exists = false;
