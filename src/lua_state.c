@@ -92,6 +92,30 @@ void cache_install_directories() {
   lua_pop(L, 1);
 }
 
+void install_dependencies(lua_State *L) {
+  while (lua_next(L, -2) != 0) {
+    const char *depname = lua_tostring(L, -2);
+    if (depname && lua_istable(L, -1)) {
+      lua_getfield(L, -1, "url");
+      const char *dep_url = lua_tostring(L, -1);
+      lua_pop(L, 1);
+      lua_getfield(L, -1, "version");
+      const char *dep_version = lua_tostring(L, -1);
+      lua_pop(L, 1);
+      const char* arg_version = strcat(strdup("@"), dep_version);
+      const char* argument = strcat(strdup(dep_url), arg_version);
+      const int top = lua_gettop(L);
+      char cwd[PATH_MAX];
+      if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        install_pkg(create_pkg(argument, "default"));
+        chdir(cwd);
+      }
+      lua_settop(L, top);
+    }
+    lua_pop(L, 1);
+  }
+}
+
 bool repo_build(const char *repository) {
   lua_getglobal(L, "repositories");
   if (!config_loaded || !lua_istable(L, -1)) {
@@ -110,21 +134,8 @@ bool repo_build(const char *repository) {
   if (!lua_istable(L, -1)) {
     if (is_verbose) printf("%sbldit variable 'dependencies' is not a table.\n", print_warning);
   } else {
-    Repo *repo;
-    while (lua_next(L, -2) != 0) {
-      const char *depname = lua_tostring(L, -2);
-      if (depname && lua_istable(L, -1)) {
-        lua_getfield(L, -1, "url");
-        const char *dep_url = lua_tostring(L, -1);
-        lua_pop(L, 1);
-        lua_getfield(L, -1, "version");
-        const char *dep_version = lua_tostring(L, -1);
-        lua_pop(L, 1);
-        Dependency *dep = realloc(repo->dependencies, (repo->dep_count + 1) * sizeof(Dependency));
-        if (dep) { install_pkg(create_pkg(dep->url, "default")); }
-      }
-      lua_pop(L, 1);
-    }
+    lua_pushnil(L);
+    install_dependencies(L);
   }
   lua_pop(L, 1);
 
@@ -244,21 +255,8 @@ bool bldit(const char *target) {
   if (!lua_istable(B, -1)) {
     if (is_verbose) printf("%sbldit variable 'global_dependencies' is not a table.\n", print_warning);
   } else {
-    Repo *repo;
-    while (lua_next(B, -2) != 0) {
-      const char *depname = lua_tostring(B, -2);
-      if (depname && lua_istable(B, -1)) {
-        lua_getfield(B, -1, "url");
-        const char *dep_url = lua_tostring(B, -1);
-        lua_pop(B, 1);
-        lua_getfield(B, -1, "version");
-        const char *dep_version = lua_tostring(B, -1);
-        lua_pop(B, 1);
-        Dependency *dep = realloc(repo->dependencies, (repo->dep_count + 1) * sizeof(Dependency));
-        if (dep) { install_pkg(create_pkg(dep->url, "default")); }
-      }
-      lua_pop(B, 1);
-    }
+    lua_pushnil(B);
+    install_dependencies(B);
   }
 
   lua_getglobal(B, "targets");

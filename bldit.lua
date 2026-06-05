@@ -1,5 +1,13 @@
-bldit_version = "0.0.0"
-package_version = "0.0.0"
+bldit_version   = "0.1.0"
+package_version = "0.1.0"
+
+global_dependencies = {
+  luajit = {
+    url = "https://luajit.org/git/luajit.git",
+    version = "v2.1",
+    target = "default",
+  },
+}
 
 targets = {
 	default = {
