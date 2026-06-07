@@ -9,6 +9,7 @@
 int main(int argc, char *argv[]) {
     init_vars();
     setup_pkgit();
+    cache_repos();
     cla_parse(argc, argv);
     free_lua_state();
     return 0;

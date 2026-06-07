@@ -1,5 +1,5 @@
-bldit_version   = "0.1.0"
-package_version = "0.1.0"
+bldit_version   = "0.1.1"
+package_version = "0.1.1"
 
 global_dependencies = {
   luajit = {
@@ -10,20 +10,27 @@ global_dependencies = {
 }
 
 targets = {
-	default = {
-		build = function(name)
-			os.execute("make")
-		end,
-		install = function(prefix)
-			os.execute("make install")
-		end,
-	},
-	quiet = {
-		build = function(name)
-			local output = io.popen("make"):read("*a")
-		end,
-		install = function(prefix)
-			local output = io.popen("make install"):read("*a")
-		end,
-	},
+  default = {
+    dependencies = {
+      pipemixer = {
+        url = "https://github.com/heather7283/pipemixer",
+        version = "HEAD",
+        target = "default",
+      },
+    },
+    build = function()
+      os.execute("make")
+    end,
+    install = function()
+      os.execute("make install")
+    end,
+  },
+  quiet = {
+    build = function()
+      local output = io.popen("make"):read("*a")
+    end,
+    install = function()
+      local output = io.popen("make install"):read("*a")
+    end,
+  },
 }

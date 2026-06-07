@@ -29,6 +29,4 @@ void add_repo(const char *repo, const char *repo_name) {
         fprintf(wfile, "%srepositories[\"%s\"] = { url = \"%s\" }\n", previous_repos, repo_name, repo);
         fclose(wfile);
     }
-
-    printf("%s%sAdded %s%s\n", print_pkgit, green, repo_name, color_reset);
 }

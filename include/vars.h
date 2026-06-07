@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#define MAX_REPOS 100
-#define MAX_DIRS 10
+#define MAX_REPOS 1000
+#define MAX_DIRS 100
 #define MAX_PATH_LEN 1024
 
 typedef struct {

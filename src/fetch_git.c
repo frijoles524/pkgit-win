@@ -29,6 +29,7 @@ int fetch_git(Pkg pkg) {
       argv[i++] = "--branch";
       argv[i++] = pkg.ver;
     }
+    argv[i++] = "--recursive";
     argv[i++] = pkg.url;
     argv[i++] = pkg.src;
     argv[i] = NULL;

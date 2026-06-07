@@ -48,7 +48,7 @@ const char* get_install_dir(const char *key) {
     return "";
 }
 
-const char *version = "0.1.0";
+const char *version = "0.1.1";
 
 const char *red = "\e[0;31m";
 const char *green = "\e[0;32m";
@@ -182,7 +182,7 @@ void init_vars() {
     print_warning = print_warning_buf;
 
     static char print_error_buf[256];
-    snprintf(print_error_buf, sizeof(print_error_buf), "%s%s[ERROR]%s",
+    snprintf(print_error_buf, sizeof(print_error_buf), "%s%s[ERROR] %s",
              print_pkgit, red, color_reset);
     print_error = print_error_buf;
 }

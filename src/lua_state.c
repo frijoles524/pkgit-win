@@ -102,12 +102,12 @@ void install_dependencies(lua_State *L) {
       lua_getfield(L, -1, "version");
       const char *dep_version = lua_tostring(L, -1);
       lua_pop(L, 1);
-      const char* arg_version = strcat(strdup("@"), dep_version);
-      const char* argument = strcat(strdup(dep_url), arg_version);
+      Pkg pkg = create_pkg(dep_url, "default");
+      pkg.ver = strdup(dep_version);
       const int top = lua_gettop(L);
       char cwd[PATH_MAX];
       if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        install_pkg(create_pkg(argument, "default"));
+        install_pkg(pkg);
         chdir(cwd);
       }
       lua_settop(L, top);
@@ -132,7 +132,10 @@ bool repo_build(const char *repository) {
 
   lua_getfield(L, -1, "dependencies");
   if (!lua_istable(L, -1)) {
-    if (is_verbose) printf("%sbldit variable 'dependencies' is not a table.\n", print_warning);
+    if (is_verbose) printf(
+      "%s'repositories' variable 'dependencies' is not a table.\n",
+      print_warning
+    );
   } else {
     lua_pushnil(L);
     install_dependencies(L);
@@ -141,15 +144,16 @@ bool repo_build(const char *repository) {
 
   lua_getfield(L, -1, "build");
   if (!lua_isfunction(L, -1)) {
-    if (is_verbose) printf("%s'repositories' lua variable 'build' is not a function.\n",
-           print_warning);
+    if (is_verbose) printf(
+      "%s'repositories' lua variable 'build' is not a function.\n",
+      print_warning
+    );
     lua_pop(L, 3);
     return false;
   }
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
     printf("%s'repositories' build failed: %s\n", print_warning, lua_tostring(L, -1));
-    lua_pop(L, 1);
-    lua_pop(L, 2);
+    lua_pop(L, 3);
     return false;
   }
 
@@ -182,7 +186,6 @@ bool repo_install(const char *repository) {
   lua_getfield(L, -1, "install");
   if (!lua_isfunction(L, -1)) {
     if (is_verbose) printf("%s'repositories' lua variable 'install' is not a function.\n", print_warning);
-  } else {
     return false;
   }
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
@@ -258,6 +261,7 @@ bool bldit(const char *target) {
     lua_pushnil(B);
     install_dependencies(B);
   }
+  lua_pop(B, 1);
 
   lua_getglobal(B, "targets");
   if (!lua_istable(B, -1)) {
@@ -268,11 +272,20 @@ bool bldit(const char *target) {
 
   lua_getfield(B, -1, target);
   if (!lua_istable(B, -1)) {
-    if (is_verbose) printf("%sbldit variable '%s' is not a table.\n", print_warning, target);
+    if (is_verbose) printf("%sbldit variable 'targets.%s' is not a table.\n", print_warning, target);
     lua_pop(B, 2);
     lua_close(B);
     return false;
   }
+
+  lua_getfield(B, -1, "dependencies");
+  if (!lua_istable(B, -1)) {
+    if (is_verbose) printf("%sbldit variable 'targets.%s.dependencies' is not a table.\n", target, print_warning);
+  } else {
+    lua_pushnil(B);
+    install_dependencies(B);
+  }
+  lua_pop(B, 1);
 
   lua_getfield(B, -1, "build");
   if (!lua_isfunction(B, -1)) {
@@ -421,37 +434,6 @@ void cache_repos() {
     lua_getfield(L, -1, "version");
     const char *version = lua_tostring(L, -1);
     repo->version = version ? strdup(version) : strdup("HEAD");
-    lua_pop(L, 1);
-    lua_getfield(L, -1, "dependencies");
-    if (!lua_istable(L, -1)) {
-      lua_pop(L, 2);
-      cached_repos_count++;
-      continue;
-    }
-    lua_pushnil(L);
-    while (lua_next(L, -2) != 0) {
-      const char *depname = lua_tostring(L, -2);
-      if (depname && lua_istable(L, -1)) {
-        lua_getfield(L, -1, "url");
-        const char *dep_url = lua_tostring(L, -1);
-        lua_pop(L, 1);
-        lua_getfield(L, -1, "version");
-        const char *dep_version = lua_tostring(L, -1);
-        lua_pop(L, 1);
-        Dependency *dep = realloc(repo->dependencies,
-                                  (repo->dep_count + 1) * sizeof(Dependency));
-        if (dep) {
-          repo->dependencies = dep;
-          repo->dependencies[repo->dep_count].url =
-              dep_url ? strdup(dep_url) : strdup("");
-          repo->dependencies[repo->dep_count].version =
-              dep_version ? strdup(dep_version) : strdup("");
-          repo->dep_count++;
-        }
-      }
-      lua_pop(L, 1);
-    }
-
     lua_pop(L, 1);
     lua_pop(L, 1);
     cached_repos_count++;
