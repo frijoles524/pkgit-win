@@ -29,6 +29,7 @@ Please follow the following styling guidelines:
 - All indentation should be 2 spaces long.
 - Comments should only be used to explain your thought process for writing the code you wrote. Don't explain what it does.
 - Variable/Function names should concisely describe what they are/do. All of which are styled in snake_case.
+- Version numbers will loosely follow the guidelines of [Semantic Versioning 2.0.0](https://semver.org/)
 
 # How big can the patches be?
 You should only make one effective change per patch.
