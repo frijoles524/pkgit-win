@@ -126,7 +126,7 @@ bool repo_build(const char *repository) {
   }
   lua_getfield(L, -1, repository);
   if (!lua_istable(L, -1)) {
-    if (is_verbose) printf("%s'repositories' lua variable '%s' is not a table.\n", print_warning, repository);
+    if (is_verbose) printf("%s'repositories.%s' is not a table.\n", print_warning, repository);
     lua_pop(L, 2);
     return false;
   }
@@ -134,8 +134,8 @@ bool repo_build(const char *repository) {
   lua_getfield(L, -1, "dependencies");
   if (!lua_istable(L, -1)) {
     if (is_verbose) printf(
-      "%s'repositories' variable 'dependencies' is not a table.\n",
-      print_warning
+      "%s'repositories.%s.dependencies' is not a table.\n",
+      print_warning, repository
     );
   } else {
     lua_pushnil(L);
@@ -146,8 +146,8 @@ bool repo_build(const char *repository) {
   lua_getfield(L, -1, "build");
   if (!lua_isfunction(L, -1)) {
     if (is_verbose) printf(
-      "%s'repositories' lua variable 'build' is not a function.\n",
-      print_warning
+      "%s'repositories.%s.build' is not a function: %s\n",
+      print_warning, repository, lua_tostring(L, -1)
     );
     lua_pop(L, 3);
     return false;
@@ -171,18 +171,24 @@ bool repo_install(const char *repository) {
   }
   lua_getfield(L, -1, repository);
   if (!lua_istable(L, -1)) {
-    if (is_verbose) printf("%s'repositories' lua variable '%s' is not a table.\n", print_warning, repository);
+    if (is_verbose) printf("%s'repositories.%s' is not a table.\n", print_warning, repository);
     lua_pop(L, 2);
     return false;
   }
 
   lua_getfield(L, -1, "pre_install");
   if (!lua_isfunction(L, -1)) {
-    if (is_verbose) printf("%s'repositories' lua variable 'pre_install' is not a function.\n", print_warning);
+    if (is_verbose) printf(
+      "%s'repositories.%s.pre_install' is not a function.\n",
+      print_warning, repository
+    );
+  } else if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+    if (is_verbose) printf(
+      "%s'repositories.%s.pre_install' failed: %s\n",
+      print_warning, repository, lua_tostring(L, -1)
+    );
   }
-  if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-    if (is_verbose) printf("%s'repositories' pre_install failed: %s\n", print_warning, lua_tostring(L, -1));
-  }
+  lua_pop(L, 1);
 
   lua_getfield(L, -1, "install");
   if (!lua_isfunction(L, -1)) {
