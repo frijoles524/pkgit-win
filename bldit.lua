@@ -1,5 +1,5 @@
-bldit_version   = "0.1.2"
-package_version = "0.1.2"
+bldit_version   = "0.1.3"
+package_version = "0.1.3"
 
 global_dependencies = {
   luajit = {
