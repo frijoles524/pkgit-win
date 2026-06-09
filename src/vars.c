@@ -48,7 +48,7 @@ const char* get_install_dir(const char *key) {
     return "";
 }
 
-const char *version = "0.1.2";
+const char *version = "0.1.3";
 
 const char *red = "\e[0;31m";
 const char *green = "\e[0;32m";
