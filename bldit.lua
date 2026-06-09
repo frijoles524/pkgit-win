@@ -11,13 +11,6 @@ global_dependencies = {
 
 targets = {
   default = {
-    dependencies = {
-      pipemixer = {
-        url = "https://github.com/heather7283/pipemixer",
-        version = "HEAD",
-        target = "default",
-      },
-    },
     build = function()
       os.execute("make")
     end,
