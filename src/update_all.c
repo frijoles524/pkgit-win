@@ -20,13 +20,13 @@ void update_all() {
   struct dirent* dirent_ptr;
   DIR* dir_ptr;
   if ((dir_ptr = opendir(get_install_dir("src"))) == NULL) {
-    fprintf(stderr, "%scould not open %s\n", print_pkgit, get_install_dir("src"));
+    fprintf(stderr, "%s could not open %s\n", print_pkgit, get_install_dir("src"));
   }
   while ((dirent_ptr = readdir(dir_ptr)) != NULL) {
     if (strcmp(dirent_ptr->d_name, "..") == 0 || strcmp(dirent_ptr->d_name, ".") == 0) continue;
     for (size_t i = 0; i < cached_repos_count; i++) {
       if (!strcmp(dirent_ptr->d_name, cached_repos[i].source_key) == 0) continue;
-      Pkg pkg = create_pkg(cached_repos[i].source_value, "default");
+      Pkg pkg = create_pkg(cached_repos[i].source_value);
       update_pkg(pkg);
     }
   }

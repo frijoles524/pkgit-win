@@ -4,13 +4,13 @@
 #include <unistd.h>
 
 #include "create_pkg.h"
+#include "files.h"
 #include "lua_state.h"
 #include "name_from_url.h"
 #include "vars.h"
 
-Pkg create_pkg(const char *arg, const char *target) {
+Pkg create_pkg(const char *arg) {
   Pkg pkg = {0};
-  pkg.target = target;
   pkg.ver = "HEAD";
   pkg.is_local = false;
 
@@ -23,9 +23,16 @@ Pkg create_pkg(const char *arg, const char *target) {
   char *new_arg = strdup(arg);
   if (!new_arg) exit(EXIT_FAILURE);
   char *argver = strchr(new_arg, '@');
+  char *argtrg = strchr(new_arg, ',');
   if (argver) {
     pkg.ver = argver + 1;
     *argver = '\0';
+  }
+  if (argtrg) {
+    pkg.target = argtrg + 1;
+    *argtrg = '\0';
+  } else {
+    pkg.target = "default";
   }
 
   bool is_in_repos = false;
@@ -42,7 +49,7 @@ Pkg create_pkg(const char *arg, const char *target) {
   } else if (strcmp(new_arg, ".") == 0) {
     pkg.url = "";
     getcwd(pkg.src, MAX_PATH_LEN);
-    pkg.name = name_from_url(pkg.url);
+    pkg.name = name_from_url(pkg.src);
     pkg.is_local = true;
   } else if (is_in_repos) {
     for (size_t i = 0; i < cached_repos_count; i++) {
@@ -53,20 +60,27 @@ Pkg create_pkg(const char *arg, const char *target) {
     }
     pkg.name = strdup(new_arg);
   } else {
-    printf("%s'%s' is not a valid package\n", print_error, new_arg);
+    printf("%s '%s' is not a valid package\n", print_error, new_arg);
     exit(EXIT_FAILURE);
   }
 
-  if (strlen(pkg.name) > 4 && strncmp(pkg.name + strlen(pkg.name) - 4, ".git", 4) == 0) {
+  if (strlen(pkg.name) > 4 &&
+  strncmp(pkg.name + strlen(pkg.name) - 4, ".git", 4) == 0)
     pkg.name[strlen(pkg.name) - 4] = '\0';
-  }
 
   cache_install_directories();
   if (!pkg.is_local) {
     char src_dir[MAX_PATH_LEN];
-    snprintf(src_dir, sizeof(src_dir), "%s/%s/%s", get_install_dir("src"),
-             pkg.name, pkg.ver);
+    snprintf(src_dir, sizeof(src_dir), "%s/%s/%s",
+      get_install_dir("src"), pkg.name, pkg.ver);
     snprintf(pkg.src, MAX_PATH_LEN, "%s", src_dir);
+  } else {
+    const char *destination = strcat(
+      strdup(get_install_dir("src")),
+      strcat(strdup("/"), pkg.name)
+    );
+    printf("%s\n", destination);
+    cpdir(pkg.src, destination);
   }
 
   return pkg;

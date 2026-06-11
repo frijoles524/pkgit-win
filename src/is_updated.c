@@ -10,7 +10,7 @@
 
 bool is_updated(const char *src) {
     if (src && strlen(src) > 0 && chdir(src) != 0) {
-        return false;
+      return false;
     }
 
     char *output = cmd_out("git pull");

@@ -140,22 +140,22 @@ This means that you can require any sub-file/directory, without wrestling with `
 The overall structure of the configuration file looks like this:
 ```lua
 --[[
-  - install directories -
-  this is where every package you
-  get with pkgit is installed,
-  with respect to each of it's
-  files' types:
+- install directories -
+this is where every package you
+get with pkgit is installed,
+with respect to each of it's
+files' types:
 
-  install_directories = {
-    bin     = "...",
-    include = "...",
-    lib     = "...",
-    src     = "...",
-  }
+install_directories = {
+  bin     = "...",
+  include = "...",
+  lib     = "...",
+  src     = "...",
+}
 
-  it is recommended that you create
-  a prefix variable to prepend to
-  these directories, like so:
+it is recommended that you create
+a prefix variable to prepend to
+these directories, like so:
 ]]
 local prefix = os.getenv("HOME").."/.local" -- for user-level installs
 install_directories = {
@@ -166,11 +166,11 @@ install_directories = {
 }
 
 --[[
-  - your repositories -
-  this is where you store your
-  own custom urls, dependencies,
-  and functions to install
-  whatever programs you desire.
+- your repositories -
+this is where you store your
+own custom urls, dependencies,
+and functions to install
+whatever programs you desire.
 ]]
 repositories = {
   example_name = {
@@ -187,18 +187,18 @@ repositories = {
   }
 }
 --[[
-  pkgit also creates a 'repos.lua' file in
-  your config directory,  which you can
-  require here to automatically add repos
-  that you install from.
+pkgit also creates a 'repos.lua' file in
+your config directory,  which you can
+require here to automatically add repos
+that you install from.
 ]]
 require('repos')
 
 --[[
-  - standard build systems -
-  will be auto-detected if required
-  functions aren't in 'repositories'
-  or a repo's 'bldit.lua'
+- standard build systems -
+will be auto-detected if required
+functions aren't in 'repositories'
+or a repo's 'bldit.lua'
 ]]
 build_systems = {
   ["filename.extension"] = {
@@ -223,9 +223,9 @@ repositories = {
 
       ["yt-dlp"] = { url = "https://github.com/yt-dlp/yt-dlp" },
       --[[
-        for dependencies with names that contain illegal
-        characters in lua, you'll want to wrap them in
-        [""] to avoid problems.
+      for dependencies with names that contain illegal
+      characters in lua, you'll want to wrap them in
+      [""] to avoid problems.
       ]]
 
       ffmpeg = { url = "https://github.com/FFmpeg/FFmpeg" },
@@ -255,34 +255,34 @@ Example `bldit.lua` that works for pkgit:
 bldit_version = "0.0.0"
 package_version = "0.0.0"
 --[[
-  versions have to be strings, 
-  because some devs like to
-  have fun and whimsical
-  version numbers :D
+versions have to be strings, 
+because some devs like to
+have fun and whimsical
+version numbers :D
 ]]
 
 global_dependencies = {}
 -- dependencies for all targets
 
 targets = {
-	default = {
-		dependencies = {},
-		-- target-specific dependencies
-		build = function(name)
-			os.execute("make")
-		end,
-		pre_install = function() end,
-		install = function(prefix)
-			os.execute("make install")
-		end,
-		post_install = function() end,
-		uninstall = function() end,
-	}
-	--[[
-    could also have targets for 'client'
-    or 'server.' useful for monorepos
-    and related use-cases.
-	]]
+  default = {
+    dependencies = {},
+    -- target-specific dependencies
+    build = function(name)
+      os.execute("make")
+    end,
+    pre_install = function() end,
+    install = function(prefix)
+      os.execute("make install")
+    end,
+    post_install = function() end,
+    uninstall = function() end,
+  }
+  --[[
+  could also have targets for 'client'
+  or 'server.' useful for monorepos
+  and related use-cases.
+  ]]
 }
 ```
 

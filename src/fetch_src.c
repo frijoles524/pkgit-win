@@ -9,7 +9,10 @@
 #include "fetch_git.h"
 #include "vars.h"
 
-static int remove_tree(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf) {
+static int remove_tree(
+  const char *fpath, const struct stat *sb,
+  int typeflag, struct FTW *ftwbuf
+) {
     (void)sb;
     (void)ftwbuf;
     if (typeflag == FTW_F || typeflag == FTW_SL) {
@@ -21,18 +24,30 @@ static int remove_tree(const char *fpath, const struct stat *sb, int typeflag, s
 }
 
 void fetch_src(Pkg pkg) {
-    if (is_verbose) printf("%starget source directory: %s\n", print_pkgit, pkg.src);
+    if (is_verbose) printf(
+      "%s target source directory: %s\n",
+      print_pkgit, pkg.src
+    );
     if (file_exists(pkg.src)) {
-        if (is_verbose) printf("%s%s already exists. deleting...\n", print_pkgit, pkg.src);
+        if (is_verbose) printf(
+          "%s %s already exists. deleting...\n",
+          print_pkgit, pkg.src
+        );
         nftw(pkg.src, remove_tree, 64, FTW_DEPTH | FTW_PHYS);
     }
     if (strcmp(pkg.url, "") == 0) {
-        if (is_verbose) printf("%screating directory %s...\n", print_pkgit, pkg.src);
+        if (is_verbose) printf(
+          "%s creating directory %s...\n",
+          print_pkgit, pkg.src
+        );
         mkdir_p(pkg.src);
         return;
     }
     if (fetch_git(pkg) == 0) {
-        if (is_verbose) printf("%scloned into %s...\n", print_pkgit, pkg.src);
+        if (is_verbose) printf(
+          "%s cloned into %s\n",
+          print_pkgit, pkg.src
+        );
         return;
     }
     printf("%s no fetch methods worked.\n", print_error);

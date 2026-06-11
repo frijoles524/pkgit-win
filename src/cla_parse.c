@@ -24,7 +24,7 @@
   code
 
 #define NOT_ENOUGH_ARGS(arg, next)                                             \
-  printf("%sNot enough arguments! Try: `pkgit %s [%s]`\n", print_error, arg,   \
+  printf("%s Not enough arguments! Try: `pkgit %s [%s]`\n", print_error, arg,   \
          next)
 
 void cla_parse(int argc, char **argv) {
@@ -38,6 +38,7 @@ void cla_parse(int argc, char **argv) {
   for (int i = 1; i < argc; i++) {
     COMMAND("--link", "-l", { is_symlink_install = true; });
     COMMAND("--quiet", "-q", { is_verbose = false; });
+    COMMAND("--force", "-f", { is_forced = true; });
   }
 
   for (int i = 1; i < argc; i++) {
@@ -50,32 +51,38 @@ void cla_parse(int argc, char **argv) {
     });
     COMMAND("build", "b", {
       if (argv[i + 1]) {
-        if (argv[i + 2]) {
-          pkg = create_pkg(argv[i + 1], argv[i + 2]);
-          build(pkg);
-        } else if (!is_verbose) {
-          pkg = create_pkg(argv[i + 1], "quiet");
-          build(pkg);
+        if (!is_verbose) {
+          for (int j = i + 1; j < argc; j++) {
+            if (argv[j][0] == '-') continue;
+            pkg = create_pkg(argv[j]);
+            build(pkg);
+          }
         } else {
-          pkg = create_pkg(argv[i + 1], "default");
-          build(pkg);
+          for (int j = i + 1; j < argc; j++) {
+            if (argv[j][0] == '-') continue;
+            pkg = create_pkg(argv[j]);
+            build(pkg);
+          }
         }
       } else {
-        pkg = create_pkg(".", "default");
+        pkg = create_pkg(".");
         build(pkg);
       }
     });
     COMMAND("install", "i", {
       if (argv[i + 1]) {
-        if (argv[i + 2]) {
-          pkg = create_pkg(argv[i + 1], argv[i + 2]);
-          install_pkg(pkg);
-        } else if (!is_verbose) {
-          pkg = create_pkg(argv[i + 1], "quiet");
-          install_pkg(pkg);
+        if (!is_verbose) {
+          for (int j = i + 1; j < argc; j++) {
+            if (argv[j][0] == '-') continue;
+            pkg = create_pkg(argv[j]);
+            install_pkg(pkg);
+          }
         } else {
-          pkg = create_pkg(argv[i + 1], "default");
-          install_pkg(pkg);
+          for (int j = i + 1; j < argc; j++) {
+            if (argv[j][0] == '-') continue;
+            pkg = create_pkg(argv[j]);
+            install_pkg(pkg);
+          }
         }
       } else {
         NOT_ENOUGH_ARGS(argv[i], "url/pkg");
@@ -83,8 +90,11 @@ void cla_parse(int argc, char **argv) {
     });
     COMMAND("remove", "r", {
       if (argv[i + 1]) {
-        pkg = create_pkg(argv[i + 1], "default");
-        remove_pkg(pkg);
+        for (int j = i + 1; j < argc; j++) {
+          if (argv[j][0] == '-') continue;
+          pkg = create_pkg(argv[j]);
+          remove_pkg(pkg);
+        }
       } else {
         NOT_ENOUGH_ARGS(argv[i], "url/pkg");
       }

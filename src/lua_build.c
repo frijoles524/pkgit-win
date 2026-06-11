@@ -7,17 +7,34 @@
 
 bool lua_build(const char *repository, const char *target, const char *path) {
     if (is_verbose) printf(
-      "%sattempting to use build function specified in 'repositories.%s'...\n",
+      "%s attempting init.lua: 'repositories.%s.build'\n",
       print_pkgit, repository
     );
+    if (repo_build(repository, target)) { return true; }
+    if (is_verbose) printf(
+      "%s failed init.lua: 'repositories.%s.build'\n",
+      print_warning, repository
+    );
 
-    if (repo_build(repository)) { return true; }
-
-    if (is_verbose) printf("%sattempting to use build function specified in 'bldit.lua'...\n", print_pkgit);
+    if (is_verbose) printf(
+      "%s attempting bldit.lua\n",
+      print_pkgit
+    );
     if (bldit(target)) { return true; }
+    if (is_verbose) printf(
+      "%s failed bldit.lua\n",
+      print_warning
+    );
 
-    if (is_verbose) printf("%sattempting to use build functions specified in 'build_systems'...\n", print_pkgit);
-    if (config_build(path)) { return true; }
+    if (is_verbose) printf(
+      "%s attempting init.lua: 'build_systems'\n",
+      print_pkgit
+    );
+    if (config_build(path, target)) { return true; }
+    if (is_verbose) printf(
+      "%s failed init.lua: 'build_systems'\n",
+      print_warning
+    );
 
     return false;
 }

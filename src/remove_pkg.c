@@ -9,8 +9,10 @@
 #include "remove_pkg.h"
 #include "vars.h"
 
-static int remove_installed(const char *src_path, const struct stat *sb,
-                            int typeflag, struct FTW *ftwbuf) {
+static int remove_installed(
+  const char *src_path, const struct stat *sb,
+  int typeflag, struct FTW *ftwbuf
+) {
   (void)sb;
   (void)ftwbuf;
 
@@ -60,28 +62,33 @@ static int remove_tree(const char *fpath, const struct stat *sb, int typeflag,
 
 void remove_pkg(Pkg pkg) {
   if (!file_exists(pkg.src)) {
-    printf("%s%s is not installed!\n", print_pkgit, pkg.name);
+    printf("%s %s is not installed!\n", print_pkgit, pkg.name);
     return;
   }
   chdir(pkg.src);
 
-  if (repo_uninstall(pkg.name)) return;
-  if (bldit_uninstall(pkg.target)) return;
-  if (config_uninstall(pkg.src)) return;
+  bool uninstall_available = false;
+  if (!uninstall_available) if (repo_uninstall(pkg.name, pkg.target)) 
+    uninstall_available = true;
+  if (!uninstall_available) if (bldit_uninstall(pkg.target))
+    uninstall_available = true;
+  if (!uninstall_available) if (config_uninstall(pkg.src, pkg.target))
+    uninstall_available = true;
 
-  printf("%sno uninstall function availible for package: %s\n",
-    print_error, pkg.name);
-  return;
+  if (!uninstall_available) printf(
+    "%s no uninstall function availible for package: %s\n",
+    print_error, pkg.name
+  );
 
-  //nftw(pkg.src, remove_installed, 64, FTW_PHYS);
-  //const char *last_slash = strrchr(pkg.src, '/');
-  //char target[MAX_PATH_LEN];
-  //if (last_slash && last_slash != pkg.src) {
-  //  size_t parent_len = last_slash - pkg.src;
-  //  snprintf(target, sizeof(target), "%.*s", (int)parent_len, pkg.src);
-  //} else {
-  //  snprintf(target, sizeof(target), "%s", pkg.src);
-  //}
-  //nftw(target, remove_tree, 64, FTW_DEPTH | FTW_PHYS);
-  //printf("%sremoved %s\n", print_pkgit, pkg.name);
+  nftw(pkg.src, remove_installed, 64, FTW_PHYS);
+  const char *last_slash = strrchr(pkg.src, '/');
+  char target[MAX_PATH_LEN];
+  if (last_slash && last_slash != pkg.src) {
+    size_t parent_len = last_slash - pkg.src;
+    snprintf(target, sizeof(target), "%.*s", (int)parent_len, pkg.src);
+  } else {
+    snprintf(target, sizeof(target), "%s", pkg.src);
+  }
+  nftw(pkg.src, remove_tree, 64, FTW_DEPTH | FTW_PHYS);
+  printf("%s removed %s\n", print_success, pkg.name);
 }

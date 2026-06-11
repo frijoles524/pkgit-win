@@ -41,7 +41,7 @@ int fetch_git(Pkg pkg) {
   waitpid(pid, &status, 0);
   int result = WIFEXITED(status) ? WEXITSTATUS(status) : -1;
   if (result != 0) {
-    printf("clone failed\n");
+    printf("%s git clone failed\n", print_warning);
   }
 
   return result;

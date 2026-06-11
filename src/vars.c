@@ -11,6 +11,7 @@
 bool is_symlink_install = false;
 bool is_verbose = true;
 bool is_auto_installed = true;
+bool is_forced = false;
 bool config_exists = false;
 
 char home_dir[MAX_PATH_LEN] = {0};
@@ -48,7 +49,7 @@ const char* get_install_dir(const char *key) {
     return "";
 }
 
-const char *version = "0.1.3";
+const char *version = "1.0.0";
 
 const char *red = "\e[0;31m";
 const char *green = "\e[0;32m";
@@ -162,27 +163,27 @@ void init_vars() {
     install_directories[4] = strdup(get_install_dir("src"));
 
     static char print_pkgit_buf[256];
-    snprintf(print_pkgit_buf, sizeof(print_pkgit_buf), "%s[%s%s%s] %s",
+    snprintf(print_pkgit_buf, sizeof(print_pkgit_buf), "%s[%s%s%s]%s",
              bold_yellow, bold_magenta, "pkgit", bold_yellow, color_reset);
     print_pkgit = print_pkgit_buf;
 
     static char print_success_buf[256];
-    snprintf(print_success_buf, sizeof(print_success_buf), "%s%s[SUCCESS] %s",
+    snprintf(print_success_buf, sizeof(print_success_buf), "%s%s [SUCCESS]%s",
              print_pkgit, green, color_reset);
     print_success = print_success_buf;
 
     static char print_skipped_buf[256];
-    snprintf(print_skipped_buf, sizeof(print_skipped_buf), "%s%s[SKIP] %s",
+    snprintf(print_skipped_buf, sizeof(print_skipped_buf), "%s%s [SKIP]%s",
              print_pkgit, blue, color_reset);
     print_skipped = print_skipped_buf;
 
     static char print_warning_buf[256];
-    snprintf(print_warning_buf, sizeof(print_warning_buf), "%s%s[WARN] %s",
+    snprintf(print_warning_buf, sizeof(print_warning_buf), "%s%s [WARN]%s",
              print_pkgit, yellow, color_reset);
     print_warning = print_warning_buf;
 
     static char print_error_buf[256];
-    snprintf(print_error_buf, sizeof(print_error_buf), "%s%s[ERROR] %s",
+    snprintf(print_error_buf, sizeof(print_error_buf), "%s%s [ERROR]%s",
              print_pkgit, red, color_reset);
     print_error = print_error_buf;
 }

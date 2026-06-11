@@ -12,12 +12,19 @@ void list_pkgs() {
   DIR* dir_ptr = opendir(src_code);
 
   if (dir_ptr == NULL) {
-    fprintf(stderr, "%scould not open %s\n", print_pkgit, src_code);
+    fprintf(
+      stderr,
+      "%s could not open %s\n",
+      print_pkgit, src_code
+    );
     return;
   }
 
   while ((dirent_ptr = readdir(dir_ptr)) != NULL) {
-    if (strcmp(dirent_ptr->d_name, "..") == 0 || strcmp(dirent_ptr->d_name, ".") == 0) { continue; }
+    if (
+      strcmp(dirent_ptr->d_name, "..") == 0 ||
+      strcmp(dirent_ptr->d_name, ".") == 0
+    ) continue;
     printf("%s\n", dirent_ptr->d_name);
   }
 }

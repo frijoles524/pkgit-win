@@ -3,6 +3,6 @@
 
 #include "vars.h"
 
-Pkg create_pkg(const char *arg, const char *target);
+Pkg create_pkg(const char *arg);
 
 #endif
