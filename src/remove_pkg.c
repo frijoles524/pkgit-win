@@ -61,7 +61,7 @@ static int remove_tree(const char *fpath, const struct stat *sb, int typeflag,
 }
 
 void remove_pkg(Pkg pkg) {
-  if (!file_exists(pkg.src)) {
+  if (!is_directory(pkg.src)) {
     printf("%s %s is not installed!\n", print_pkgit, pkg.name);
     return;
   }

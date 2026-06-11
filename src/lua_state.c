@@ -610,7 +610,7 @@ bool config_install(const char *path, const char *target) {
       return false;
     }
     target_loop_success = target_loop_install(L, "init.lua", target);
-    lua_pop(L, 1);
+    lua_pop(L, 2);
   }
   lua_pop(L, 1);
   return target_loop_success;
@@ -647,7 +647,7 @@ bool config_uninstall(const char *path, const char *target) {
       return false;
     }
     target_loop_success = target_loop_uninstall(L, "init.lua", target);
-    lua_pop(L, 1);
+    lua_pop(L, 2);
   }
   lua_pop(L, 1);
   return target_loop_success;

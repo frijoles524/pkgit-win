@@ -6,6 +6,7 @@
 #include "add_repo.h"
 #include "build.h"
 #include "fetch_src.h"
+#include "files.h"
 #include "install_pkg.h"
 #include "lua_state.h"
 #include "name_from_url.h"
@@ -27,7 +28,11 @@ void install_pkg(Pkg pkg) {
     }
   }
 
-  if (!pkg.is_local) {
+	if (pkg.is_local) {
+    char cwd[MAX_PATH_LEN];
+    getcwd(cwd, MAX_PATH_LEN);
+    cpdir(cwd, pkg.src);
+	} else {
     printf(
       "%s fetching %s%s%s\n",
       print_pkgit, green, pkg.name, color_reset

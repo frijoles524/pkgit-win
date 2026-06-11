@@ -43,13 +43,28 @@ Pkg create_pkg(const char *arg) {
     }
   }
 
+  cache_install_directories();
+  bool is_installed_locally = false;
+  char dest_dir[MAX_PATH_LEN];
+  if (new_arg[0] == '.') {
+  	char cwd[MAX_PATH_LEN];
+  	getcwd(cwd, MAX_PATH_LEN);
+	  snprintf(dest_dir, sizeof(dest_dir), "%s/%s",
+	    get_install_dir("src"), name_from_url(cwd));
+  } else {
+	  snprintf(dest_dir, sizeof(dest_dir), "%s/%s",
+	    get_install_dir("src"), new_arg);
+  }
+  if (is_directory(dest_dir)) is_installed_locally = true;
+
   if (strncmp(new_arg, "http", 4) == 0) {
     pkg.url = strdup(new_arg);
     pkg.name = name_from_url(new_arg);
   } else if (strcmp(new_arg, ".") == 0) {
     pkg.url = "";
-    getcwd(pkg.src, MAX_PATH_LEN);
-    pkg.name = name_from_url(pkg.src);
+    char cwd[MAX_PATH_LEN];
+    getcwd(cwd, MAX_PATH_LEN);
+    pkg.name = name_from_url(cwd);
     pkg.is_local = true;
   } else if (is_in_repos) {
     for (size_t i = 0; i < cached_repos_count; i++) {
@@ -59,6 +74,10 @@ Pkg create_pkg(const char *arg) {
       }
     }
     pkg.name = strdup(new_arg);
+  } else if (is_installed_locally) {
+    pkg.url = "";
+    pkg.name = name_from_url(dest_dir);
+    pkg.is_local = true;
   } else {
     printf("%s '%s' is not a valid package\n", print_error, new_arg);
     exit(EXIT_FAILURE);
@@ -68,20 +87,15 @@ Pkg create_pkg(const char *arg) {
   strncmp(pkg.name + strlen(pkg.name) - 4, ".git", 4) == 0)
     pkg.name[strlen(pkg.name) - 4] = '\0';
 
-  cache_install_directories();
-  if (!pkg.is_local) {
-    char src_dir[MAX_PATH_LEN];
-    snprintf(src_dir, sizeof(src_dir), "%s/%s/%s",
-      get_install_dir("src"), pkg.name, pkg.ver);
-    snprintf(pkg.src, MAX_PATH_LEN, "%s", src_dir);
+  char src_dir[MAX_PATH_LEN];
+  if (pkg.is_local) {
+	  snprintf(src_dir, sizeof(src_dir), "%s/%s",
+	    get_install_dir("src"), pkg.name);
   } else {
-    const char *destination = strcat(
-      strdup(get_install_dir("src")),
-      strcat(strdup("/"), pkg.name)
-    );
-    printf("%s\n", destination);
-    cpdir(pkg.src, destination);
+	  snprintf(src_dir, sizeof(src_dir), "%s/%s/%s",
+	    get_install_dir("src"), pkg.name, pkg.ver);
   }
+  snprintf(pkg.src, MAX_PATH_LEN, "%s", src_dir);
 
   return pkg;
 }
