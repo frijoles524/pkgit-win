@@ -1,8 +1,11 @@
 #include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 const char *get_filename_ext(const char *filename) {
   const char *dot = strrchr(filename, '.');
@@ -10,78 +13,130 @@ const char *get_filename_ext(const char *filename) {
   return dot + 1;
 }
 
-void cpdir(const char *path, const char *dest) {
-  DIR *dirp = opendir(path);
-  struct dirent *dirp_ent;
-
-  struct stat dest_st;
-  stat(path, &dest_st);
-  if ((dest_st.st_mode & S_IFDIR) != 0) {
-    mkdir(dest, dest_st.st_mode);
-  }
-
-  while ((dirp_ent = readdir(dirp))) {
-    if (dirp_ent->d_name[0] == '.' &&
-      (strlen(dirp_ent->d_name) == 1 ||
-	      (strlen(dirp_ent->d_name) == 2 &&
-	      dirp_ent->d_name[1] == '.')
-      )
-    )
-      continue;
-    char rfile_line[1024];
-    struct stat st;
-    char *filename = malloc(sizeof(path) + sizeof(dirp_ent->d_name) + 2);
-    snprintf(
-    	filename,
-    	sizeof(path) + sizeof(dirp_ent->d_name) + 2,
-    	"%s/%s",
-    	path,
-    	dirp_ent->d_name
-   	);
-    stat(filename, &st);
-    if (st.st_mode) {
-      char *newfile = malloc(sizeof(dest) + sizeof(dirp_ent->d_name) + 2);
-      snprintf(
-      	newfile,
-      	sizeof(dest) + sizeof(dirp_ent->d_name) + 2,
-      	"%s/%s",
-        dest,
-        dirp_ent->d_name
-      );
-      if ((st.st_mode & S_IFDIR) != 0) {
-        mkdir(newfile, st.st_mode);
-        cpdir(filename, newfile);
-        continue;
-      }
-      FILE *rfile = fopen(dirp_ent->d_name, "r");
-      FILE *wfile = fopen(newfile, "w+");
-      if (!rfile || !wfile) {
-        continue;
-      }
-      while (1) {
-	      size_t ret = fread(rfile_line, 1, 1024, rfile);
-	      if (ret != sizeof(rfile_line) / sizeof(rfile_line[0]) && ferror(rfile)) {
-	        fprintf(stderr, "file read failed: %zu\n", ret);
-	        break;
-	      }
-	      if (feof(rfile)) {
-	        fclose(rfile);
-	        fclose(wfile);
-	        break;
-	      }
-	      size_t write = fwrite(rfile_line, 1, ret, wfile);
-	      if (write != sizeof(rfile_line) / sizeof(rfile_line[0])) {
-	        fprintf(stderr, "file write failed: %zu\n", ret);
-	        break;
-	      }
-	      free(newfile);
-	      if (feof(rfile)) {
-	        fclose(rfile);
-	        fclose(wfile);
-	        break;
-	      }
-      }
+static int write_all(int fd, const void *buf, size_t size) {
+  while (size) {
+    ssize_t written = write(fd, buf, size);
+    if (written < 0) {
+      return -1;
     }
-    free(filename);
+
+    size -= written;
+    buf = (const char *)buf + written;
   }
+
+  return 0;
+}
+
+static int copy_file_content(int src_fd, int dst_fd) {
+  char buf[4096];
+  ssize_t readed;
+  while ((readed = read(src_fd, buf, sizeof(buf))) > 0) {
+    if (write_all(dst_fd, buf, readed) < 0) {
+      perror("write_all");
+      return -1;
+    }
+  }
+
+  if (readed < 0) {
+    perror("read");
+    return -1;
+  }
+
+  return 0;
+}
+
+static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd, const char *dst_path);
+
+static int copy_dir_content(int src_fd, int dst_fd) {
+  int ret = -1;
+  // duplicate the descriptor to prevent closedir from closing original one
+  src_fd = dup(src_fd);
+  if (src_fd < 0) {
+     perror("dup");
+     goto cleanup0;
+  }
+
+  DIR *src_dir = fdopendir(src_fd);
+  if (!src_dir) {
+    perror("fdopendir");
+    close(src_fd);
+    goto cleanup0;
+  }
+
+  for (struct dirent *ent; (errno = 0, ent = readdir(src_dir));) {
+    if (strcmp(ent->d_name, ".") == 0 || strcmp(ent->d_name, "..") == 0) {
+      continue;
+    }
+
+    if (copy_at(src_fd, ent->d_name, dst_fd, ent->d_name) < 0) {
+      goto cleanup1;
+    }
+  }
+
+  if (errno != 0) {
+    perror("readdir");
+    goto cleanup1;
+  }
+
+  ret = 0;
+
+cleanup1:
+  closedir(src_dir);
+cleanup0:
+  return ret;
+}
+
+static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd, const char *dst_path) {
+  int ret = -1;
+  int src_fd = openat(src_dir_fd, src_path, O_NOFOLLOW | O_RDONLY);
+  if (src_fd < 0) {
+    perror("openat");
+    goto cleanup0;
+  }
+
+  struct stat stat;
+  if (fstat(src_fd, &stat) < 0) {
+    perror("fstat");
+    goto cleanup1;
+  }
+
+  int dst_oflag = O_NOFOLLOW;
+  if (S_ISDIR(stat.st_mode)) {
+    if (mkdirat(dst_dir_fd, dst_path, stat.st_mode) < 0) {
+      perror("mkdirat");
+      goto cleanup1;
+    }
+
+    dst_oflag |= O_RDONLY | O_DIRECTORY;
+  } else {
+    dst_oflag |= O_WRONLY | O_CREAT | O_EXCL;
+  }
+
+  int dst_fd = openat(dst_dir_fd, dst_path, dst_oflag, stat.st_mode);
+  if (dst_fd < 0) {
+    perror("openat");
+    goto cleanup1;
+  }
+
+  switch (stat.st_mode & S_IFMT) {
+    case S_IFDIR:
+      ret = copy_dir_content(src_fd, dst_fd);
+      break;
+    case S_IFREG:
+      ret = copy_file_content(src_fd, dst_fd);
+      break;
+    default:
+      fprintf(stderr, "copy_at: unsupported file inode type\n");
+  }
+
+cleanup2:
+  close(dst_fd);
+cleanup1:
+  close(src_fd);
+cleanup0:
+  return ret;
+}
+
+void cpdir(const char *src_path, const char *dst_path) {
+  copy_at(AT_FDCWD, src_path, AT_FDCWD, dst_path);
 }
