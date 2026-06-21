@@ -4,9 +4,9 @@
 #include "resolve_deps.h"
 
 void resolve_deps(void) {
-    const char *frame_top = "  (C_C)";
-    const char *frame1_bot = "_/    \\-";
-    const char *frame2_bot = "-/    \\_";
+    const char *frame_top = "  (c _c)";
+    const char *frame1_bot = "_/      \\-";
+    const char *frame2_bot = "-/      \\_";
 
     printf("\033[2J\033[H");
     printf("Unfortunately due to budget issues, we could not afford a progress bar. Enjoy this instead:\n\n");

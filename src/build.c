@@ -8,12 +8,11 @@
 #include "vars.h"
 
 void build(Pkg pkg) {
-    char original_dir[MAX_PATH_LEN];
-    getcwd(original_dir, MAX_PATH_LEN);
+  char cwd[MAX_PATH_LEN];
+  getcwd(cwd, MAX_PATH_LEN);
+  if (strcmp(pkg.src, cwd) != 0 && !pkg.is_local) chdir(pkg.src);
 
-    if (strcmp(pkg.src, original_dir) != 0) chdir(pkg.src);
-    if (lua_build(pkg.name, pkg.target, pkg.src)) return;
-
-    printf("%s no usable build system was found\n", print_error);
-    exit(EXIT_FAILURE);
+  if (lua_build(pkg.name, pkg.target, pkg.is_local ? cwd : pkg.src)) return;
+  printf("%s no usable build system was found\n", print_error);
+  exit(EXIT_FAILURE);
 }

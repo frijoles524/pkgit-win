@@ -29,9 +29,13 @@ pkgit build
 Both methods will create an executable in the root directory of the project.
 
 You'll probably also want to generate a base configuration file if you don't already have one.
-Run this as a user to generate the config:
+Run this as a user to generate the config in ~/.config/pkgit:
 ```
 make defconfig
+```
+You can also run this with root using sudo/doas to genereate the config in /etc/pkgit
+```
+sudo make defconfig
 ```
 
 # Install pkgit
@@ -41,21 +45,24 @@ make install
 ```
 
 ## Don't have root?
-You can specify any install location with `PREFIX=<path>`:
+You can specify any install location with `PREFIX=<path>`. A popular option is `~/.local`:
 ```
-make install PREFIX="/path/to/install"
+make install PREFIX="~/.local"
 ```
 
 # Usage
 ## Installing Packages
 ### Pre-installation
 Before you use any programs that you installed with pkgit, you need to specify the path of the binaries in your shell's configuration.
+For most users, this is the command:
 ```sh
 export PATH="$HOME/.local/bin:$PATH"
 ```
+or for fish users:
 ```fish
 fish_add_path $HOME/.local/bin
 ```
+or for csh users:
 ```csh
 setenv PATH $HOME/.local/bin:$PATH
 ```
@@ -76,11 +83,27 @@ You can specify a version of any package based on its tags with '@' separating t
 pkgit install [pkg_name]@[version]
 ```
 
+### Specific target install
+You can specify a target of any package based on its configuration in bldit.lua or init.lua with ',' separating the name from the target:
+```
+pkgit install [pkg_name],[target]
+```
+
+### Combined target and version install
+You can specify both the target and the version of any package you install in the same command (order does not matter as long as the package name is first):
+```
+pkgit install [pkg_name],[target]@[version]
+```
+```
+pkgit install [pkg_name]@[version],[target]
+```
+
 ### Repo install
 If you haven't added the package's repository yet, or you just want to be specific, you can install the package using its git URL:
 ```
 pkgit install [url.git]
 ```
+This also works with the target and version syntax.
 
 ### Local install
 If you want to install a package from a local code repository, and want to take advantage of pkgit's build system autodetection, you can enter that repository's root directory and install it from there:

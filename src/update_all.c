@@ -7,11 +7,9 @@
 #include <unistd.h>
 
 #include "update_all.h"
-#include "files.h"
 #include "create_pkg.h"
 #include "update_pkg.h"
 #include "lua_state.h"
-#include "set_install_directories.h"
 #include "vars.h"
 
 void update_all() {

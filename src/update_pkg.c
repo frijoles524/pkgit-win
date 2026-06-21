@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <string.h>
 
 #include "update_pkg.h"
 #include "is_updated.h"

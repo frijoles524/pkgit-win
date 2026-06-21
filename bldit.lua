@@ -7,6 +7,11 @@ global_dependencies = {
     version = "v2.1",
     target = "default",
   },
+  git = {
+    url = "https://github.com/git/git",
+    version = "HEAD",
+    target = "default",
+  },
 }
 
 targets = {
@@ -17,6 +22,9 @@ targets = {
     install = function()
       os.execute("make install")
     end,
+    uninstall = function()
+      os.execute("make uninstall")
+    end,
   },
   quiet = {
     build = function()
@@ -24,6 +32,9 @@ targets = {
     end,
     install = function()
       local output = io.popen("make install"):read("*a")
+    end,
+    uninstall = function()
+      local output = io.popen("make uninstall"):read("*a")
     end,
   },
 }

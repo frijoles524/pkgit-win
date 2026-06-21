@@ -27,10 +27,11 @@ void install_pkg(Pkg pkg) {
       );
     }
   }
+  char cwd[MAX_PATH_LEN];
+  getcwd(cwd, MAX_PATH_LEN);
+  if (strcmp(pkg.src, cwd) != 0) chdir(pkg.src);
 
 	if (pkg.is_local) {
-    char cwd[MAX_PATH_LEN];
-    getcwd(cwd, MAX_PATH_LEN);
     cpdir(cwd, pkg.src);
 	} else {
     printf(

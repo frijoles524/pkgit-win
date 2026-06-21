@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "cla_parse.h"
@@ -8,106 +7,129 @@
 #include "build.h"
 #include "create_pkg.h"
 #include "declare.h"
-#include "find.h"
+#include "search.h"
 #include "help.h"
 #include "install_pkg.h"
 #include "list_pkgs.h"
 #include "name_from_url.h"
 #include "remove_pkg.h"
+#include "resolve_deps.h"
 #include "update_all.h"
 #include "vars.h"
 
-#include "resolve_deps.h"
+#define COMMAND(large, small, code)                                           \
+  if (strcmp(argv[i], large) == 0 || strcmp(argv[i], small) == 0) code
 
-#define COMMAND(large, small, code)                                            \
-  if (strcmp(argv[i], large) == 0 || strcmp(argv[i], small) == 0)              \
-  code
+#define NOT_ENOUGH_ARGS(arg, next)                                            \
+  printf("%s Not enough arguments! Try: `pkgit %s [%s]`\n",                   \
+    print_error, arg, next)
 
-#define NOT_ENOUGH_ARGS(arg, next)                                             \
-  printf("%s Not enough arguments! Try: `pkgit %s [%s]`\n", print_error, arg,   \
-         next)
-
-void cla_parse(int argc, char **argv) {
-  Pkg pkg = {0};
-
-  if (!argv[1]) {
-    help();
-    return;
+void cmd_add(char **argv, int i) {
+  if (argv[i + 1]) {
+    add_repo(argv[i + 1], name_from_url(argv[i + 1]));
+  } else {
+    NOT_ENOUGH_ARGS(argv[i], "url");
   }
+}
 
-  for (int i = 1; i < argc; i++) {
-    COMMAND("--link", "-l", { is_symlink_install = true; });
-    COMMAND("--quiet", "-q", { is_verbose = false; });
-    COMMAND("--force", "-f", { is_forced = true; });
+void cmd_build(int argc, char **argv, int i, Pkg pkg) {
+  if (argv[i + 1]) {
+    for (int j = i + 1; j < argc; j++) {
+      if (argv[j][0] == '-') continue;
+      pkg = create_pkg(argv[j]);
+      build(pkg);
+    }
+  } else {
+    pkg = create_pkg(".");
+    build(pkg);
   }
+}
 
+void cmd_install(int argc, char **argv, int i, Pkg pkg) {
+  if (argv[i + 1]) {
+    for (int j = i + 1; j < argc; j++) {
+      if (argv[j][0] == '-') continue;
+      pkg = create_pkg(argv[j]);
+      install_pkg(pkg);
+    }
+  } else {
+    NOT_ENOUGH_ARGS(argv[i], "url/pkg");
+  }
+}
+
+void cmd_remove(int argc, char **argv, int i, Pkg pkg) {
+  if (argv[i + 1]) {
+    for (int j = i + 1; j < argc; j++) {
+      if (argv[j][0] == '-') continue;
+      pkg = create_pkg(argv[j]);
+      remove_pkg(pkg);
+    }
+  } else {
+    NOT_ENOUGH_ARGS(argv[i], "url/pkg");
+  }
+}
+
+void mod_flags(char **argv, int i) {
+  for (int j = 1; j < strlen(argv[i]); j++) {
+    switch (argv[i][j]) {
+      case 'q': is_verbose = false; break;
+      case 'f': is_forced = true; break;
+      default:  break;
+    }
+  }
+}
+
+void cmd_flags(int argc, char **argv, int i, Pkg pkg) {
+  for (int j = 1; j < strlen(argv[i]); j++) {
+    switch (argv[i][j]) {
+      case 'a': cmd_add(argv, i); break;
+      case 'b': cmd_build(argc, argv, i, pkg); break;
+      case 'i': cmd_install(argc, argv, i, pkg); break;
+      case 'r': cmd_remove(argc, argv, i, pkg); break;
+      case 'u': update_all(); break;
+      case 'd': declare(); break;
+      case 'l': list_pkgs(); break;
+      case 's': search(argv[i + 1]); break;
+      case 'v': printf("%s\n", version); break;
+      case 'h': help(); break;
+      case 'c': resolve_deps(); break;
+      default:  break;
+    }
+  }
+}
+
+void parse_flags(int argc, char **argv, Pkg pkg) {
   for (int i = 1; i < argc; i++) {
-    COMMAND("add", "a", {
-      if (argv[i + 1]) {
-        add_repo(argv[i + 1], name_from_url(argv[i + 1]));
-      } else {
-        NOT_ENOUGH_ARGS(argv[i], "url");
-      }
-    });
-    COMMAND("build", "b", {
-      if (argv[i + 1]) {
-        if (!is_verbose) {
-          for (int j = i + 1; j < argc; j++) {
-            if (argv[j][0] == '-') continue;
-            pkg = create_pkg(argv[j]);
-            build(pkg);
-          }
-        } else {
-          for (int j = i + 1; j < argc; j++) {
-            if (argv[j][0] == '-') continue;
-            pkg = create_pkg(argv[j]);
-            build(pkg);
-          }
-        }
-      } else {
-        pkg = create_pkg(".");
-        build(pkg);
-      }
-    });
-    COMMAND("install", "i", {
-      if (argv[i + 1]) {
-        if (!is_verbose) {
-          for (int j = i + 1; j < argc; j++) {
-            if (argv[j][0] == '-') continue;
-            pkg = create_pkg(argv[j]);
-            install_pkg(pkg);
-          }
-        } else {
-          for (int j = i + 1; j < argc; j++) {
-            if (argv[j][0] == '-') continue;
-            pkg = create_pkg(argv[j]);
-            install_pkg(pkg);
-          }
-        }
-      } else {
-        NOT_ENOUGH_ARGS(argv[i], "url/pkg");
-      }
-    });
-    COMMAND("remove", "r", {
-      if (argv[i + 1]) {
-        for (int j = i + 1; j < argc; j++) {
-          if (argv[j][0] == '-') continue;
-          pkg = create_pkg(argv[j]);
-          remove_pkg(pkg);
-        }
-      } else {
-        NOT_ENOUGH_ARGS(argv[i], "url/pkg");
-      }
-    });
+    if (argv[i][0] != '-') continue;
+    if (argv[i][1] == '-') {
+      COMMAND("--quiet", "-q", { is_verbose = false; });
+      COMMAND("--force", "-f", { is_forced = true; });
+      COMMAND("--version", "-v", { printf("%s\n", version); });
+      COMMAND("--help", "-h", { help(); });
+      COMMAND("--check", "-c", { resolve_deps(); });
+    } else {
+      mod_flags(argv, i);
+      cmd_flags(argc, argv, i, pkg);
+    }
+  }
+}
+
+void parse_cmds(int argc, char **argv, Pkg pkg) {
+  for (int i = 1; i < argc; i++) {
+    COMMAND("add", "a", { cmd_add(argv, i); });
+    COMMAND("build", "b", { cmd_build(argc, argv, i, pkg); });
+    COMMAND("install", "i", { cmd_install(argc, argv, i, pkg); });
+    COMMAND("remove", "r", { cmd_remove(argc, argv, i, pkg); });
     COMMAND("update", "u", { update_all(); });
     COMMAND("declare", "d", { declare(); });
     COMMAND("list", "l", { list_pkgs(); });
-    COMMAND("find", "f", { find(argv[i + 1]); });
-    COMMAND("--version", "-v", { printf("%s\n", version); });
-    COMMAND("--help", "-h", { help(); });
-    COMMAND("--check", "-c", {
-      resolve_deps();
-      return;
-    });
+    COMMAND("search", "s", { search(argv[i + 1]); });
   }
+}
+
+void cla_parse(int argc, char **argv) {
+  if (!argv[1]) { help(); return; }
+  Pkg pkg = {0};
+  parse_flags(argc, argv, pkg);
+  parse_cmds(argc, argv, pkg);
 }

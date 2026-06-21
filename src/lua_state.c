@@ -40,10 +40,8 @@ void init_lua_state() {
       "%s cannot run configuration script: %s\n",
       print_error, lua_tostring(L, -1)
     );
-    printf(
-      "%s to generate a configration file, head into the root directory of the pkgit source and run `make defconfig`\n",
-      print_pkgit
-    );
+    printf("%s to generate a configration file, head into the", print_pkgit);
+    printf(" root directory of the pkgit source and run `make defconfig`\n");
     exit(EXIT_FAILURE);
   }
   if (file_exists(repo_file)) {
@@ -130,7 +128,9 @@ void install_dependencies(lua_State *L) {
   }
 }
 
-bool target_loop_build(lua_State *L, const char* lua_file, const char *target) {
+bool target_loop_build(
+  lua_State *L, const char* lua_file, const char *target
+) {
   lua_getfield(L, -1, target);
   if (!lua_istable(L, -1)) {
     if (is_verbose) printf(

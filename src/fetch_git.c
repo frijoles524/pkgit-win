@@ -1,6 +1,5 @@
 #include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -41,7 +40,7 @@ int fetch_git(Pkg pkg) {
   waitpid(pid, &status, 0);
   int result = WIFEXITED(status) ? WEXITSTATUS(status) : -1;
   if (result != 0) {
-    printf("%s git clone failed\n", print_warning);
+    printf("%s git clone failed: %d\n", print_warning, result);
   }
 
   return result;
