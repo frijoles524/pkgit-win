@@ -4,6 +4,8 @@
 #include <unistd.h>
 
 #include "build.h"
+
+#include "is_updated.h"
 #include "lua_build.h"
 #include "vars.h"
 

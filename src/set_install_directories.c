@@ -8,6 +8,7 @@
 
 void set_install_directories() {
   lua_State *L = get_lua_state();
+  cache_prefix_directory();
   lua_getglobal(L, "install_directories");
   if (!lua_istable(L, -1)) {
     printf(

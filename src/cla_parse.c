@@ -104,9 +104,6 @@ void parse_flags(int argc, char **argv, Pkg pkg) {
     if (argv[i][1] == '-') {
       COMMAND("--quiet", "-q", { is_verbose = false; });
       COMMAND("--force", "-f", { is_forced = true; });
-      COMMAND("--version", "-v", { printf("%s\n", version); });
-      COMMAND("--help", "-h", { help(); });
-      COMMAND("--check", "-c", { resolve_deps(); });
     } else {
       mod_flags(argv, i);
       cmd_flags(argc, argv, i, pkg);
@@ -116,14 +113,17 @@ void parse_flags(int argc, char **argv, Pkg pkg) {
 
 void parse_cmds(int argc, char **argv, Pkg pkg) {
   for (int i = 1; i < argc; i++) {
-    COMMAND("add", "a", { cmd_add(argv, i); });
-    COMMAND("build", "b", { cmd_build(argc, argv, i, pkg); });
-    COMMAND("install", "i", { cmd_install(argc, argv, i, pkg); });
-    COMMAND("remove", "r", { cmd_remove(argc, argv, i, pkg); });
-    COMMAND("update", "u", { update_all(); });
-    COMMAND("declare", "d", { declare(); });
-    COMMAND("list", "l", { list_pkgs(); });
-    COMMAND("search", "s", { search(argv[i + 1]); });
+    COMMAND("--add",      "a", { cmd_add(argv, i); });
+    COMMAND("--build",    "b", { cmd_build(argc, argv, i, pkg); });
+    COMMAND("--install",  "i", { cmd_install(argc, argv, i, pkg); });
+    COMMAND("--remove",   "r", { cmd_remove(argc, argv, i, pkg); });
+    COMMAND("--update",   "u", { update_all(); });
+    COMMAND("--declare",  "d", { declare(); });
+    COMMAND("--list",     "l", { list_pkgs(); });
+    COMMAND("--search",   "s", { search(argv[i + 1]); });
+    COMMAND("--version",  "v", { printf("%s\n", version); });
+    COMMAND("--help",     "h", { help(); });
+    COMMAND("--check",    "c", { resolve_deps(); });
   }
 }
 

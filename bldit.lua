@@ -17,24 +17,24 @@ global_dependencies = {
 targets = {
   default = {
     build = function()
-      os.execute("make")
+      return os.execute("make")
     end,
     install = function()
-      os.execute("make install")
+      return os.execute("make install PREFIX="..prefix)
     end,
     uninstall = function()
-      os.execute("make uninstall")
+      return os.execute("make uninstall PREFIX="..prefix)
     end,
   },
   quiet = {
     build = function()
-      local output = io.popen("make"):read("*a")
+      return os.execute("make &>/tmp/pkgit_build.log")
     end,
     install = function()
-      local output = io.popen("make install"):read("*a")
+      return os.execute("make install PREFIX="..prefix.." &>/tmp/pkgit_build.log")
     end,
     uninstall = function()
-      local output = io.popen("make uninstall"):read("*a")
+      return os.execute("make uninstall PREFIX="..prefix.." &>/tmp/pkgit_build.log")
     end,
   },
 }

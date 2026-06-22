@@ -57,6 +57,7 @@ extern bool is_forced;
 extern bool config_exists;
 
 extern char home_dir[MAX_PATH_LEN];
+extern char prefix_dir[MAX_PATH_LEN];
 
 extern char root_config[MAX_PATH_LEN];
 extern bool is_root_config;

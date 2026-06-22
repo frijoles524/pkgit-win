@@ -6,6 +6,7 @@
 
 #include "create_pkg.h"
 #include "install_pkg.h"
+#include "is_updated.h"
 #include "lua_state.h"
 #include "vars.h"
 
@@ -81,6 +82,19 @@ void free_lua_state() {
 
 lua_State *get_lua_state() { return L; }
 
+void cache_prefix_directory() {
+  lua_getglobal(L, "prefix");
+  if (!lua_isstring(L, -1)) {
+    printf(
+      "%s init.lua: 'prefix' is not a string.\n",
+      print_error
+    );
+    return;
+  }
+  snprintf(prefix_dir, MAX_PATH_LEN, "%s", lua_tostring(L, -1));
+  lua_pop(L, 1);
+}
+
 void cache_install_directories() {
   if (!config_loaded || !lua_istable(L, -1)) {
     lua_getglobal(L, "install_directories");
@@ -155,7 +169,15 @@ bool target_loop_build(
     lua_pop(L, 3);
     return false;
   }
-  if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+  if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
+    printf(
+      "%s %s: 'targets.%s.build' function borked: %s\n",
+      print_error, lua_file, target, lua_tostring(L, -1)
+    );
+    lua_pop(L, 3);
+    return false;
+  }
+  if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) if (is_verbose) {
     printf(
       "%s %s: 'targets.%s.build' failed: %s\n",
       print_error, lua_file, target, lua_tostring(L, -1)
@@ -163,7 +185,7 @@ bool target_loop_build(
     lua_pop(L, 3);
     return false;
   }
-  lua_pop(L, 2);
+  lua_pop(L, 3);
   return true;
 }
 
@@ -366,25 +388,58 @@ bool repo_uninstall(const char *repository, const char *target) {
   return target_loop_success;
 }
 
+char* bldit_getver() {
+  init_bldit();
+  lua_getglobal(B, "bldit_version");
+  if (!lua_isstring(B, -1)) {
+    if (is_verbose)
+      printf("%s bldit.lua: 'bldit_version' is not a string.\n", print_warning);
+    return NULL;
+  }
+  const char* bldit_version = lua_tostring(B, -1);
+  return strdup(bldit_version);
+}
+
+char* bldit_pkg_getver() {
+  init_bldit();
+  lua_getglobal(B, "package_version");
+  if (!lua_isstring(B, -1)) {
+    if (is_verbose)
+      printf("%s bldit.lua: 'package_version' is not a string.\n", print_warning);
+    return NULL;
+  }
+  const char* package_version = lua_tostring(B, -1);
+  return strdup(package_version);
+}
+
 bool bldit(const char *target) {
   lua_State *B = luaL_newstate();
   luaL_openlibs(B);
 
   if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
-    if (is_verbose) printf("%s cannot run bldit script: %s\n", print_warning, lua_tostring(B, -1));
+    if (is_verbose) printf(
+      "%s cannot run bldit script: %s\n",
+      print_warning, lua_tostring(B, -1)
+    );
     lua_close(B);
     return false;
   }
 
-  lua_getglobal(B, "bldit_version");
-  if (!lua_isstring(B, -1)) {
-    if (is_verbose) printf("%s bldit.lua: 'bldit_version' is not a string.\n", print_warning);
+  if (!is_bldit_usable()) {
+    printf(
+      "%s bldit version is newer than the installed pkgit version\n",
+      print_error
+    );
+    printf(
+      "%s consider updating pkgit\n",
+      print_pkgit
+    );
+    if (!is_forced) return false;
   }
 
-  lua_getglobal(B, "package_version");
-  if (!lua_isstring(B, -1)) {
-    if (is_verbose) printf("%s bldit.lua: 'package_version' is not a string.\n", print_warning);
-  }
+  lua_pushfstring(B, "%s", prefix_dir);
+  lua_setglobal(B, "prefix");
+  lua_pop(B, 1);
 
   lua_getglobal(B, "dependencies");
   if (!lua_istable(B, -1)) {
@@ -421,6 +476,22 @@ bool bldit_install(const char *target) {
     return false;
   }
 
+  if (!is_bldit_usable()) {
+    printf(
+      "%s bldit version is newer than the installed pkgit version\n",
+      print_error
+    );
+    printf(
+      "%s consider updating pkgit\n",
+      print_pkgit
+    );
+    if (!is_forced) return false;
+  }
+
+  lua_pushfstring(B, "%s", prefix_dir);
+  lua_setglobal(B, "prefix");
+  lua_pop(B, 1);
+
   lua_getglobal(B, "targets");
   if (!lua_istable(B, -1)) {
     if (is_verbose) printf(
@@ -450,6 +521,22 @@ bool bldit_uninstall(const char *target) {
     lua_close(B);
     return false;
   }
+
+  if (!is_bldit_usable()) {
+    printf(
+      "%s bldit version is newer than the installed pkgit version\n",
+      print_error
+    );
+    printf(
+      "%s consider updating pkgit\n",
+      print_pkgit
+    );
+    if (!is_forced) return false;
+  }
+
+  lua_pushfstring(B, "%s", prefix_dir);
+  lua_setglobal(B, "prefix");
+  lua_pop(B, 1);
 
   lua_getglobal(B, "targets");
   if (!lua_istable(B, -1)) {

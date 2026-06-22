@@ -15,6 +15,7 @@ bool is_forced = false;
 bool config_exists = false;
 
 char home_dir[MAX_PATH_LEN] = {0};
+char prefix_dir[MAX_PATH_LEN] = {0};
 
 char root_config[MAX_PATH_LEN] = "/etc/pkgit/init.lua";
 bool is_root_config = false;

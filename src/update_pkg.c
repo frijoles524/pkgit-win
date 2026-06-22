@@ -1,8 +1,11 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "update_pkg.h"
+
 #include "is_updated.h"
 #include "install_pkg.h"
+#include "lua_state.h"
 
 void update_pkg(Pkg pkg) {
     if (is_updated(pkg.src)) {

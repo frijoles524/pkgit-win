@@ -2,6 +2,8 @@
 #include <stdbool.h>
 
 #include "lua_build.h"
+
+#include "is_updated.h"
 #include "lua_state.h"
 #include "vars.h"
 

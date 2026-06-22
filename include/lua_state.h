@@ -20,6 +20,7 @@ lua_State* get_lua_state(void);
 void cache_repos(void);
 void cache_build_systems(void);
 void cache_install_directories(void);
+void cache_prefix_directory(void);
 bool repo_build(const char *repository, const char *target);
 bool repo_install(const char *repository, const char *target);
 bool repo_uninstall(const char *repository, const char *target);
@@ -29,5 +30,8 @@ bool bldit_uninstall(const char *target);
 bool config_build(const char *path, const char *target);
 bool config_install(const char *path, const char *target);
 bool config_uninstall(const char *path, const char *target);
+
+char* bldit_getver(void);
+char* bldit_pkg_getver(void);
 
 #endif

@@ -82,7 +82,7 @@ Pkg create_pkg(const char *arg) {
     pkg.target = trgptr + 1;
     *trgptr = '\0';
   } else {
-    pkg.target = "default";
+    pkg.target = is_verbose ? "default" : "quiet";
   }
 
   bool is_in_repos = false;

@@ -24,7 +24,7 @@ make
 
 ## Using pkgit
 ```
-pkgit build
+pkgit --build
 ```
 Both methods will create an executable in the root directory of the project.
 
@@ -51,9 +51,34 @@ make install PREFIX="~/.local"
 ```
 
 # Usage
+## Command Syntax
+The structure in which you type commands into pkgit is very standard:
+```
+pkgit [--flag|-f] <package>
+```
+
+Flags have two types; long, and short.
+The short type of each command uses the first letter of its long counterpart.
+For example:
+Long: `pkgit --install`
+Short: `pkgit -i`
+
+If you use the short version of commands,
+you can chain them together into one argument:
+```
+pkgit -qif <package>
+```
+
+This example uses the `--quiet`, `--install`, and `--force` flags to:
+  --quiet: minimize logs to stdout
+  --install: install a package
+  --force: even if already installed, will force the package to be installed
+
 ## Installing Packages
 ### Pre-installation
-Before you use any programs that you installed with pkgit, you need to specify the path of the binaries in your shell's configuration.
+Before you use any programs that you installed with pkgit,
+you need to specify the path of the binaries in your shell's configuration.
+
 For most users, this is the command:
 ```sh
 export PATH="$HOME/.local/bin:$PATH"
@@ -70,199 +95,100 @@ setenv PATH $HOME/.local/bin:$PATH
 ### Basic install
 Assuming you have already added its respective repo, you can install a package by specifying its name:
 ```
-pkgit install [pkg_name]
+pkgit --install [pkg_name]
 ```
 Or you can use the short command:
 ```
-pkgit i [pkg_name]
+pkgit -i [pkg_name]
 ```
 
 ### Specific version install
 You can specify a version of any package based on its tags with '@' separating the name from the version:
 ```
-pkgit install [pkg_name]@[version]
+pkgit --install [pkg_name]@[version]
 ```
 
 ### Specific target install
 You can specify a target of any package based on its configuration in bldit.lua or init.lua with ',' separating the name from the target:
 ```
-pkgit install [pkg_name],[target]
+pkgit --install [pkg_name],[target]
 ```
 
 ### Combined target and version install
 You can specify both the target and the version of any package you install in the same command (order does not matter as long as the package name is first):
 ```
-pkgit install [pkg_name],[target]@[version]
+pkgit --install [pkg_name],[target]@[version]
 ```
 ```
-pkgit install [pkg_name]@[version],[target]
+pkgit --install [pkg_name]@[version],[target]
 ```
 
 ### Repo install
 If you haven't added the package's repository yet, or you just want to be specific, you can install the package using its git URL:
 ```
-pkgit install [url.git]
+pkgit --install [url.git]
 ```
 This also works with the target and version syntax.
 
 ### Local install
 If you want to install a package from a local code repository, and want to take advantage of pkgit's build system autodetection, you can enter that repository's root directory and install it from there:
 ```
-pkgit install .
+pkgit --install .
 ```
 
 ## Building packages
 *FOR DEVELOPERS*
 You can also use pkgit as a sort of meta-build-system to automatically compile any supported project with the build command:
 ```
-pkgit build [/path/to/project]
+pkgit --build [/path/to/project]
 ```
 This can also be done without specifying the path (`pkgit build`) if you're in the project's root directory
 
 ## Removing Packages
 Removing (uninstalling) a package is as simple as it seems:
 ```
-pkgit remove [pkg_name]
+pkgit --remove [pkg_name]
 ```
 Or the short command:
 ```
-pkgit r [pkg_name]
+pkgit -r [pkg_name]
 ```
 
 ## Updating Packages
 You can easily update your installed packages by running:
 ```
-pkgit update
+pkgit --update
 ```
 Or the short command:
 ```
-pkgit u
+pkgit -u
 ```
 
 ## Declaring Packages
 If you prefer a declarative approach, you can use the config file (read below) as a package declaration file.
 When you're ready, you can declare all your packages at once with:
 ```
-pkgit declare
+pkgit --declare
 ```
 Or the short command:
 ```
-pkgit d
+pkgit -d
 ```
 
 ## Dependency Management
-As it is, pkgit is capable of dependency management, but you will likely have to specify the dependency URLs for each package you install in `<config_directory>/pkgit/init.lua`. There's not a universal way to check for dependencies without using an existing package manager (unless the package you're installing has a bldit.lua).
+As it is, pkgit is capable of dependency management, but you will likely have to specify the dependency URLs for each package you install in `<config_directory>/pkgit/init.lua`.
+There's not a universal way to check for dependencies without using an existing package manager (unless the package you're installing has a bldit.lua).
 
-### Configuring pkgit
+## Configuring pkgit
 Thankfully, this is a very simple process.
 
 To configure pkgit, you have one centralized configuration file: `<config_directory>/pkgit/init.lua`
 Thanks to liblua, pkgit pushes a package.path variable directly to your configuration file.
 This means that you can require any sub-file/directory, without wrestling with `require()`.
 
-The overall structure of the configuration file looks like this:
-```lua
---[[
-- install directories -
-this is where every package you
-get with pkgit is installed,
-with respect to each of it's
-files' types:
+The overall structure of the configuration file is explained in detail in `config/init.lua`
 
-install_directories = {
-  bin     = "...",
-  include = "...",
-  lib     = "...",
-  src     = "...",
-}
-
-it is recommended that you create
-a prefix variable to prepend to
-these directories, like so:
-]]
-local prefix = os.getenv("HOME").."/.local" -- for user-level installs
-install_directories = {
-  bin     = prefix.."/bin",
-  include = prefix.."/include",
-  lib     = prefix.."/lib",
-  src     = prefix.."/src",
-}
-
---[[
-- your repositories -
-this is where you store your
-own custom urls, dependencies,
-and functions to install
-whatever programs you desire.
-]]
-repositories = {
-  example_name = {
-    url = "https://...",
-    version = "v0.0.0", -- can be a tag or branch
-    dependencies = {
-      ...
-    },
-    build = function() ... end
-    pre_install = function() ... end
-    install = function() ... end
-    post_install = function() ... end
-    uninstall = function() ... end
-  }
-}
---[[
-pkgit also creates a 'repos.lua' file in
-your config directory,  which you can
-require here to automatically add repos
-that you install from.
-]]
-require('repos')
-
---[[
-- standard build systems -
-will be auto-detected if required
-functions aren't in 'repositories'
-or a repo's 'bldit.lua'
-]]
-build_systems = {
-  ["filename.extension"] = {
-    build = function() ... end
-    pre_install = function() ... end
-    install = function() ... end
-    post_install = function() ... end
-    uninstall = function() ... end
-  }
-}
-```
-
-For each dependency, all you need to do is paste the dependency's remote git URL in its own url variable.
-
-Here's an example for mush:
-```lua
-repositories = {
-  mush = {
-    url = "https://github.com/dacctal/mush",
-    dependencies = {
-      mpv = { url = "https://github.com/mpv-player/mpv" },
-
-      ["yt-dlp"] = { url = "https://github.com/yt-dlp/yt-dlp" },
-      --[[
-      for dependencies with names that contain illegal
-      characters in lua, you'll want to wrap them in
-      [""] to avoid problems.
-      ]]
-
-      ffmpeg = { url = "https://github.com/FFmpeg/FFmpeg" },
-      curl = { url = "https://github.com/curl/curl" },
-      mutagen = { url = "https://github.com/quodlibet/mutagen" }
-    }
-  }
-}
-```
-
-That's it! pkgit will read from this file and resolve these
-dependencies automatically.
-
-### [DEVELOPER]: bldit.lua
+## [DEVELOPER]: bldit.lua
 If you want your own package's dependencies, version, compilation,
 and other aspects to be properly resolved in pkgit, you can create a
 `bldit.lua` file in the root directory of your project's git repo.
@@ -270,44 +196,8 @@ and other aspects to be properly resolved in pkgit, you can create a
 Do not name it anything other than `bldit.lua`, otherwise pkgit
 will not find the file.
 
-> [!WARNING]
-> Recursive dependency management does NOT work in pkgit, so you may want to list your dependencies accordingly.
-
-Example `bldit.lua` that works for pkgit:
-```lua
-bldit_version = "0.0.0"
-package_version = "0.0.0"
---[[
-versions have to be strings, 
-because some devs like to
-have fun and whimsical
-version numbers :D
-]]
-
-global_dependencies = {}
--- dependencies for all targets
-
-targets = {
-  default = {
-    dependencies = {},
-    -- target-specific dependencies
-    build = function(name)
-      os.execute("make")
-    end,
-    pre_install = function() end,
-    install = function(prefix)
-      os.execute("make install")
-    end,
-    post_install = function() end,
-    uninstall = function() end,
-  }
-  --[[
-  could also have targets for 'client'
-  or 'server.' useful for monorepos
-  and related use-cases.
-  ]]
-}
-```
+A great example for `bldit.lua` is right here in the pkgit repository!
+Check it out if you want to know how it's structured.
 
 # Contributing to pkgit
 If you want to contribute to pkgit, please refer to CONTRIBUTING.md
