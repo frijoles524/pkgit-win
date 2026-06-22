@@ -1,8 +1,6 @@
 <div align="center">
-
 <h1>pkgit</h1>
 (package it!)
-
 </div>
 
 # What is this?
@@ -131,7 +129,9 @@ pkgit --install [url.git]
 This also works with the target and version syntax.
 
 ### Local install
-If you want to install a package from a local code repository, and want to take advantage of pkgit's build system autodetection, you can enter that repository's root directory and install it from there:
+If you want to install a package from a local code repository,
+and want to take advantage of pkgit's build system autodetection,
+you can enter that repository's root directory and install it from there:
 ```
 pkgit --install .
 ```
@@ -142,7 +142,7 @@ You can also use pkgit as a sort of meta-build-system to automatically compile a
 ```
 pkgit --build [/path/to/project]
 ```
-This can also be done without specifying the path (`pkgit build`) if you're in the project's root directory
+This can also be done without specifying the path (`pkgit --build`) if you're in the project's root directory
 
 ## Removing Packages
 Removing (uninstalling) a package is as simple as it seems:

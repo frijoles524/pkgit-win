@@ -148,7 +148,7 @@ build_systems = {
       in `repositories.<pkg>`, `bldit.lua`, and
       right here in `build_systems`.
 
-      this template comes with two templates;
+      this table comes with two templates;
       `default` and `quiet`. the first is pretty
       self-explanatory; this is what you'd define
       as the default intended behavior of the
