@@ -228,7 +228,7 @@ bool target_loop_install(lua_State *L, const char* lua_file, const char *target)
     lua_pop(L, 1);
     return false;
   }
-  if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+  if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
     if (is_verbose) printf(
       "%s %s: 'targets.%s.install' function borked: %s\n",
       print_warning, lua_file, target, lua_tostring(L, -1)
@@ -251,7 +251,7 @@ bool target_loop_install(lua_State *L, const char* lua_file, const char *target)
       "%s %s: 'targets.%s.post_install' is not a function.\n",
       print_warning, lua_file, target
     );
-  } else if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+  } else if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
     if (is_verbose) printf(
       "%s %s: 'targets.%s.post_install' function borked: %s\n",
       print_warning, lua_file, target, lua_tostring(L, -1)
@@ -286,7 +286,7 @@ bool target_loop_uninstall(lua_State *L, const char *lua_file, const char *targe
     lua_pop(L, 1);
     return false;
   }
-  if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
+  if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
     if (is_verbose) printf(
       "%s %s: 'targets.%s.uninstall' function borked: %s\n",
       print_warning, lua_file, target, lua_tostring(L, -1)
