@@ -51,7 +51,7 @@ const char *get_install_dir(const char *key) {
   return "";
 }
 
-const char *version = "1.0.0_INDEV";
+const char *version = "1.0.0";
 
 const char *red = "\e[0;31m";
 const char *green = "\e[0;32m";
