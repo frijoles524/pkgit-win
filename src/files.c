@@ -1,6 +1,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -86,8 +87,35 @@ cleanup0:
   return ret;
 }
 
+#define ERROR_NOT_A_SYMLINK (-2)
+
+static int copy_symlink(int src_dir_fd, const char *src_path, int dst_dir_fd, const char *dst_path) {
+  char symlink_target[PATH_MAX];
+  ssize_t symlink_target_len = readlinkat(src_dir_fd, src_path, symlink_target, sizeof(symlink_target) - 1);
+  if (symlink_target_len >= 0) {
+    symlink_target[symlink_target_len] = '\0';
+
+    if (symlinkat(symlink_target, dst_dir_fd, dst_path) < 0) {
+      perror("symlinkat");
+      return -1;
+    }
+
+    return 0;
+  } else if (errno == EINVAL) {
+    return ERROR_NOT_A_SYMLINK;
+  } else {
+    perror("readlinkat");
+    return -1;
+  }
+}
+
 static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd, const char *dst_path) {
-  int ret = -1;
+  int ret = copy_symlink(src_dir_fd, src_path, dst_dir_fd, dst_path);
+  if (ret != ERROR_NOT_A_SYMLINK) {
+    goto cleanup0;
+  }
+
+  ret = -1;
   int src_fd = openat(src_dir_fd, src_path, O_NOFOLLOW | O_RDONLY);
   if (src_fd < 0) {
     perror("openat");
