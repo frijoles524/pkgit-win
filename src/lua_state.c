@@ -263,7 +263,7 @@ bool target_loop_install(lua_State *L, const char* lua_file, const char *target)
       );
     }
   }
-  lua_pop(L, 1);
+  lua_pop(L, 2);
   return true;
 }
 
@@ -299,10 +299,10 @@ bool target_loop_uninstall(lua_State *L, const char *lua_file, const char *targe
       "%s %s: 'targets.%s.uninstall' failed: %s\n",
       print_error, lua_file, target, lua_tostring(L, -1)
     );
-    lua_pop(L, 1);
+    lua_pop(L, 2);
     return false;
   }
-  lua_pop(L, 1);
+  lua_pop(L, 2);
   return true;
 }
 
