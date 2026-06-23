@@ -26,7 +26,7 @@ install: pkgit
 	install -d ${DESTDIR}${PREFIX}/bin
 	install -m 755 pkgit ${DESTDIR}${PREFIX}/bin/pkgit
 	install -d ${DESTDIR}${PREFIX}/share/man/man1
-	install -m 644 src/pkgit.1 ${DESTDIR}${PREFIX}/share/man/man1/pkgit.1
+	install -m 644 docs/pkgit.1 ${DESTDIR}${PREFIX}/share/man/man1/pkgit.1
 
 uninstall: ${DESTDIR}${PREFIX}/bin/pkgit
 	${RM} ${DESTDIR}${PREFIX}/bin/pkgit
