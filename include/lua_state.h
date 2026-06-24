@@ -31,7 +31,7 @@ bool config_build(const char *path, const char *target);
 bool config_install(const char *path, const char *target);
 bool config_uninstall(const char *path, const char *target);
 
-char* bldit_getver(void);
-char* bldit_pkg_getver(void);
+const char* bldit_getver(void);
+const char* bldit_pkg_getver(void);
 
 #endif

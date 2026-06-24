@@ -417,28 +417,30 @@ bool repo_uninstall(const char *repository, const char *target) {
   return target_loop_success;
 }
 
-char* bldit_getver() {
+const char* bldit_getver() {
   init_bldit();
   lua_getglobal(B, "bldit_version");
   if (!lua_isstring(B, -1)) {
     if (is_verbose)
       printf("%s bldit.lua: 'bldit_version' is not a string.\n", print_warning);
+    lua_pop(B, 3);
     return NULL;
   }
   const char* bldit_version = lua_tostring(B, -1);
-  return strdup(bldit_version);
+  return bldit_version;
 }
 
-char* bldit_pkg_getver() {
+const char* bldit_pkg_getver() {
   init_bldit();
   lua_getglobal(B, "package_version");
   if (!lua_isstring(B, -1)) {
     if (is_verbose)
       printf("%s bldit.lua: 'package_version' is not a string.\n", print_warning);
+    lua_pop(B, 3);
     return NULL;
   }
   const char* package_version = lua_tostring(B, -1);
-  return strdup(package_version);
+  return package_version;
 }
 
 bool bldit(const char *target) {
