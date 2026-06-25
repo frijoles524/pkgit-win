@@ -21,6 +21,9 @@
 
 #include <dirent.h>
 #include <errno.h>
+#ifdef __APPLE__
+#define _DARWIN_C_SOURCE
+#endif
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
