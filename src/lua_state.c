@@ -41,7 +41,7 @@ void init_lua_state() {
       "%s cannot run configuration script: %s\n",
       print_error, lua_tostring(L, -1)
     );
-    printf("%s to generate a configration file, head into the", print_pkgit);
+    printf("%s to generate a configuration file, head into the", print_pkgit);
     printf(" root directory of the pkgit source and run `make defconfig`\n");
     exit(EXIT_FAILURE);
   }

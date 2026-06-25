@@ -3,7 +3,7 @@ Do not submit any AI-generated code.
 
 To contribute to pkgit, you should go to the xmpp muc `pkgit@muc.symlinx.net` and drop your patch file which *should* contain the changes you made.
 
-Before submitting a patch, you MUST test the funcitonality of said patch, along with the rest of pkgit's features:
+Before submitting a patch, you MUST test the functionality of said patch, along with the rest of pkgit's features:
 ```
 pkgit add [url]
 pkgit build [path] # should be the root dir of a project with a valid build system

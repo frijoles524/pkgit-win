@@ -6,7 +6,7 @@ PREFIX   ?= /usr/local
 OBJDIR   = obj
 SRCS     = $(wildcard src/*.c)
 OBJS     = $(SRCS:src/%.c=$(OBJDIR)/%.o)
-CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99 -D_XOPEN_SOURCE=700 
+CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99 -D_XOPEN_SOURCE=700 -Wall -Wextra 
 
 default: pkgit
 
