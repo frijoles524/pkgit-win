@@ -11,6 +11,11 @@
 - [x] lua dependency listing
 - [x] version management
 - [x] lua uninstall function
-- [-] git commit signature checks
+- [ ] git depth 1
+- [ ] lua on_update function
+- [ ] lua-configured privilege escalation
+- [ ] multiple jobs
+
+- [ ] (maybe) git commit signature checks
 - [ ] (maybe) lua custom install methods for sandboxed builds
 - [ ] (maybe) install to store directory

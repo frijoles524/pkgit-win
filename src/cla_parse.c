@@ -70,7 +70,7 @@ void cmd_remove(int argc, char **argv, int i, Pkg pkg) {
 }
 
 void mod_flags(char **argv, int i) {
-  for (int j = 1; j < strlen(argv[i]); j++) {
+  for (size_t j = 1; j < strlen(argv[i]); j++) {
     switch (argv[i][j]) {
       case 'q': is_verbose = false; break;
       case 'f': is_forced = true; break;
@@ -80,7 +80,7 @@ void mod_flags(char **argv, int i) {
 }
 
 void cmd_flags(int argc, char **argv, int i, Pkg pkg) {
-  for (int j = 1; j < strlen(argv[i]); j++) {
+  for (size_t j = 1; j < strlen(argv[i]); j++) {
     switch (argv[i][j]) {
       case 'a': cmd_add(argv, i); break;
       case 'b': cmd_build(argc, argv, i, pkg); break;

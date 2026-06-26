@@ -597,7 +597,7 @@ bool bldit_uninstall(const char *target) {
   bool target_loop_success = target_loop_uninstall(B, "bldit.lua", target);
   lua_pop(B, 1);
   lua_close(B);
-  return true;
+  return target_loop_success;
 }
 
 void cache_repos() {

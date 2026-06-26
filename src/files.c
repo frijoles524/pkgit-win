@@ -129,8 +129,6 @@ static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd, const c
       fprintf(stderr, "copy_at: unsupported file inode type\n");
   }
 
-cleanup2:
-  close(dst_fd);
 cleanup1:
   close(src_fd);
 cleanup0:

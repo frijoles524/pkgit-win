@@ -70,7 +70,7 @@ Pkg create_pkg(const char *arg) {
 
   char *verptr = strchr(new_arg, '@');
   char *trgptr = strchr(new_arg, ',');
-  for (int i = 0; i < cached_repos_count; i++) {
+  for (size_t i = 0; i < cached_repos_count; i++) {
     if (strcmp(cached_repos[i].source_key, new_arg) != 0) continue;
     pkg.ver = cached_repos[i].version;
   }

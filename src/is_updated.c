@@ -26,7 +26,7 @@ bool is_bldit_usable() {
   char* bldit_version = bldit_getver();
   if (strcmp(bldit_version, version) == 0) return true;
   bool prev_pass = false;
-  for (int i = 0; i < strlen(bldit_version); i++) {
+  for (size_t i = 0; i < strlen(bldit_version); i++) {
     if (bldit_version[i] == '.') continue;
     if ((bldit_version[i] - '0') <= (version[i] - '0')) {
       prev_pass = ((bldit_version[i] - '0') != (version[i] - '0'));

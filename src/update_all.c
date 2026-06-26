@@ -23,7 +23,7 @@ void update_all() {
   while ((dirent_ptr = readdir(dir_ptr)) != NULL) {
     if (strcmp(dirent_ptr->d_name, "..") == 0 || strcmp(dirent_ptr->d_name, ".") == 0) continue;
     for (size_t i = 0; i < cached_repos_count; i++) {
-      if (!strcmp(dirent_ptr->d_name, cached_repos[i].source_key) == 0) continue;
+      if (strcmp(dirent_ptr->d_name, cached_repos[i].source_key) != 0) continue;
       Pkg pkg = create_pkg(cached_repos[i].source_value);
       update_pkg(pkg);
     }
