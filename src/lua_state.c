@@ -177,7 +177,7 @@ bool target_loop_build(
     lua_pop(L, 3);
     return false;
   }
-  if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) if (is_verbose) {
+  if ((int)lua_tonumber(L, -1) != 0) if (is_verbose) {
     printf(
       "%s %s: 'targets.%s.build' failed: %s\n",
       print_error, lua_file, target, lua_tostring(L, -1)
@@ -210,10 +210,10 @@ bool target_loop_install(lua_State *L, const char* lua_file, const char *target)
       "%s %s: 'targets.%s.pre_install' function borked: %s\n",
       print_warning, lua_file, target, lua_tostring(L, -1)
     );
-    if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) if (is_verbose) {
+    if ((int)lua_tonumber(L, -1) != 0) if (is_verbose) {
       printf(
-        "%s %s: 'targets.%s.pre_install' failed: %s\n",
-        print_error, lua_file, target, lua_tostring(L, -1)
+        "%s %s: 'targets.%s.pre_install' failed: %d\n",
+        print_error, lua_file, target, (int)lua_tonumber(L, -1)
       );
       return false;
     }
@@ -236,10 +236,10 @@ bool target_loop_install(lua_State *L, const char* lua_file, const char *target)
     lua_pop(L, 1);
     return false;
   }
-  if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) if (is_verbose) {
+  if ((int)lua_tonumber(L, -1) != 0) if (is_verbose) {
     printf(
-      "%s %s: 'targets.%s.install' failed: %s\n",
-      print_error, lua_file, target, lua_tostring(L, -1)
+      "%s %s: 'targets.%s.install' failed: %d\n",
+      print_error, lua_file, target, (int)lua_tonumber(L, -1)
     );
     lua_pop(L, 1);
     return false;
@@ -256,7 +256,7 @@ bool target_loop_install(lua_State *L, const char* lua_file, const char *target)
       "%s %s: 'targets.%s.post_install' function borked: %s\n",
       print_warning, lua_file, target, lua_tostring(L, -1)
     );
-    if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) if (is_verbose) {
+    if ((int)lua_tonumber(L, -1) != 0) if (is_verbose) {
       printf(
         "%s %s: 'targets.%s.post_install' failed: %s\n",
         print_error, lua_file, target, lua_tostring(L, -1)
@@ -294,7 +294,7 @@ bool target_loop_uninstall(lua_State *L, const char *lua_file, const char *targe
     lua_pop(L, 1);
     return false;
   }
-  if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) if (is_verbose) {
+  if ((int)lua_tonumber(L, -1) != 0) if (is_verbose) {
     printf(
       "%s %s: 'targets.%s.uninstall' failed: %s\n",
       print_error, lua_file, target, lua_tostring(L, -1)

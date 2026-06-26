@@ -29,6 +29,7 @@ void fetch_src(Pkg pkg) {
   if (file_exists(pkg.src)) {
     if (is_verbose)
       printf("%s %s already exists. deleting...\n", print_pkgit, pkg.src);
+    chdir("..");
     nftw(pkg.src, remove_tree, 64, FTW_DEPTH | FTW_PHYS);
   }
   if (strcmp(pkg.url, "") == 0) {

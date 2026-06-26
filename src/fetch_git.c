@@ -18,7 +18,7 @@ int fetch_git(Pkg pkg) {
         close(nullfd);
       }
     }
-    const char *argv[8];
+    const char *argv[10];
     int i = 0;
     argv[i++] = "git";
     argv[i++] = "-c";

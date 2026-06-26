@@ -87,7 +87,7 @@ Pkg create_pkg(const char *arg) {
 
   bool is_in_repos = false;
   for (size_t i = 0; i < cached_repos_count; i++) {
-    if (strcmp(arg, cached_repos[i].source_key) == 0) {
+    if (strcmp(new_arg, cached_repos[i].source_key) == 0) {
       is_in_repos = true;
       break;
     }
