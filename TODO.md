@@ -13,7 +13,7 @@
 - [x] lua uninstall function
 - [x] git depth 1
 - [x] lua on_update function
-- [ ] lua-configured privilege escalation
+- [-] lua-configured privilege escalation
 - [ ] multiple jobs
 
 - [ ] (maybe) git commit signature checks
