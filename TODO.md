@@ -11,7 +11,7 @@
 - [x] lua dependency listing
 - [x] version management
 - [x] lua uninstall function
-- [ ] git depth 1
+- [x] git depth 1
 - [ ] lua on_update function
 - [ ] lua-configured privilege escalation
 - [ ] multiple jobs
