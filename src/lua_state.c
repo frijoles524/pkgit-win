@@ -465,7 +465,7 @@ char* bldit_pkg_getver(void) {
 			print_warning
 		);
 		lua_pop(B, 1);
-		return NULL;
+		return strdup("");
 	}
 	const char* package_version = lua_tostring(B, -1);
 	lua_pop(B, 1);

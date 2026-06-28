@@ -30,16 +30,17 @@
 #include "lua_state.h"
 
 bool is_updated(const char *src) {
-  bool result = false;
-  if (src && strlen(src) > 0 && chdir(src) != 0) return result;
-  char *bldit_pkgver = bldit_pkg_getver();
-  char *git_tag = cmd_out("git tag | tail -n 1");
-  result = (strstr(git_tag, bldit_pkgver) != NULL);
-  char *git_pull = cmd_out("git pull");
-  result = (strstr(git_pull, "Already up to date.") != NULL);
-  free(git_tag);
-  free(git_pull);
-  return result;
+	bool result = false;
+	if (src && strlen(src) > 0 && chdir(src) != 0) return result;
+	char *bldit_pkgver = bldit_pkg_getver();
+	char *git_tag = cmd_out("git tag | tail -n 1");
+	result = (strstr(git_tag, bldit_pkgver) != NULL && strlen(bldit_pkgver) != 0);
+	char *git_pull = cmd_out("git pull");
+	result = (strstr(git_pull, "Already up to date.") != NULL);
+	free(git_tag);
+	free(git_pull);
+	free(bldit_pkgver);
+	return result;
 }
 
 bool is_bldit_usable(void) {
