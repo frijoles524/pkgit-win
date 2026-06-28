@@ -55,4 +55,5 @@ void update_all(void) {
 		}
 	}
 	closedir(dir_ptr);
+	on_update(get_lua_state());
 }

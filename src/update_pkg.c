@@ -40,4 +40,5 @@ void update_pkg(Pkg pkg) {
 		print_pkgit, green, pkg.name, color_reset
 	);
 	install_pkg(pkg);
+	target_loop_on_update(get_lua_state(), "init.lua", pkg.target);
 }

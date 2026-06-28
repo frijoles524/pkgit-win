@@ -41,6 +41,8 @@ void cache_repos(void);
 void cache_build_systems(void);
 void cache_install_directories(void);
 void cache_prefix_directory(void);
+bool on_update(lua_State *L);
+bool target_loop_on_update(lua_State *L, const char* lua_file, const char *target);
 bool repo_build(const char *repository, const char *target);
 bool repo_install(const char *repository, const char *target);
 bool repo_uninstall(const char *repository, const char *target);

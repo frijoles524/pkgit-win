@@ -164,6 +164,82 @@ void install_dependencies(lua_State *L) {
 	}
 }
 
+bool on_update(lua_State *L) {
+	const char* lua_file = "init.lua";
+	lua_getglobal(L, "on_update");
+	if (!lua_isfunction(L, -1)) {
+		if (is_verbose) printf(
+			"%s %s: 'on_update' is not a function.\n",
+			print_warning, lua_file
+		);
+		lua_pop(L, 2);
+		return false;
+	}
+	if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
+		printf(
+			"%s %s: 'on_update' function borked: %s\n",
+			print_error, lua_file, lua_tostring(L, -1)
+		);
+		lua_pop(L, 2);
+		return false;
+	}
+	if ((int)lua_tonumber(L, -1) != 0) if (is_verbose) {
+		printf(
+			"%s %s: 'on_update' failed: %s\n",
+			print_error, lua_file, lua_tostring(L, -1)
+		);
+		lua_pop(L, 2);
+		return false;
+	}
+	lua_pop(L, 2);
+	return true;
+}
+
+bool target_loop_on_update(
+	lua_State *L, const char* lua_file, const char *target
+) {
+	lua_getfield(L, -1, target);
+	if (!lua_istable(L, -1)) {
+		if (is_verbose) printf(
+			"%s %s: 'targets.%s' is not a table.\n",
+			print_warning, lua_file, target
+		);
+		lua_pop(L, 1);
+		if (strcmp(target, "quiet") == 0) {
+			target_loop_on_update(L, lua_file, "default");
+			lua_pop(L, 1);
+		}
+		return false;
+	}
+	lua_getfield(L, -1, "on_update");
+	if (!lua_isfunction(L, -1)) {
+		if (is_verbose) printf(
+			"%s %s: 'targets.%s.on_update' is not a function.\n",
+			print_warning, lua_file, target
+		);
+		lua_pop(L, 3);
+		return false;
+	}
+	if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
+		printf(
+			"%s %s: 'targets.%s.on_update' function borked: %s\n",
+			print_error, lua_file, target, lua_tostring(L, -1)
+		);
+		lua_pop(L, 3);
+		return false;
+	}
+	if ((int)lua_tonumber(L, -1) != 0) if (is_verbose) {
+		printf(
+			"%s %s: 'targets.%s.on_update' failed: %s\n",
+			print_error, lua_file, target, lua_tostring(L, -1)
+		);
+		lua_pop(L, 3);
+		return false;
+	}
+	lua_pop(L, 3);
+	return true;
+}
+
 bool target_loop_build(
 	lua_State *L, const char* lua_file, const char *target
 ) {
@@ -174,8 +250,10 @@ bool target_loop_build(
 			print_warning, lua_file, target
 		);
 		lua_pop(L, 1);
-		if (strcmp(target, "quiet") == 0)
+		if (strcmp(target, "quiet") == 0) {
 			target_loop_build(L, lua_file, "default");
+			lua_pop(L, 1);
+		}
 		return false;
 	}
 	lua_getfield(L, -1, "dependencies");
@@ -224,8 +302,10 @@ bool target_loop_install(
 			print_warning, lua_file, target
 		);
 		lua_pop(L, 1);
-		if (strcmp(target, "quiet") == 0)
+		if (strcmp(target, "quiet") == 0) {
 			target_loop_install(L, lua_file, "default");
+			lua_pop(L, 1);
+		}
 		return false;
 	}
 	lua_getfield(L, -1, "pre_install");
@@ -304,8 +384,10 @@ bool target_loop_uninstall(lua_State *L, const char *lua_file, const char *targe
 			print_warning, lua_file, target
 		);
 		lua_pop(L, 1);
-		if (strcmp(target, "quiet") == 0)
+		if (strcmp(target, "quiet") == 0) {
 			target_loop_uninstall(L, lua_file, "default");
+			lua_pop(L, 1);
+		}
 		return false;
 	}
 	lua_getfield(L, -1, "uninstall");
