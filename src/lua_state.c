@@ -104,6 +104,20 @@ void free_lua_state(void) {
 
 lua_State *get_lua_state(void) { return L; }
 
+const char* get_privilege_escalator(void) {
+	lua_getglobal(L, "privilege_escalator");
+	if (!lua_isstring(L, -1)) {
+		printf(
+			"%s init.lua: 'privilege_escalator' is not a string.\n",
+			print_error
+		);
+		return "";
+	}
+	const char* privilege_escalator = lua_tostring(L, -1);
+	lua_pop(L, 1);
+	return privilege_escalator;
+}
+
 void cache_prefix_directory(void) {
 	lua_getglobal(L, "prefix");
 	if (!lua_isstring(L, -1)) {
@@ -465,6 +479,11 @@ bool repo_build(const char *repository, const char *target) {
 }
 
 bool repo_install(const char *repository, const char* target) {
+	if (!access(prefix_dir, W_OK)) {
+		lua_pushfstring(L, "%s", "");
+		lua_setglobal(L, "privilege_escalator");
+		lua_pop(L, 1);
+	}
 	lua_getglobal(L, "repositories");
 	if (!config_loaded || !lua_istable(L, -1)) {
 		if (is_verbose) printf(
@@ -497,6 +516,11 @@ bool repo_install(const char *repository, const char* target) {
 }
 
 bool repo_uninstall(const char *repository, const char *target) {
+	if (!access(prefix_dir, W_OK)) {
+		lua_pushfstring(L, "%s", get_privilege_escalator());
+		lua_setglobal(L, "privilege_escalator");
+		lua_pop(L, 1);
+	}
 	lua_getglobal(L, "repositories");
 	if (!config_loaded || !lua_istable(L, -1)) {
 		if (is_verbose) printf(
@@ -634,6 +658,11 @@ bool bldit_install(const char *target) {
 	lua_pushfstring(B, "%s", prefix_dir);
 	lua_setglobal(B, "prefix");
 	lua_pop(B, 1);
+	if (!access(prefix_dir, W_OK)) {
+		lua_pushfstring(B, "%s", get_privilege_escalator());
+		lua_setglobal(B, "privilege_escalator");
+		lua_pop(B, 1);
+	}
 	lua_getglobal(B, "targets");
 	if (!lua_istable(B, -1)) {
 		if (is_verbose) printf(
@@ -675,6 +704,11 @@ bool bldit_uninstall(const char *target) {
 	lua_pushfstring(B, "%s", prefix_dir);
 	lua_setglobal(B, "prefix");
 	lua_pop(B, 1);
+	if (!access(prefix_dir, W_OK)) {
+		lua_pushfstring(B, "%s", get_privilege_escalator());
+		lua_setglobal(B, "privilege_escalator");
+		lua_pop(B, 1);
+	}
 	lua_getglobal(B, "targets");
 	if (!lua_istable(B, -1)) {
 		if (is_verbose) printf(
@@ -799,6 +833,11 @@ bool config_build(const char *path, const char *target) {
 }
 
 bool config_install(const char *path, const char *target) {
+	if (!access(prefix_dir, W_OK)) {
+		lua_pushfstring(L, "%s", get_privilege_escalator());
+		lua_setglobal(L, "privilege_escalator");
+		lua_pop(L, 1);
+	}
 	lua_getglobal(L, "build_systems");
 	if (!config_loaded || !lua_istable(L, -1)) {
 		lua_pop(L, 1);
@@ -835,13 +874,18 @@ bool config_install(const char *path, const char *target) {
 }
 
 bool config_uninstall(const char *path, const char *target) {
+	if (!access(prefix_dir, W_OK)) {
+		lua_pushfstring(L, "%s", get_privilege_escalator());
+		lua_setglobal(L, "privilege_escalator");
+		lua_pop(L, 1);
+	}
 	lua_getglobal(L, "build_systems");
 	if (!config_loaded || !lua_istable(L, -1)) {
 		lua_pop(L, 1);
 		return false;
 	}
-	bool target_loop_success = false;
 	lua_pushnil(L);
+	bool target_loop_success = false;
 	while (lua_next(L, -2) != 0) {
 		const char *key = lua_tostring(L, -2);
 		if (!lua_istable(L, -1)) {

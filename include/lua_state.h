@@ -36,6 +36,7 @@ void push_lua_path(lua_State *L, const char *new_path);
 void init_lua_state(void);
 void free_lua_state(void);
 lua_State* get_lua_state(void);
+const char* get_privilege_escalator(void);
 
 void cache_repos(void);
 void cache_build_systems(void);

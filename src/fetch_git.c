@@ -25,6 +25,8 @@
 #include <unistd.h>
 
 #include "fetch_git.h"
+
+#include "lua_state.h"
 #include "vars.h"
 
 int fetch_git(Pkg pkg) {
