@@ -22,7 +22,7 @@ PREFIX   ?= /usr/local
 OBJDIR   = obj
 SRCS     = $(wildcard src/*.c)
 OBJS     = $(SRCS:src/%.c=$(OBJDIR)/%.o)
-CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99 -D_XOPEN_SOURCE=700 -Wall -Wextra -Werror -Wvla -pedantic 
+CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99 -D_XOPEN_SOURCE=700 
 
 # pretty print for compilation. To enable verbose (show commands), run with
 # `make V=1`
@@ -38,7 +38,7 @@ default: pkgit
 
 pkgit: $(OBJS)
 	$(E) "  LINK    " $@
-	$(Q) ${CC} -o $@ $^ $(shell pkg-config --libs luajit)
+	$(Q) ${CC} -o $@ $^ $(shell pkg-config --libs luajit) $(LDFLAGS)
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
@@ -47,7 +47,8 @@ $(OBJDIR)/%.o: src/%.c | $(OBJDIR)
 	$(E) "  CC      " $@
 	$(Q) ${CC} $(CFLAGS) -c -o $@ $<
 
-debug: CFLAGS += -g -O0
+debug: CFLAGS += -g -O0 -Wall -Wextra -Werror -Wvla -pedantic -fsanitize=address
+debug: LDFLAGS += -fsanitize=address
 debug: pkgit
 
 install: pkgit
