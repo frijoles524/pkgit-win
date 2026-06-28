@@ -12,7 +12,7 @@
 - [x] version management
 - [x] lua uninstall function
 - [x] git depth 1
-- [ ] lua on_update function
+- [x] lua on_update function
 - [ ] lua-configured privilege escalation
 - [ ] multiple jobs
 
