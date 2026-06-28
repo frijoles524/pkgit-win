@@ -6,6 +6,10 @@
 # What is this?
 pkgit is an unconventional package manager designed to compile & install packages directly from their git repository.
 
+# License
+pkgit is licensed under the GNU-GPL-2.0-or-later.
+if you did not get a copy, please see <https://www.gnu.org/licenses/>.
+
 > ***[DISCLAIMER]***
 >
 > Due to the nature of pkgit, you are solely responsible for vetting the repos that you add to your system.

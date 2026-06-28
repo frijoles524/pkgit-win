@@ -26,7 +26,7 @@ Please write your code to be as extensible as reasonably possible.
 # Code Styling
 Please follow the following styling guidelines:
 - Try not to make your lines longer than 80 characters.
-- All indentation should be 2 spaces long.
+- All indentation should be 1 tab character long.
 - Comments should only be used to explain your thought process for writing the code you wrote. Don't explain what it does.
 - Variable/Function names should concisely describe what they are/do. All of which are styled in snake_case.
 - Version numbers will loosely follow the guidelines of [Semantic Versioning 2.0.0](https://semver.org/)

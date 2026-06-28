@@ -1,0 +1,188 @@
+.TH PKGIT 1 "2026-06-22" "git.symlinx.net/pkgit" "User Commands"
+.SH NAME
+pkgit \- an unconventional package manager
+.SH SYNOPSIS
+.B pkgit
+.RI [ options ] " " <package>
+.br
+.B pkgit
+.RI [ options ] " " <command> " " [arguments]
+.SH DESCRIPTION
+.B pkgit
+is an unconventional package manager designed to compile and install packages directly from their git repository.
+.PP
+Commands in
+.B pkgit
+follow a standard structure:
+.PP
+.RS
+.B pkgit
+.RI [ \-\-flag | \-f ] " " <package>
+.RE
+.PP
+Flags have two forms: long (e.g., \fB\-\-install\fR) and short (e.g., \fB\-i\fR).
+The short form uses the first letter of the long counterpart. Short flags
+can be chained together into a single argument. For example,
+.B \-qif
+combines
+.BR \-\-quiet ,
+.BR \-\-install ,
+and
+.BR \-\-force .
+.SH WARNING
+Due to the nature of
+.BR pkgit ,
+you are solely responsible for vetting the repositories that you add to your system. Use at your own risk.
+.SH COMPILATION
+To compile
+.B pkgit
+from source, enter the project directory and run one of the following:
+.PP
+.RS
+.B make
+.RE
+or
+.RS
+.B pkgit \-\-build
+.RE
+.PP
+Both methods will create an executable in the root directory of the project.
+.PP
+You may also want to generate a base configuration file. Run the following as a regular user to generate the config in
+.IR ~/.config/pkgit :
+.PP
+.RS
+.B make defconfig
+.RE
+.PP
+Alternatively, run as root (using
+.B sudo
+or
+.BR doas )
+to generate the system-wide config in
+.IR /etc/pkgit :
+.PP
+.RS
+.B sudo make defconfig
+.RE
+.SH INSTALLATION
+After compiling, install the package with root privileges:
+.PP
+.RS
+.B make install
+.RE
+.PP
+If you do not have root privileges, or prefer a local installation, you can specify an install location using the
+.B PREFIX
+variable. A common choice is
+.IR ~/.local :
+.PP
+.RS
+.B make install PREFIX="~/.local"
+.RE
+.SH ENVIRONMENT
+Before using programs installed via
+.BR pkgit ,
+ensure the binary path is added to your shell's
+.BR PATH .
+For a local installation (e.g.,
+.IR ~/.local/bin ),
+add the following to your shell configuration:
+.PP
+.TP
+.B Bash / Zsh
+export PATH="$HOME/.local/bin:$PATH"
+.TP
+.B Fish
+fish_add_path $HOME/.local/bin
+.TP
+.B Csh / Tcsh
+setenv PATH $HOME/.local/bin:$PATH
+.SH OPTIONS
+These options modify the behavior of commands.
+.TP
+.BR \-q ", " \-\-quiet
+Minimize logs output to stdout.
+.TP
+.BR \-f ", " \-\-force
+Force the package to be installed, even if it is already installed.
+.SH COMMANDS
+.TP
+.BR \-i ", " \-\-install " \fI<target>\fR"
+Install a package. Assuming the respective repository has been added,
+you can specify the package by name. The \fI<target>\fR argument supports
+several syntax variations:
+.RS
+.TP
+.B Basic install
+.B pkgit \-\-install
+.I pkg_name
+.TP
+.B Specific version
+.B pkgit \-\-install
+.IR pkg_name @ version
+.TP
+.B Specific target
+.B pkgit \-\-install
+.IR pkg_name , target
+(Target is based on configuration in
+.I bldit.lua
+or
+.IR init.lua ).
+.TP
+.B Combined target and version
+.B pkgit \-\-install
+.IR pkg_name , target @ version
+or
+.B pkgit \-\-install
+.IR pkg_name @ version , target
+(Order does not matter as long as the package name is first).
+.TP
+.B Repo install
+.B pkgit \-\-install
+.I url.git
+(Installs directly from a git URL. Works with target and version syntax).
+.TP
+.B Local install
+.B pkgit \-\-install " ."
+(Installs from the local code repository in the current directory,
+taking advantage of pkgit's build system autodetection).
+.RE
+.TP
+.BR \-b ", " \-\-build " \fI[/path/to/project]\fR"
+(Best for developers) Act as a meta-build-system to automatically compile
+any supported project. Can be run from the project's root directory
+without specifying the path.
+.TP
+.BR \-r ", " \-\-remove " \fI<pkg_name>\fR"
+Remove (uninstall) an installed package.
+.TP
+.BR \-u ", " \-\-update
+Update all installed packages.
+.TP
+.BR \-d ", " \-\-declare
+Use the configuration file as a package declaration file to declare
+and install all packages at once.
+.SH EXAMPLES
+.TP
+Install a package quietly, forcing the installation:
+.B pkgit \-qif
+.I mypackage
+.TP
+Install a specific version and target of a package:
+.B pkgit \-i
+.I mypackage,mytarget@1.0.0
+.TP
+Install a package directly from a git repository:
+.B pkgit \-\-install
+.I https://github.com/heather7283/pipemixer
+.TP
+Build the project in the current directory:
+.B pkgit \-\-build
+.SH SEE ALSO
+.BR git (1),
+.BR lua (1)
+.SH AUTHORS
+.B pkgit
+is developed and maintained by the contributors at
+.IR git.symlinx.net/pkgit .)'
