@@ -132,7 +132,7 @@ extern const char *print_skipped;
 extern const char *print_warning;
 extern const char *print_error;
 
-void init_vars();
+void init_vars(void);
 const char* get_install_dir(const char *key);
 bool file_exists(const char *path);
 bool is_directory(const char *path);

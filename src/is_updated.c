@@ -42,7 +42,7 @@ bool is_updated(const char *src) {
   return result;
 }
 
-bool is_bldit_usable() {
+bool is_bldit_usable(void) {
   char* bldit_version = bldit_getver();
   if (!bldit_version) return false;
   if (strcmp(bldit_version, version) == 0) return true;

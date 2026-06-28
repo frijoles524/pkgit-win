@@ -27,7 +27,7 @@
 #include "update_pkg.h"
 #include "lua_state.h"
 
-void declare() {
+void declare(void) {
   init_lua_state();
   cache_repos();
   for (size_t i = 0; i < cached_repos_count; i++) {

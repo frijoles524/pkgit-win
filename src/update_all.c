@@ -32,7 +32,7 @@
 #include "lua_state.h"
 #include "vars.h"
 
-void update_all() {
+void update_all(void) {
 	init_lua_state();
 	cache_repos();
 	struct dirent* dirent_ptr;

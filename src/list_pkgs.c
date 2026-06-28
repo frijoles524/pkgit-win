@@ -26,7 +26,7 @@
 #include "lua_state.h"
 #include "vars.h"
 
-void list_pkgs() {
+void list_pkgs(void) {
   char* src_code = map_get(&cached_install_directories, "src");
   struct dirent* dirent_ptr;
   DIR* dir_ptr = opendir(src_code);

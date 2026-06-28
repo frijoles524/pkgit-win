@@ -56,7 +56,7 @@ size_t cached_repos_count = 0;
 Map cached_build_systems = {0};
 
 char home_config_buf[MAX_PATH_LEN] = {0};
-char *home_config() {
+char *home_config(void) {
 	snprintf(
 		home_config_buf, MAX_PATH_LEN,
 		"%s/.config/pkgit/init.lua",
@@ -76,37 +76,37 @@ const char *get_install_dir(const char *key) {
 
 const char *version = "1.1.3";
 
-const char *red = "\e[0;31m";
-const char *green = "\e[0;32m";
-const char *yellow = "\e[0;33m";
-const char *blue = "\e[0;34m";
-const char *magenta = "\e[0;35m";
-const char *cyan = "\e[0;36m";
-const char *gray = "\e[0;37m";
-const char *bright_red = "\e[0;91m";
-const char *bright_green = "\e[0;92m";
-const char *bright_yellow = "\e[0;93m";
-const char *bright_blue = "\e[0;94m";
-const char *bright_magenta = "\e[0;95m";
-const char *bright_cyan = "\e[0;96m";
-const char *bright_gray = "\e[0;97m";
-const char *bold_red = "\e[1;31m";
-const char *bold_green = "\e[1;32m";
-const char *bold_yellow = "\e[1;33m";
-const char *bold_blue = "\e[1;34m";
-const char *bold_magenta = "\e[1;35m";
-const char *bold_cyan = "\e[1;36m";
-const char *bold_gray = "\e[1;37m";
-const char *bold_white = "\e[1;38m";
-const char *bold_bright_red = "\e[1;91m";
-const char *bold_bright_green = "\e[1;92m";
-const char *bold_bright_yellow = "\e[1;93m";
-const char *bold_bright_blue = "\e[1;94m";
-const char *bold_bright_magenta = "\e[1;95m";
-const char *bold_bright_cyan = "\e[1;96m";
-const char *bold_bright_gray = "\e[1;97m";
-const char *italic = "\e[3m";
-const char *color_reset = "\e[0m";
+const char *red = "\x1b[0;31m";
+const char *green = "\x1b[0;32m";
+const char *yellow = "\x1b[0;33m";
+const char *blue = "\x1b[0;34m";
+const char *magenta = "\x1b[0;35m";
+const char *cyan = "\x1b[0;36m";
+const char *gray = "\x1b[0;37m";
+const char *bright_red = "\x1b[0;91m";
+const char *bright_green = "\x1b[0;92m";
+const char *bright_yellow = "\x1b[0;93m";
+const char *bright_blue = "\x1b[0;94m";
+const char *bright_magenta = "\x1b[0;95m";
+const char *bright_cyan = "\x1b[0;96m";
+const char *bright_gray = "\x1b[0;97m";
+const char *bold_red = "\x1b[1;31m";
+const char *bold_green = "\x1b[1;32m";
+const char *bold_yellow = "\x1b[1;33m";
+const char *bold_blue = "\x1b[1;34m";
+const char *bold_magenta = "\x1b[1;35m";
+const char *bold_cyan = "\x1b[1;36m";
+const char *bold_gray = "\x1b[1;37m";
+const char *bold_white = "\x1b[1;38m";
+const char *bold_bright_red = "\x1b[1;91m";
+const char *bold_bright_green = "\x1b[1;92m";
+const char *bold_bright_yellow = "\x1b[1;93m";
+const char *bold_bright_blue = "\x1b[1;94m";
+const char *bold_bright_magenta = "\x1b[1;95m";
+const char *bold_bright_cyan = "\x1b[1;96m";
+const char *bold_bright_gray = "\x1b[1;97m";
+const char *italic = "\x1b[3m";
+const char *color_reset = "\x1b[0m";
 
 const char *print_pkgit;
 const char *print_success;
@@ -151,7 +151,7 @@ bool is_directory(const char *path) {
 	return S_ISDIR(statbuf.st_mode);
 }
 
-void init_vars() {
+void init_vars(void) {
 	char *home = getenv("HOME");
 	if (home) snprintf(home_dir, MAX_PATH_LEN, "%s", home);
 	else snprintf(home_dir, MAX_PATH_LEN, "/root");

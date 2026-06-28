@@ -47,7 +47,7 @@ void push_lua_path(lua_State *L, const char *new_path) {
 	lua_pop(L, 1);
 }
 
-void init_lua_state() {
+void init_lua_state(void) {
 	if (L != NULL) return;
 	L = luaL_newstate();
 	luaL_openlibs(L);
@@ -80,7 +80,7 @@ void init_lua_state() {
 	config_loaded = true;
 }
 
-void init_bldit() {
+void init_bldit(void) {
 	if (B != NULL) return;
 	B = luaL_newstate();
 	luaL_openlibs(B);
@@ -94,7 +94,7 @@ void init_bldit() {
 	bldit_loaded = true;
 }
 
-void free_lua_state() {
+void free_lua_state(void) {
 	if (L != NULL) {
 		lua_close(L);
 		L = NULL;
@@ -102,9 +102,9 @@ void free_lua_state() {
 	config_loaded = false;
 }
 
-lua_State *get_lua_state() { return L; }
+lua_State *get_lua_state(void) { return L; }
 
-void cache_prefix_directory() {
+void cache_prefix_directory(void) {
 	lua_getglobal(L, "prefix");
 	if (!lua_isstring(L, -1)) {
 		printf(
@@ -117,7 +117,7 @@ void cache_prefix_directory() {
 	lua_pop(L, 1);
 }
 
-void cache_install_directories() {
+void cache_install_directories(void) {
 	if (!config_loaded || !lua_istable(L, -1)) {
 		lua_getglobal(L, "install_directories");
 	}
@@ -440,7 +440,7 @@ bool repo_uninstall(const char *repository, const char *target) {
 	return target_loop_success;
 }
 
-char* bldit_getver() {
+char* bldit_getver(void) {
 	init_bldit();
 	lua_getglobal(B, "bldit_version");
 	if (!lua_isstring(B, -1)) {
@@ -456,7 +456,7 @@ char* bldit_getver() {
 	return strdup(bldit_version);
 }
 
-char* bldit_pkg_getver() {
+char* bldit_pkg_getver(void) {
 	init_bldit();
 	lua_getglobal(B, "package_version");
 	if (!lua_isstring(B, -1)) {
@@ -618,7 +618,7 @@ bool bldit_uninstall(const char *target) {
 	return target_loop_success;
 }
 
-void cache_repos() {
+void cache_repos(void) {
 	cached_repos_count = 0;
 	lua_getglobal(L, "repositories");
 	if (!config_loaded || !lua_istable(L, -1)) {
@@ -653,7 +653,7 @@ void cache_repos() {
 	lua_pop(L, 1);
 }
 
-void cache_build_systems() {
+void cache_build_systems(void) {
 	if (!config_loaded) {
 		lua_getglobal(L, "build_systems");
 	} else if (!lua_istable(L, -1)) {

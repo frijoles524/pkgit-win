@@ -26,7 +26,7 @@
 #include "set_install_directories.h"
 #include "vars.h"
 
-void set_install_directories() {
+void set_install_directories(void) {
 	lua_State *L = get_lua_state();
 	cache_prefix_directory();
 	lua_getglobal(L, "install_directories");

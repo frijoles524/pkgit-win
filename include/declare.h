@@ -20,5 +20,5 @@
 
 #ifndef DECLARE
 #define DECLARE
-void declare();
+void declare(void);
 #endif

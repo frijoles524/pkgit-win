@@ -1,3 +1,19 @@
+#  pkgit - package it!
+
+#  Copyright (C) 2026 dacctal
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 2 of the License, or
+#  (at your option) any later version.
+
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 .PHONY: default debug install defconfig clean
 
 CC       ?= clang
@@ -6,7 +22,7 @@ PREFIX   ?= /usr/local
 OBJDIR   = obj
 SRCS     = $(wildcard src/*.c)
 OBJS     = $(SRCS:src/%.c=$(OBJDIR)/%.o)
-CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99 -D_XOPEN_SOURCE=700 -Wall -Wextra 
+CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99 -D_XOPEN_SOURCE=700 -Wall -Wextra -Werror -Wvla -pedantic 
 
 # pretty print for compilation. To enable verbose (show commands), run with
 # `make V=1`

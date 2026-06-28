@@ -23,7 +23,7 @@
 #include "help.h"
 #include "vars.h"
 
-void help() {
+void help(void) {
   if (is_verbose) {
     printf("%s      ,        \n", bold_magenta);
     printf("%s     / \\       \n", bold_magenta);
