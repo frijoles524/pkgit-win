@@ -113,7 +113,7 @@ Pkg create_pkg(const char *arg) {
     }
   }
 
-  if (strncmp(new_arg, "http", 4) == 0) {
+  if (strncmp(new_arg, "http", 4) == 0 || strncmp(new_arg, "ssh", 3) == 0) {
     pkg.url = strdup(new_arg);
     pkg.name = name_from_url(new_arg);
   } else if (strcmp(new_arg, ".") == 0) {
