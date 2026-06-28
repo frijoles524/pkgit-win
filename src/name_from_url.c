@@ -30,6 +30,8 @@ char* name_from_url(const char *url) {
 	const char *end = after_git + len;
 	while (end > after_git && *(end-1) == '/')
 		end--;
+	if (strncmp(end-4, ".git", 4) == 0)
+		end -= 4;
 	const char *last_slash = end;
 	while (last_slash > after_git && *(last_slash-1) != '/')
 		last_slash--;

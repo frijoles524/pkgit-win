@@ -1,0 +1,14 @@
+diff --git a/src/name_from_url.c b/src/name_from_url.c
+index 67995fe..6b26560 100644
+--- a/src/name_from_url.c
++++ b/src/name_from_url.c
+@@ -32,6 +32,9 @@ char* name_from_url(const char *url) {
+     while (end > after_git && *(end-1) == '/') {
+         end--;
+     }
++    if (strncmp(end-4, ".git", 4) == 0) {
++      end -= 4;
++    }
+     const char *last_slash = end;
+     while (last_slash > after_git && *(last_slash-1) != '/') {
+         last_slash--;
