@@ -174,6 +174,8 @@ bool target_loop_build(
 			print_warning, lua_file, target
 		);
 		lua_pop(L, 1);
+		if (strcmp(target, "quiet") == 0)
+			target_loop_build(L, lua_file, "default");
 		return false;
 	}
 	lua_getfield(L, -1, "dependencies");
@@ -222,6 +224,8 @@ bool target_loop_install(
 			print_warning, lua_file, target
 		);
 		lua_pop(L, 1);
+		if (strcmp(target, "quiet") == 0)
+			target_loop_install(L, lua_file, "default");
 		return false;
 	}
 	lua_getfield(L, -1, "pre_install");
@@ -300,6 +304,8 @@ bool target_loop_uninstall(lua_State *L, const char *lua_file, const char *targe
 			print_warning, lua_file, target
 		);
 		lua_pop(L, 1);
+		if (strcmp(target, "quiet") == 0)
+			target_loop_uninstall(L, lua_file, "default");
 		return false;
 	}
 	lua_getfield(L, -1, "uninstall");
