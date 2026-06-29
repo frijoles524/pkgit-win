@@ -23,6 +23,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include "banned.h"
 
 #define MAX_REPOS 1000
 #define MAX_DIRS 100
