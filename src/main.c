@@ -1,34 +1,9 @@
-/*
+#include <stdio.h> 
 
-  pkgit - package it!
+#include "pkgit_string.h" 
 
-  Copyright (C) 2026 dacctal
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 2 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-*/
-
-#include "cla_parse.h"
-#include "lua_state.h"
-#include "setup_pkgit.h"
-#include "vars.h"
-
-int main(int argc, char *argv[]) {
-	init_vars();
-	init_lua_state();
-	setup_pkgit();
-	cache_repos();
-	cla_parse(argc, argv);
-	free_lua_state();
+int main(int argc, char** argv) {
+	str_s slice = slice_trim(slice_from_cstr("  hello world  "));
+	printf("[%.*s]\n", format_string(slice));
 	return 0;
 }
