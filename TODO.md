@@ -1,19 +1,18 @@
-- [x] add pkg repo
-- [x] build pkg
-- [x] install pkg repo
-- [x] install pkg name
-- [x] remove pkg
-- [x] lua build systems
-- [x] lua repos
-- [x] CLA parsing
-- [x] lua config primary(/etc) / secondary(.config) checks
-- [x] lua variables for install paths
-- [x] lua dependency listing
-- [x] version management
-- [x] lua uninstall function
-- [x] git depth 1
-- [x] lua on_update function
-- [-] lua-configured privilege escalation
+- [-] cla parsing
+- [ ] lua config primary(/etc) / secondary(.config) checks
+- [ ] lua variables for install paths
+- [ ] lua repos
+- [ ] pkg add repo
+- [ ] lua build systems
+- [ ] pkg build
+- [ ] lua dependency listing
+- [ ] pkg install repo
+- [ ] pkg install name
+- [ ] pkg remove
+- [ ] version management
+- [ ] lua on_update function
+- [ ] lua-configured privilege escalation
+- [ ] git depth 1
 - [ ] multiple jobs
 
 - [ ] (maybe) git commit signature checks
