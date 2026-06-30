@@ -40,8 +40,9 @@ windows: default
 	@rm -f pkgit_win_portable.zip
 	@cp win_template.zip pkgit_win_portable.zip
 	@echo "Adding exe to distribution"
-	@zip -j pkgit_win_portable.zip pkgit.exe
-	@rm -f pkgit.exe
+	@mv pkgit.exe pkgit_bin.exe
+	@zip -j pkgit_win_portable.zip pkgit_bin.exe
+	@rm -f pkgit_bin.exe
 	@$(MAKE) clean
 	@echo "Done. Packaged to pkgit_win_portable.zip"
 

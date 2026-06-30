@@ -54,7 +54,7 @@ make windows
 
 You can also download a release.
 
-Now, run with pkgit.bat. Do not use the exe directly as it will not work. To edit init.lua, it is located in cygwin/home/.config/pkgit
+Now, run with `./pkgit`. To edit init.lua, it is located in cygwin/home/.config/pkgit
 
 # Install pkgit
 After compiling, run the following with root privilages:
