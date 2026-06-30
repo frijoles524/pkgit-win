@@ -20,22 +20,9 @@
 #include <stdio.h> 
 
 #include "cla_parse.h"
-#include "pkgit_string.h"
-#include "pkgit_globals.h"
+#include "str.h"
+#include "globs.h"
 
 int main(int argc, char** argv) {
-	//slc_cat(BOLD_YELLOW, slc_from_cstr("["))
-	//slc_cat(BOLD_MAGENTA, slc_from_cstr("pkgit"))
-	//slc_cat(BOLD_MAGENTA, slc_from_cstr("]"))
-	//COLOR_RESET
-	str_slc hello_world = {"", 0};
-	slc_cat(slc_from_cstr("hello"), slc_from_cstr(" world"), &hello_world);
-	str_slc test = {"hello", 5};
-	printf("%.*s\n", str_fmt(test));
-	printf("%.*s%s%.*s\n", str_fmt(BOLD_YELLOW), "TEST", str_fmt(COLOR_RESET));
-	printf("length: %zu\nstring: %.*s\n", hello_world.len, str_fmt(hello_world));
-	str_slc hello_world_ext = {"", 0};
-	slc_cat(slc_from_cstr(hello_world.data), slc_from_cstr("!!!"), &hello_world_ext);
-	printf("length: %zu\nstring: %.*s\n", hello_world_ext.len, str_fmt(hello_world_ext));
 	return 0;
 }

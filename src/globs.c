@@ -1,7 +1,14 @@
+#include <stdio.h>
+
+#include "globs.h"
+#include "str.h"
+
 int is_verbose = 1;
 int is_forced = 0;
+char root_config_file[20] = "/etc/pkgit/init.lua";
+char root_config_dir[15] = "/etc/pkgit";
 
-//void init_vars(void) {
+void init_vars(void) {
 //	char *home = getenv("HOME");
 //	if (home) snprintf(home_dir, MAX_PATH_LEN, "%s", home);
 //	else snprintf(home_dir, MAX_PATH_LEN, "/root");
@@ -26,4 +33,4 @@ int is_forced = 0;
 //	install_directories[2] = strdup(get_install_dir("lib"));
 //	install_directories[3] = strdup(get_install_dir("inc"));
 //	install_directories[4] = strdup(get_install_dir("src"));
-//}
+}

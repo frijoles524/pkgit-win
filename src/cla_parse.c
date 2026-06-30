@@ -23,8 +23,8 @@
 
 #include "cla_parse.h"
 
-#include "pkgit_globals.h"
-#include "pkgit_string.h"
+#include "globs.h"
+#include "str.h"
 
 //#include "declare.h"
 //#include "deps_resolve.h"
@@ -46,7 +46,7 @@
 
 #define NOT_ENOUGH_ARGS(arg, next)									\
 	printf("%.*s Not enough arguments! Try: `pkgit %s [%s]`\n",		\
-	str_fmt(PRINT_ERROR), arg, next)
+	PRINT_ERROR, arg, next)
 
 void cmd_add(char **argv, int i) {
 	if (argv[i + 1]) {
@@ -120,7 +120,7 @@ void flags_cmd(int argc, char **argv, int i, package pkg) {
 			case 'u': /*update();*/ printf("update\n"); break;
 			case 'l': /*pkgs_list();*/ printf("list\n"); break;
 			case 's': /*search(argv[i + 1]);*/ printf("search\n"); break;
-			case 'v': printf("%.*s\n", str_fmt(VERSION)); break;
+			case 'v': printf("%s\n", VERSION); break;
 			case 'h': /*help();*/ printf("help\n"); break;
 			default:  break;
 		}
@@ -150,7 +150,7 @@ void cmds_parse(int argc, char **argv, package pkg) {
 		COMMAND("--declare",  "d", { /*declare();*/ });
 		COMMAND("--list",     "l", { /*pkgs_list();*/ });
 		COMMAND("--search",   "s", { /*search(argv[i + 1]);*/ });
-		COMMAND("--version",  "v", { printf("%.*s\n", str_fmt(VERSION)); });
+		COMMAND("--version",  "v", { printf("%s\n", VERSION); });
 		COMMAND("--help",     "h", { /*help();*/ });
 		COMMAND("--check",    "c", { /*deps_resolve();*/ });
 	}

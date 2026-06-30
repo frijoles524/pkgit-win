@@ -20,9 +20,10 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "pkgit_string.h"
+#include "str.h"
 
 void slc_print(str_slc slc) {
 	for (size_t i = 0; i < slc.len; i++) {
@@ -95,13 +96,14 @@ str_slc slc_split(str_slc *slc, char delimiter) {
 }
 
 void slc_cat(str_slc first, str_slc second, str_slc *new_slc) {
-	new_slc->len = first.len + second.len + 1;
-	char buf[new_slc->len];
+	if (new_slc->len < first.len + second.len) {
+		printf("fatal: slc_cat length of new slice is too small\n");
+		exit(EXIT_FAILURE);
+	}
 	for (size_t i = 0; i < first.len; i++) {
-		buf[i] = first.data[i];
+		new_slc->data[i] = first.data[i];
 	}
 	for (size_t i = first.len; i < new_slc->len; i++) {
-		buf[i] = second.data[i-first.len];
+		new_slc->data[i] = second.data[i-first.len];
 	}
-	new_slc->data = buf;
 }
