@@ -40,6 +40,20 @@ You can also run this with root using sudo/doas to genereate the config in /etc/
 sudo make defconfig
 ```
 
+## Building for windows
+
+This port is intended to make pkgit compilable for windows. While it's not best practice to zip up dlls and upload them to github, I really couldn't come up with a better way to do this.
+
+The build requires cygwin to be installed with the following packages: gcc-core, git, luajit-devel and/or luajit, make, zip, pkg-config, pkgconf (idk about those last 2 but better safe than sorry)
+
+A quick note: luajit appears to be unmaintained for cygwin, consider yourself informed of how sketchy this is. To build a portable zip file:
+
+```
+make windows
+```
+
+Now, run with pkgit.bat. Do not use the exe directly as it will not work.
+
 # Install pkgit
 After compiling, run the following with root privilages:
 ```

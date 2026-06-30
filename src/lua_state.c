@@ -31,6 +31,8 @@
 #include "lua_state.h"
 #include "vars.h"
 
+#define LUA_OK 0
+
 static lua_State *L = NULL;
 static bool config_loaded = false;
 

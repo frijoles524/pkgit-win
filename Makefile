@@ -35,6 +35,16 @@ $(OBJDIR):
 $(OBJDIR)/%.o: src/%.c | $(OBJDIR)
 	${CC} $(CFLAGS) -c -o $@ $<
 
+windows: default
+	@echo "Building pkgit for windows. May be unstable! Use with caution"
+	@rm -f pkgit_win_portable.zip
+	@cp win_template.zip pkgit_win_portable.zip
+	@echo "Adding exe to distribution"
+	@zip -j pkgit_win_portable.zip pkgit.exe
+	@rm -f pkgit.exe
+	@$(MAKE) clean
+	@echo "Done. Packaged to pkgit_win_portable.zip"
+
 debug: CFLAGS += -g -O0
 debug: pkgit
 
