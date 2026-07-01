@@ -1,0 +1,4 @@
+CompileFlags:
+  Add: [-I/usr/include/luajit-2.1, -I../include]
+---
+UseTab: Always

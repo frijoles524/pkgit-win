@@ -26,7 +26,7 @@
 int main(int argc, char **argv) {
 	(void)argc;
 	init_vars();
-	pkg_create(mstrslc(argv[1]));
+	package_t pkg = pkg_create(mstrslc(argv[1]));
 	// cla_parse(argc, argv);
 	free_vars();
 	return 0;

@@ -24,13 +24,14 @@
 #include "cla_parse.h"
 
 #include "globs.h"
+#include "log.h"
 #include "str.h"
 // #include "declare.h"
 // #include "deps_resolve.h"
 #include "help.h"
 // #include "name_from_url.h"
 // #include "pkg_build.h"
-#include "pkg_create.h"
+#include "pkg/create.h"
 // #include "pkg_search.h"
 // #include "pkg_install.h"
 // #include "pkg_list.h"
@@ -55,47 +56,48 @@ void cmd_add(char **argv, int i) {
 	}
 }
 
-void cmd_build(int argc, char **argv, int i, package pkg) {
+void cmd_build(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-')
-				continue;
+			if (argv[j][0] == '-') continue;
 			printf("build pkg %s\n", argv[j]);
-			// pkg = pkg_create(argv[j]);
-			// pkg_build(pkg);
+			// str_slc arg = mstrslc(argv[j]);
+			// package_t pkg = pkg_create(arg);
+			//  pkg_build(pkg);
 		}
 	} else {
 		printf("build pkg .\n");
-		// pkg = pkg_create(".");
-		// pkg_build(pkg);
+		// str_slc arg = mstrslc(".");
+		// package_t pkg = pkg_create(arg);
+		//  pkg_build(pkg);
 	}
 }
 
-void cmd_install(int argc, char **argv, int i, package pkg) {
+void cmd_install(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-')
-				continue;
+			if (argv[j][0] == '-') continue;
 			printf("install pkg %s\n", argv[j]);
-			// pkg = pkg_create(argv[j]);
-			// pkg_install(pkg);
+			// str_slc arg = mstrslc(argv[j]);
+			// package_t pkg = pkg_create(arg);
+			//  pkg_install(pkg);
 		}
 	} else {
-		// NOT_ENOUGH_ARGS(argv[i], "url/pkg");
+		NOT_ENOUGH_ARGS(argv[i], "url/pkg");
 	}
 }
 
-void cmd_remove(int argc, char **argv, int i, package pkg) {
+void cmd_remove(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-')
-				continue;
+			if (argv[j][0] == '-') continue;
 			printf("remove pkg %s\n", argv[j]);
-			// pkg = pkg_create(argv[j]);
-			// pkg_remove(pkg);
+			// str_slc arg = mstrslc(argv[j]);
+			// package_t pkg = pkg_create(arg);
+			//  pkg_remove(pkg);
 		}
 	} else {
-		// NOT_ENOUGH_ARGS(argv[i], "url/pkg");
+		NOT_ENOUGH_ARGS(argv[i], "url/pkg");
 	}
 }
 
@@ -103,10 +105,10 @@ void flags_mod(char **argv, int i) {
 	for (size_t j = 1; j < strlen(argv[i]); j++) {
 		switch (argv[i][j]) {
 		case 'q':
-			is_verbose = 0;
+			flags.verbose = false;
 			break;
 		case 'f':
-			is_forced = 1;
+			flags.force = true;
 			break;
 		default:
 			break;
@@ -114,14 +116,14 @@ void flags_mod(char **argv, int i) {
 	}
 }
 
-void flags_cmd(int argc, char **argv, int i, package pkg) {
+void flags_cmd(int argc, char **argv, int i) {
 	for (size_t j = 1; j < strlen(argv[i]); j++) {
 		switch (argv[i][j]) {
 		case 'a':
 			cmd_add(argv, i);
 			break;
 		case 'b':
-			cmd_build(argc, argv, i, pkg);
+			cmd_build(argc, argv, i);
 			break;
 		case 'c': /*deps_resolve();*/
 			printf("deps_resolve\n");
@@ -130,10 +132,10 @@ void flags_cmd(int argc, char **argv, int i, package pkg) {
 			printf("declare\n");
 			break;
 		case 'i':
-			cmd_install(argc, argv, i, pkg);
+			cmd_install(argc, argv, i);
 			break;
 		case 'r':
-			cmd_remove(argc, argv, i, pkg);
+			cmd_remove(argc, argv, i);
 			break;
 		case 'u': /*update();*/
 			printf("update\n");
@@ -156,28 +158,25 @@ void flags_cmd(int argc, char **argv, int i, package pkg) {
 	}
 }
 
-void flags_parse(int argc, char **argv, package pkg) {
+void flags_parse(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
-		if (argv[i][0] != '-')
-			continue;
-		str_slc arg = str_slc_from_cstr(argv[i]);
+		if (argv[i][0] != '-') continue;
 		if (argv[i][1] == '-') {
-			COMMAND(argv[i], "--quiet", "-q", { is_verbose = 0; });
-			COMMAND(argv[i], "--force", "-f", { is_forced = 1; });
+			COMMAND(argv[i], "--quiet", "-q", { flags.verbose = false; });
+			COMMAND(argv[i], "--force", "-f", { flags.force = true; });
 		} else {
 			flags_mod(argv, i);
-			flags_cmd(argc, argv, i, pkg);
+			flags_cmd(argc, argv, i);
 		}
 	}
 }
 
-void cmds_parse(int argc, char **argv, package pkg) {
+void cmds_parse(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
 		COMMAND(argv[i], "--add", "a", { cmd_add(argv, i); });
-		COMMAND(argv[i], "--build", "b", { cmd_build(argc, argv, i, pkg); });
-		COMMAND(argv[i], "--install", "i",
-				{ cmd_install(argc, argv, i, pkg); });
-		COMMAND(argv[i], "--remove", "r", { cmd_remove(argc, argv, i, pkg); });
+		COMMAND(argv[i], "--build", "b", { cmd_build(argc, argv, i); });
+		COMMAND(argv[i], "--install", "i", { cmd_install(argc, argv, i); });
+		COMMAND(argv[i], "--remove", "r", { cmd_remove(argc, argv, i); });
 		COMMAND(argv[i], "--update", "u", {/*update();*/});
 		COMMAND(argv[i], "--declare", "d", {/*declare();*/});
 		COMMAND(argv[i], "--list", "l", {/*pkgs_list();*/});
@@ -193,7 +192,6 @@ void cla_parse(int argc, char **argv) {
 		help();
 		return;
 	}
-	package pkg = {0};
-	flags_parse(argc, argv, pkg);
-	cmds_parse(argc, argv, pkg);
+	flags_parse(argc, argv);
+	cmds_parse(argc, argv);
 }
