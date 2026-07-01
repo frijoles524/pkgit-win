@@ -21,7 +21,6 @@
 #ifndef PKGIT_FILES_H
 #define PKGIT_FILES_H
 
-#include <sys/stat.h>
 #include <stdbool.h>
 
 bool file_exists(const char *path);

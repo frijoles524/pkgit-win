@@ -21,5 +21,5 @@
 #ifndef PKGIT_PKG_CREATE_H
 #define PKGIT_PKG_CREATE_H
 #include "globs.h"
-package pkg_create(str_slc *arg);
+package_t pkg_create(str_slc arg);
 #endif

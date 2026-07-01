@@ -1,6 +1,6 @@
 /*
 
-  pkgit - package it!
+  pkgit - package_t it!
 
   Copyright (C) 2026 dacctal
   This program is free software: you can redistribute it and/or modify
@@ -18,101 +18,79 @@
 
 */
 
-#include <unistd.h>
 #include <string.h>
-
-#include "pkg_create.h"
+#include <unistd.h>
 
 #include "files.h"
 #include "globs.h"
+#include "log.h"
+#include "pkg_create.h"
 #include "str.h"
 
 static str get_destdir(str_slc cwd, str_slc arg) {
-	str destdir;
-	if (str_slc_first(arg) == '.') {
-		str_format_into(
-			&destdir, "%s/%s",
-			src, str_slc_from_after_delim(cwd, '/')
-		);
-	} else {
-		str_format_into(
-			&destdir, "%s/%s",
-			src, arg
-		);
-	}
-	return destdir;
+	str_slc name = str_slc_from_after_delim(arg, '/');
+	if (str_slc_first(arg) == '.')
+		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&cwd));
+	else
+		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&name));
 }
 
-static str get_pkgsrc(package pkg) {
-	str src_dir;
-	if (pkg.is_local == 1) {
-		str_format_into(
-			&src_dir, "%s/%s",
-			src, pkg.name
-		);
-	} else {
-		str_format_into(
-			&src_dir, "%s/%s/%s",
-			src, pkg.name, pkg.version
-		);
-	}
-	return src_dir;
+static str get_pkgsrc(package_t pkg) {
+	if (pkg.is_local == 1)
+		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), pkg.name);
+	else
+		return str_format("%.*s/%.*s/%.*s", str_fmt(&inst_dirs.src),
+						  str_fmt(&pkg.name), str_fmt(&pkg.version));
 }
 
-package pkg_create(str_slc *arg) {
-	package pkg;
-	pkg.version = (str) {
-		.data = "HEAD",
-		.len = 4,
-		.cap = 4,
+package_t pkg_create(str_slc arg) {
+	package_t pkg = {
+		.version = mstr("HEAD"),
+		.is_local = false,
 	};
-	pkg.is_local = false;
+
 	char cwd[MAX_PATH_LEN];
 	getcwd(cwd, MAX_PATH_LEN);
+
 	str_slc cwd_slc = mstrslc(cwd);
 	str cwd_str = mstr(cwd);
-	str_slc new_arg;
-	new_arg.data = arg->data;
-	new_arg.len = arg->len;
-	if (!new_arg.data) exit(EXIT_FAILURE);
-	str dest_dir = get_destdir(cwd_slc, new_arg);
+	str dest_dir = get_destdir(cwd_slc, arg);
+	str new_arg_str = str_from_str_slc(arg);
+
 	bool is_installed_locally = is_directory(dest_dir.data);
 
-	str new_arg_str = str_from_str_slc(new_arg);
 	pkg.version = str_from_after_delim(&new_arg_str, '@');
-	str_println(&pkg.version);
 	pkg.target = str_from_after_delim(&new_arg_str, ',');
-	str_println(&pkg.target);
 
 	bool is_in_repos = false;
-	//for (size_t i = 0; i < cached_repos_count; i++) {
+	// for (size_t i = 0; i < cached_repos_count; i++) {
 	//	if (strcmp(new_arg, cached_repos[i].source_key) == 0) {
 	//		is_in_repos = true;
 	//		break;
 	//	}
-	//}
+	// }
 
-	if (strncmp(new_arg.data, "http", 4) == 0 || strncmp(new_arg.data, "ssh", 3) == 0) {
+	if (strncmp(arg.data, "http", 4) == 0 || strncmp(arg.data, "ssh", 3) == 0) {
 		pkg.url = new_arg_str;
 		pkg.name = str_from_after_delim(&new_arg_str, '/');
-	} else if (strcmp(new_arg.data, ".") == 0) {
-		pkg.url = str_from_cstr("");
+	} else if (str_slc_equal_cstr(arg, ".")) {
+		pkg.url = mstr("");
 		pkg.name = str_from_after_delim(&cwd_str, '/');
 		pkg.is_local = true;
 	} else if (is_in_repos) {
-	//for (size_t i = 0; i < cached_repos_count; i++) {
-	//	if (strcmp(new_arg, cached_repos[i].source_key) == 0) {
-	//		pkg.url = strdup(cached_repos[i].source_value);
-	//		break;
-	//	}
-	//}
-	pkg.name = new_arg_str;
+		// for (size_t i = 0; i < cached_repos_count; i++) {
+		//	if (strcmp(new_arg, cached_repos[i].source_key) == 0) {
+		//		pkg.url = strdup(cached_repos[i].source_value);
+		//		break;
+		//	}
+		// }
+		pkg.name = new_arg_str;
 	} else if (is_installed_locally) {
-		pkg.url = str_from_cstr("");
+		pkg.url = mstr("");
 		pkg.name = str_from_after_delim(&dest_dir, '/');
 		pkg.is_local = true;
 	} else {
-		printf("%s '%.*s' is not a valid package\n", PRINT_ERROR, str_fmt(&new_arg));
+		log_error("'%.*s' is not a valid package", str_fmt(&arg));
 		exit(EXIT_FAILURE);
 	}
 	pkg.src = get_pkgsrc(pkg);

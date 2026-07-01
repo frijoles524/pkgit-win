@@ -21,6 +21,9 @@
 #ifndef PKGIT_GLOBALS_H
 #define PKGIT_GLOBALS_H
 
+#include "str.h"
+#include <stdint.h>
+
 #define VERSION "1.4.0_INDEV"
 #define RED "\x1b[0;31m"
 #define GREEN "\x1b[0;32m"
@@ -90,48 +93,38 @@
 #endif
 #define unreachable panic("reached unreachable code")
 
-#define PRINT_PKGIT                                                            \
-	BOLD_YELLOW "[" BOLD_MAGENTA "pkgit" BOLD_YELLOW "]" COLOR_RESET
-#define PRINT_SUCCESS PRINT_PKGIT GREEN " [SUCCESS]" COLOR_RESET
-#define PRINT_SKIPPED PRINT_PKGIT BLUE " [SKIPPED]" COLOR_RESET
-#define PRINT_WARNING PRINT_PKGIT YELLOW " [WARNING]" COLOR_RESET
-#define PRINT_ERROR PRINT_PKGIT RED " [ERROR]" COLOR_RESET
+#define PKGIT_PREFIX                                                           \
+	BOLD_YELLOW "[" BOLD_MAGENTA "pkgit" BOLD_YELLOW "] " COLOR_RESET
+#define PKGIT_PREFIX_SUCCESS PKGIT_PREFIX GREEN "[SUCCESS] " COLOR_RESET
+#define PKGIT_PREFIX_INFO PKGIT_PREFIX BLUE "[INFO] " COLOR_RESET
+#define PKGIT_PREFIX_WARNING PKGIT_PREFIX YELLOW "[WARNING] " COLOR_RESET
+#define PKGIT_PREFIX_ERROR PKGIT_PREFIX RED "[ERROR] " COLOR_RESET
 
 #define MAX_REPOS 1000
 #define MAX_DIRS 100
 #define MAX_PATH_LEN 1024
 
-#include "str.h"
+typedef struct {
+	str name, url, version, target, src;
+	bool is_local;
+} package_t;
 
 typedef struct {
-	str name;
-	str url;
-	str version;
-	str target;
-	str src;
-	int is_local;
-} package;
+	bool verbose, force;
+} cli_flags_t;
 
-extern int is_verbose;
-extern int is_forced;
-extern int config_exists;
+typedef struct {
+	str dir, name, content, repos;
+	bool is_root_config;
+} config_t;
 
-extern str home_config_dir; 
-extern str home_config_file; 
-extern str home_repos_file; 
-extern str root_config_dir;
-extern str root_config_file;
-extern str root_repos_file;
-extern int is_root_config;
+typedef struct {
+	str prefix, bin, lib, include, src;
+} install_dirs_t;
 
-extern str config_dir; 
-extern str config_file; 
-extern str repos_file; 
-
-extern str bin; 
-extern str lib; 
-extern str include; 
-extern str src; 
+extern cli_flags_t flags;
+extern config_t cfg;
+extern install_dirs_t inst_dirs;
 
 void init_vars(void);
 void free_vars(void);

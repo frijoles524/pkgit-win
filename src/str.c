@@ -44,15 +44,21 @@ along with this program.If not, see <https://www.gnu.org/licenses/>.
 
 // XXX: INTERNAL USE ONLY
 #define _strslc(str)                                                           \
-	(str_slc) { str->data, str->len }
+	(str_slc) {                                                                \
+		str->data, str->len                                                    \
+	}
 #define _cstrslc(str)                                                          \
-	(str_slc) { str, strlen(str) }
+	(str_slc) {                                                                \
+		str, strlen(str)                                                       \
+	}
 // XXX: since msvc/tcc and I presume cproc aren't smart enough to inline calls
 // where a str calls a str_slc function and vice versa, we optimize things
 // ourselves+reduce boilerplate
 #define _STRINGS_EQUAL
 
-str str_new(void) { return str_new_with_capacity(16); }
+str str_new(void) {
+	return str_new_with_capacity(16);
+}
 
 str str_new_with_capacity(size_t cap) {
 	str res = {0};
@@ -62,9 +68,13 @@ str str_new_with_capacity(size_t cap) {
 	return res;
 }
 
-str str_from_cstr(const char *s) { return str_from_str_slc(_cstrslc(s)); }
+str str_from_cstr(const char *s) {
+	return str_from_str_slc(_cstrslc(s));
+}
 
-str mstr(const char *s) { return str_from_str_slc(_cstrslc(s)); }
+str mstr(const char *s) {
+	return str_from_str_slc(_cstrslc(s));
+}
 
 str str_from_str_slc(const str_slc s) {
 	str res = str_new_with_capacity(s.len + 1);
@@ -429,13 +439,21 @@ size_t str_find_char_right(const str *s, char c) {
 	return str_slc_find_char_right(_strslc(s), c);
 }
 
-void str_print(const str *s) { printf("%.*s", str_fmt(s)); }
+void str_print(const str *s) {
+	printf("%.*s", str_fmt(s));
+}
 
-void str_println(const str *s) { printf("%.*s\n", str_fmt(s)); }
+void str_println(const str *s) {
+	printf("%.*s\n", str_fmt(s));
+}
 
-void str_fprint(const str *s, FILE *f) { fprintf(f, "%.*s", str_fmt(s)); }
+void str_fprint(const str *s, FILE *f) {
+	fprintf(f, "%.*s", str_fmt(s));
+}
 
-void str_fprintln(const str *s, FILE *f) { fprintf(f, "%.*s\n", str_fmt(s)); }
+void str_fprintln(const str *s, FILE *f) {
+	fprintf(f, "%.*s\n", str_fmt(s));
+}
 
 str str_read_line_from_file(FILE *f) {
 	size_t len = 0;
@@ -475,11 +493,17 @@ bool str_write_to_file(const str *s, FILE *f) {
 
 // === str_slc implementation ===
 
-str_slc str_slc_from_str(const str *s) { return _strslc(s); }
+str_slc str_slc_from_str(const str *s) {
+	return _strslc(s);
+}
 
-str_slc str_slc_from_cstr(const char *s) { return _cstrslc(s); }
+str_slc str_slc_from_cstr(const char *s) {
+	return _cstrslc(s);
+}
 
-str_slc mstrslc(const char *s) { return (str_slc){s, strlen(s)}; }
+str_slc mstrslc(const char *s) {
+	return (str_slc){s, strlen(s)};
+}
 
 str str_slc_concat(const str_slc lhs, const str_slc rhs) {
 	str res = str_new();
@@ -684,9 +708,13 @@ char str_slc_at(const str_slc s, size_t i) {
 	return s.data[i];
 }
 
-void str_slc_print(const str_slc s) { printf("%.*s", str_fmt(&s)); }
+void str_slc_print(const str_slc s) {
+	printf("%.*s", str_fmt(&s));
+}
 
-void str_slc_println(const str_slc s) { printf("%.*s\n", str_fmt(&s)); }
+void str_slc_println(const str_slc s) {
+	printf("%.*s\n", str_fmt(&s));
+}
 
 void str_slc_fprint(const str_slc s, FILE *f) {
 	fprintf(f, "%.*s", str_fmt(&s));
@@ -717,27 +745,23 @@ ptrdiff_t str_slc_find_char_right(const str_slc s, char c) {
 str str_from_after_delim(str *arg, char delimiter) {
 	size_t i = str_find_char_right(arg, delimiter);
 	str res = str_slice_to_str(arg, i + 1, arg->len);
-	str_println(&res);
 	return res;
 }
 
 str str_from_before_delim(str *arg, char delimiter) {
 	size_t i = str_find_char(arg, delimiter);
 	str res = str_slice_to_str(arg, i + 1, arg->len);
-	str_println(&res);
 	return res;
 }
 
 str_slc str_slc_from_after_delim(str_slc arg, char delimiter) {
 	size_t i = str_slc_find_char_right(arg, delimiter);
 	str_slc res = str_slc_slice(arg, i + 1, arg.len);
-	str_slc_println(res);
 	return res;
 }
 
 str_slc str_slc_from_before_delim(str_slc arg, char delimiter) {
 	size_t i = str_slc_find_char(arg, delimiter);
 	str_slc res = str_slc_slice(arg, i + 1, arg.len);
-	str_slc_println(res);
 	return res;
 }

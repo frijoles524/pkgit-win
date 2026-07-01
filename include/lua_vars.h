@@ -20,8 +20,10 @@
 
 #ifndef PKGIT_LUA_VARS_H
 #define PKGIT_LUA_VARS_H
-#include <lua.h>
+
 #include <lauxlib.h>
+#include <lua.h>
 #include <lualib.h>
+
 void init_install_directories(void);
 #endif
