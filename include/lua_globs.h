@@ -18,17 +18,25 @@
 
 */
 
-//#include "cla_parse.h"
-#include "pkg_create.h"
-#include "str.h"
-#include "globs.h"
+#ifndef PKGIT_LUA_GLOBALS_H
+#define PKGIT_LUA_GLOBALS_H
 
-int main(int argc, char** argv) {
-	(void)argc;
-	init_vars();
-	str_slc arg = str_slc_from_cstr(argv[1]);
-	pkg_create(&arg);
-	//cla_parse(argc, argv);
-	free_vars();
-	return 0;
-}
+#include <lua.h>
+#include <lauxlib.h>
+#include <lualib.h>
+#include <stdbool.h>
+
+extern lua_State *L;
+extern lua_State *B;
+extern bool config_loaded;
+
+void push_lua_path(lua_State *L, const char *new_path);
+void init_lua_state(void);
+void init_bldit(void);
+void free_lua_state(void);
+
+lua_State *get_lua_state(void);
+
+void lua_isnt_type(char* variable, char* type);
+
+#endif

@@ -18,17 +18,9 @@
 
 */
 
-//#include "cla_parse.h"
-#include "pkg_create.h"
-#include "str.h"
-#include "globs.h"
+#ifndef HELP_H
+#define HELP_H
 
-int main(int argc, char** argv) {
-	(void)argc;
-	init_vars();
-	str_slc arg = str_slc_from_cstr(argv[1]);
-	pkg_create(&arg);
-	//cla_parse(argc, argv);
-	free_vars();
-	return 0;
-}
+void help(void);
+
+#endif

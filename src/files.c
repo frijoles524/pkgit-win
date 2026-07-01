@@ -18,17 +18,17 @@
 
 */
 
-//#include "cla_parse.h"
-#include "pkg_create.h"
-#include "str.h"
-#include "globs.h"
+#include "files.h"
 
-int main(int argc, char** argv) {
-	(void)argc;
-	init_vars();
-	str_slc arg = str_slc_from_cstr(argv[1]);
-	pkg_create(&arg);
-	//cla_parse(argc, argv);
-	free_vars();
-	return 0;
+bool file_exists(const char *path) {
+	struct stat buffer;
+	return (stat(path, &buffer) == 0);
+}
+
+bool is_directory(const char *path) {
+	struct stat statbuf;
+	if (stat(path, &statbuf) != 0) {
+		return false;
+	}
+	return S_ISDIR(statbuf.st_mode);
 }

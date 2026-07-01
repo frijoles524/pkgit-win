@@ -18,17 +18,8 @@
 
 */
 
-//#include "cla_parse.h"
-#include "pkg_create.h"
-#include "str.h"
+#ifndef PKGIT_PKG_CREATE_H
+#define PKGIT_PKG_CREATE_H
 #include "globs.h"
-
-int main(int argc, char** argv) {
-	(void)argc;
-	init_vars();
-	str_slc arg = str_slc_from_cstr(argv[1]);
-	pkg_create(&arg);
-	//cla_parse(argc, argv);
-	free_vars();
-	return 0;
-}
+package pkg_create(str_slc *arg);
+#endif
