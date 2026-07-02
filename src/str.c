@@ -432,11 +432,11 @@ char str_last(const str *s) {
 	return s->data[s->len - 1];
 }
 
-size_t str_find_char(const str *s, char c) {
+ptrdiff_t str_find_char(const str *s, char c) {
 	return str_slc_find_char(_strslc(s), c);
 }
 
-size_t str_find_char_right(const str *s, char c) {
+ptrdiff_t str_find_char_right(const str *s, char c) {
 	return str_slc_find_char_right(_strslc(s), c);
 }
 

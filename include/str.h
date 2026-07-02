@@ -415,13 +415,13 @@ char str_last(const str *s);
  * Finds a character c in s, from the left to the right.
  * Returns -1 on failure
  */
-size_t str_find_char(const str *s, char c);
+ptrdiff_t str_find_char(const str *s, char c);
 
 /**
  * Finds a character c in s from the right to the left.
  * Returns s->len on failure.
  */
-size_t str_find_char_right(const str *s, char c);
+ptrdiff_t str_find_char_right(const str *s, char c);
 
 void str_print(const str *s);
 
@@ -481,37 +481,26 @@ str_slc str_slc_slice(const str_slc s, ptrdiff_t begin, ptrdiff_t end);
 str str_slc_slice_to_str(const str_slc s, ptrdiff_t begin, ptrdiff_t end);
 
 str str_slc_to_lower(const str_slc s);
-
 str str_slc_to_upper(const str_slc s);
 
 str_slc str_slc_trim_left(const str_slc s);
-
 str_slc str_slc_trim_right(const str_slc s);
-
 str_slc str_slc_trim(const str_slc s);
 
 size_t str_slc_to_double_pro(const str_slc src, double *res);
-
 size_t str_slc_to_int64_pro(const str_slc src, int64_t *res, int base);
-
 bool str_slc_to_double(const str_slc src, double *res);
-
 bool str_slc_to_int64(const str_slc src, int64_t *res);
 
 bool str_slc_write_to_file(const str_slc src, FILE *f);
 
 char str_slc_first(const str_slc s);
-
 char str_slc_last(const str_slc s);
-
 char str_slc_at(const str_slc s, size_t i);
 
 void str_slc_print(const str_slc s);
-
 void str_slc_println(const str_slc s);
-
 void str_slc_fprint(const str_slc s, FILE *f);
-
 void str_slc_fprintln(const str_slc s, FILE *f);
 
 /**
