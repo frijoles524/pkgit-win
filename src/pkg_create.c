@@ -21,10 +21,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "pkg.h"
+
 #include "files.h"
 #include "globs.h"
 #include "log.h"
-#include "pkg_create.h"
 #include "str.h"
 
 static str get_destdir(str_slc cwd, str_slc arg) {
@@ -40,7 +41,7 @@ static str get_pkgsrc(package_t pkg) {
 		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), pkg.name);
 	else
 		return str_format("%.*s/%.*s/%.*s", str_fmt(&inst_dirs.src),
-						  str_fmt(&pkg.name), str_fmt(&pkg.version));
+			str_fmt(&pkg.name), str_fmt(&pkg.version));
 }
 
 package_t pkg_create(str_slc arg) {

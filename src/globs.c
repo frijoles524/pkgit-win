@@ -35,7 +35,6 @@ void init_vars(void) {
 	if (file_exists("/etc/pkgit/repos.lua")) {
 		cfg.dir = mstr("/etc/pkgit");
 		cfg.name = mstr("/etc/pkgit/repos.lua");
-
 	} else {
 		const char *tmp = getenv("XDG_CONFIG_HOME");
 		if (tmp) {

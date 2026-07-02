@@ -62,13 +62,14 @@ void help(void) {
 		printf(BOLD_YELLOW "'-_   " BOLD_MAGENTA "'" BOLD_YELLOW "   _-'  \n");
 		printf(BOLD_YELLOW "   `'-.-'`     " COLOR_RESET "\n");
 	} else {
-		printf("pkgit %s%s- package it!%s\n", ITALIC, GRAY, COLOR_RESET);
-		printf("%s%s%s\n", MAGENTA, VERSION, COLOR_RESET);
+		printf(BOLD "pkgit " COLOR_RESET ITALIC GRAY "- package it!" COLOR_RESET
+					"\n");
+		printf("version " MAGENTA VERSION COLOR_RESET "\n");
 	}
 	printf("\n");
 
 	printf(RED "subcommand flags" COLOR_RESET ":\n");
-	for (size_t i = 0; i < sizeof(cmd_flags) / sizeof(cmd_flags[0]); i++) {
+	for (size_t i = 0; i < LENGTH(cmd_flags); i++) {
 		printf(COLOR_RESET "\t" GREEN "%-2s" COLOR_RESET ", " YELLOW
 						   "%-12s" BLUE "%-16s" GRAY "# %s\n" COLOR_RESET,
 			   cmd_flags[i].short_flag, cmd_flags[i].long_flag,
@@ -76,7 +77,7 @@ void help(void) {
 	}
 
 	printf("\n" RED "modifier flags" COLOR_RESET ":\n");
-	for (size_t i = 0; i < sizeof(mod_flags) / sizeof(mod_flags[0]); i++) {
+	for (size_t i = 0; i < LENGTH(mod_flags); i++) {
 		printf(COLOR_RESET "\t" GREEN "%-2s" COLOR_RESET ", " YELLOW
 						   "%-12s" BLUE "%-16s" GRAY "# %s\n" COLOR_RESET,
 			   mod_flags[i].short_flag, mod_flags[i].long_flag,

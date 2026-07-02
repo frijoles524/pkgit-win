@@ -1,4 +1,9 @@
+If:
+  PathMatch: .*\.h
 CompileFlags:
-  Add: [-I/usr/include/luajit-2.1, -I../include]
+  Add: [-std=c99,-xc-header,-Wall,-Werror,-pedantic,-Wvla,-Iinclude,-I../include,-I../../include/]
 ---
-UseTab: Always
+If:
+  PathMatch: .*\.c
+CompileFlags:
+  Add: [-std=c99,-xc-header,-Wall,-Werror,-pedantic,-Wvla,-Iinclude,-I../include,-I../../include/]

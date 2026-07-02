@@ -116,36 +116,42 @@ void str_free(str *s);
 /**
  * Copies the entirety of src into dest, resizing it if necessary, while
  * overwriting all existing data.
+ * dest will be initialized if necessary.
  */
 void str_copy_into(str *dest, const str *src);
 
 /**
  * Copies a source C string at src into an already initialized
  * str, resizing the buffer if necessary, overwriting all existing data.
+ * dest will be initialized if necessary.
  */
 void str_copy_cstr_into(str *dest, const char *src);
 
 /**
  * Copies a source string slice at src into an already initialized
  * str, resizing the buffer if necessary, overwriting all existing data.
+ * dest will be initialized if necessary.
  */
 void str_copy_str_slc_into(str *dest, const str_slc src);
 
 /**
  * Copies n bytes of src into an already initialized str dest,
  * resizing it if necessary, while overwriting all existing data.
+ * dest will be initialized if necessary.
  */
 void str_ncopy_into(str *dest, const str *src, size_t count);
 
 /**
  * Copies n bytes of a C string src into an already initialized str dest,
  * resizing it if necessary, while overwriting all existing data.
+ * dest will be initialized if necessary.
  */
 void str_ncopy_cstr_into(str *dest, const char *src, size_t count);
 
 /**
  * Copies n bytes of a string slice src into an already initialized str dest,
  * resizing it if necessary, while overwriting all existing data.
+ * dest will be initialized if necessary.
  */
 void str_ncopy_str_slc_into(str *dest, const str_slc src, size_t count);
 
@@ -157,23 +163,23 @@ str str_dupe(const str *src);
 /**
  * Appends a str into an existing str, resizing the buffer if necessary.
  */
-void str_append(str *src, const str *new);
+void str_append(str *src, const str *new_str);
 
 /**
  * Appends a single character new into src, resizing the buffer if necessary.
  */
-void str_append_char(str *src, char new);
+void str_append_char(str *src, char new_char);
 
 /**
  * Appends a C string into an existing str, resizing the buffer if necessary.
  */
-void str_append_cstr(str *src, const char *new);
+void str_append_cstr(str *src, const char *new_cstr);
 
 /**
  * Appends a string slice into an existing str, resizing the buffer if
  * necessary.
  */
-void str_append_str_slc(str *src, const str_slc new);
+void str_append_str_slc(str *src, const str_slc new_slc);
 
 /**
  * Removes the last character from src, returning it.
@@ -521,7 +527,9 @@ ptrdiff_t str_slc_find_char(const str_slc s, char c);
 ptrdiff_t str_slc_find_char_right(const str_slc s, char c);
 
 str str_from_after_delim(str *arg, char delimiter);
+str str_from_after_delim_str_slc(str_slc arg, char delimiter);
 str str_from_before_delim(str *arg, char delimiter);
+str str_from_before_delim_str_slc(str_slc arg, char delimiter);
 str_slc str_slc_from_after_delim(str_slc arg, char delimiter);
 str_slc str_slc_from_before_delim(str_slc arg, char delimiter);
 

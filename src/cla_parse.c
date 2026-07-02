@@ -31,7 +31,7 @@
 #include "help.h"
 // #include "name_from_url.h"
 // #include "pkg_build.h"
-#include "pkg/create.h"
+#include "pkg.h"
 // #include "pkg_search.h"
 // #include "pkg_install.h"
 // #include "pkg_list.h"
@@ -40,9 +40,8 @@
 // #include "repo_add.h"
 // #include "update.h"
 
-#define COMMAND(arg, large, small, code)                                       \
-	if (strcmp(arg, large) == 0 || strcmp(arg, small) == 0)                    \
-	code
+#define COMMAND(large, small)                                                  \
+	(!strcmp(argv[i], large) || !strcmp(argv[i], small))
 
 #define NOT_ENOUGH_ARGS(arg, next)                                             \
 	log_error("Not enough arguments! Try: pkgit %s [%s]", (arg), (next))
@@ -59,7 +58,8 @@ void cmd_add(char **argv, int i) {
 void cmd_build(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-') continue;
+			if (argv[j][0] == '-')
+				continue;
 			printf("build pkg %s\n", argv[j]);
 			// str_slc arg = mstrslc(argv[j]);
 			// package_t pkg = pkg_create(arg);
@@ -76,7 +76,8 @@ void cmd_build(int argc, char **argv, int i) {
 void cmd_install(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-') continue;
+			if (argv[j][0] == '-')
+				continue;
 			printf("install pkg %s\n", argv[j]);
 			// str_slc arg = mstrslc(argv[j]);
 			// package_t pkg = pkg_create(arg);
@@ -90,7 +91,8 @@ void cmd_install(int argc, char **argv, int i) {
 void cmd_remove(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-') continue;
+			if (argv[j][0] == '-')
+				continue;
 			printf("remove pkg %s\n", argv[j]);
 			// str_slc arg = mstrslc(argv[j]);
 			// package_t pkg = pkg_create(arg);
@@ -160,10 +162,14 @@ void flags_cmd(int argc, char **argv, int i) {
 
 void flags_parse(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
-		if (argv[i][0] != '-') continue;
+		if (argv[i][0] != '-')
+			continue;
 		if (argv[i][1] == '-') {
-			COMMAND(argv[i], "--quiet", "-q", { flags.verbose = false; });
-			COMMAND(argv[i], "--force", "-f", { flags.force = true; });
+			if (COMMAND("--quiet", "-q"))
+				flags.verbose = false;
+			if (COMMAND("--force", "-f")) {
+				flags.force = true;
+			};
 		} else {
 			flags_mod(argv, i);
 			flags_cmd(argc, argv, i);
@@ -173,22 +179,48 @@ void flags_parse(int argc, char **argv) {
 
 void cmds_parse(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
-		COMMAND(argv[i], "--add", "a", { cmd_add(argv, i); });
-		COMMAND(argv[i], "--build", "b", { cmd_build(argc, argv, i); });
-		COMMAND(argv[i], "--install", "i", { cmd_install(argc, argv, i); });
-		COMMAND(argv[i], "--remove", "r", { cmd_remove(argc, argv, i); });
-		COMMAND(argv[i], "--update", "u", {/*update();*/});
-		COMMAND(argv[i], "--declare", "d", {/*declare();*/});
-		COMMAND(argv[i], "--list", "l", {/*pkgs_list();*/});
-		COMMAND(argv[i], "--search", "s", {/*search(argv[i + 1]);*/});
-		COMMAND(argv[i], "--version", "v", { printf("%s\n", VERSION); });
-		COMMAND(argv[i], "--help", "h", { help(); });
-		COMMAND(argv[i], "--check", "c", {/*deps_resolve();*/});
+		if (COMMAND("--add", "a")) {
+			cmd_add(argv, i);
+		}
+		if (COMMAND("--build", "b")) {
+			cmd_build(argc, argv, i);
+		}
+		if (COMMAND("--install", "i")) {
+			cmd_install(argc, argv, i);
+		}
+		if (COMMAND("--remove", "r")) {
+			cmd_remove(argc, argv, i);
+		}
+		if (COMMAND("--update", "u")) {
+			panic("not implemented");
+			// update();
+		}
+		if (COMMAND("--declare", "d")) {
+			// declare();
+		}
+		if (COMMAND("--list", "l")) {
+			// pkgs_list();
+		}
+		if (COMMAND("--search", "s")) {
+			// search(argv[i + 1]);
+		}
+		if (COMMAND("--version", "v")) {
+			printf(VERSION "\n");
+		}
+		if (COMMAND("--help", "h")) {
+			help();
+		}
+		if (COMMAND("--check", "c")) {
+			// deps_resolve
+		}
 	}
 }
 
 void cla_parse(int argc, char **argv) {
-	if (!argv[1]) {
+	// default
+	flags.force = false;
+	flags.verbose = true;
+	if (argc == 1) {
 		help();
 		return;
 	}

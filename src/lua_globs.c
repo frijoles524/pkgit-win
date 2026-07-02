@@ -18,10 +18,12 @@
 
 */
 
-#include "lua_globs.h"
+#include <stdlib.h>
+
 #include "files.h"
 #include "globs.h"
 #include "log.h"
+#include "lua_globs.h"
 #include "str.h"
 
 lua_State *L = NULL;

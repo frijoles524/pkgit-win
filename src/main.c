@@ -19,14 +19,16 @@
 */
 
 // #include "cla_parse.h"
+#include "pkg.h"
 #include "globs.h"
-#include "pkg_create.h"
 #include "str.h"
 
 int main(int argc, char **argv) {
 	(void)argc;
 	init_vars();
 	package_t pkg = pkg_create(mstrslc(argv[1]));
+	str_println(&pkg.name);
+	pkg_free(&pkg);
 	// cla_parse(argc, argv);
 	free_vars();
 	return 0;

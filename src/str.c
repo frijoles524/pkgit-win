@@ -160,12 +160,13 @@ void str_ncopy_into(str *dest, const str *src, size_t count) {
 }
 
 void str_ncopy_cstr_into(str *dest, const char *src, size_t count) {
-	assert_str_is_valid(dest);
 	assert(src);
-	dest->len = count;
-	if (dest->cap < count + 1)
+	if (!str_is_valid(dest))
+		*dest = str_new_with_capacity(count + 1);
+	else if (dest->cap < count + 1)
 		str_reserve_exact(dest, count + 1);
 	memcpy(dest->data, src, count);
+	dest->len = count;
 	dest->data[count] = 0;
 }
 
@@ -743,15 +744,21 @@ ptrdiff_t str_slc_find_char_right(const str_slc s, char c) {
 }
 
 str str_from_after_delim(str *arg, char delimiter) {
-	size_t i = str_find_char_right(arg, delimiter);
-	str res = str_slice_to_str(arg, i + 1, arg->len);
-	return res;
+	return str_from_after_delim_str_slc(_strslc(arg), delimiter);
+}
+
+str str_from_after_delim_str_slc(str_slc arg, char delimiter) {
+	size_t i = str_slc_find_char_right(arg, delimiter);
+	return str_slc_slice_to_str(arg, i + 1, arg.len);
 }
 
 str str_from_before_delim(str *arg, char delimiter) {
-	size_t i = str_find_char(arg, delimiter);
-	str res = str_slice_to_str(arg, i + 1, arg->len);
-	return res;
+	return str_from_before_delim_str_slc(_strslc(arg), delimiter);
+}
+
+str str_from_before_delim_str_slc(str_slc arg, char delimiter) {
+	size_t i = str_slc_find_char(arg, delimiter);
+	return str_slc_slice_to_str(arg, i + 1, arg.len);
 }
 
 str_slc str_slc_from_after_delim(str_slc arg, char delimiter) {

@@ -1,28 +1,28 @@
 /*
-
 	pkgit - package it!
-
+ 
 	Copyright (C) 2026 dacctal
+ 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 2 of the License, or
 	(at your option) any later version.
-
+ 
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-
+ 
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 */
 
 #ifndef PKGIT_GLOBALS_H
 #define PKGIT_GLOBALS_H
 
+#include <stdlib.h>
+
 #include "str.h"
-#include <stdint.h>
 
 #define VERSION "1.4.0_INDEV"
 #define RED "\x1b[0;31m"
@@ -58,6 +58,8 @@
 #define ITALIC "\x1b[3m"
 #define COLOR_RESET "\x1b[0m"
 
+#define LENGTH(lst) (sizeof(lst) / sizeof(*(lst)))
+
 #define eprintf(...) fprintf(stderr, __VA_ARGS__);
 
 #define check_alloc(ptr)                                                       \
@@ -66,7 +68,6 @@
 			panic("allocation of `%s` failed", #ptr);                          \
 	} while (0)
 
-#include <stdlib.h>
 #define panic(...)                                                             \
 	do {                                                                       \
 		eprintf(BOLD RED "panic:" COLOR_RESET " line %d, func \"%s\" in file " \
@@ -103,11 +104,6 @@
 #define MAX_REPOS 1000
 #define MAX_DIRS 100
 #define MAX_PATH_LEN 1024
-
-typedef struct {
-	str name, url, version, target, src;
-	bool is_local;
-} package_t;
 
 typedef struct {
 	bool verbose, force;
