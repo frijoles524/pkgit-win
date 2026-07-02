@@ -21,13 +21,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "cla_parse.h"
+#include "parse_args.h"
 
 #include "globs.h"
 #include "log.h"
 #include "str.h"
 // #include "declare.h"
-// #include "deps_resolve.h"
+// #include "easter_egg.h"
 #include "help.h"
 // #include "name_from_url.h"
 // #include "pkg_build.h"
@@ -121,55 +121,28 @@ void flags_mod(char **argv, int i) {
 void flags_cmd(int argc, char **argv, int i) {
 	for (size_t j = 1; j < strlen(argv[i]); j++) {
 		switch (argv[i][j]) {
-		case 'a':
-			cmd_add(argv, i);
-			break;
-		case 'b':
-			cmd_build(argc, argv, i);
-			break;
-		case 'c': /*deps_resolve();*/
-			printf("deps_resolve\n");
-			break;
-		case 'd': /*declare();*/
-			printf("declare\n");
-			break;
-		case 'i':
-			cmd_install(argc, argv, i);
-			break;
-		case 'r':
-			cmd_remove(argc, argv, i);
-			break;
-		case 'u': /*update();*/
-			printf("update\n");
-			break;
-		case 'l': /*pkgs_list();*/
-			printf("list\n");
-			break;
-		case 's': /*search(argv[i + 1]);*/
-			printf("search\n");
-			break;
-		case 'v':
-			printf("%s\n", VERSION);
-			break;
-		case 'h':
-			help();
-			break;
-		default:
-			break;
+		case 'a':	cmd_add(argv, i);			break;
+		case 'b':	cmd_build(argc, argv, i);	break;
+		case 'c':	panic("not implemented");	printf("easter_egg\n");	break;
+		case 'd':	panic("not implemented");	printf("declare\n");	break;
+		case 'i':	cmd_install(argc, argv, i);	break;
+		case 'r':	cmd_remove(argc, argv, i);	break;
+		case 'u':	panic("not implemented");	printf("update\n");		break;
+		case 'l':	panic("not implemented");	printf("list\n");		break;
+		case 's':	panic("not implemented");	printf("search\n");		break;
+		case 'v':	printf("%s\n", VERSION);	break;
+		case 'h':	help();						break;
+		default:	break;
 		}
 	}
 }
 
-void flags_parse(int argc, char **argv) {
+void parse_flags(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
-		if (argv[i][0] != '-')
-			continue;
+		if (argv[i][0] != '-') continue;
 		if (argv[i][1] == '-') {
-			if (COMMAND("--quiet", "-q"))
-				flags.verbose = false;
-			if (COMMAND("--force", "-f")) {
-				flags.force = true;
-			};
+			if (COMMAND("--quiet", "-q")) flags.verbose = false;
+			if (COMMAND("--force", "-f")) flags.force = true;
 		} else {
 			flags_mod(argv, i);
 			flags_cmd(argc, argv, i);
@@ -177,46 +150,23 @@ void flags_parse(int argc, char **argv) {
 	}
 }
 
-void cmds_parse(int argc, char **argv) {
+void parse_cmds(int argc, char **argv) {
 	for (int i = 1; i < argc; i++) {
-		if (COMMAND("--add", "a")) {
-			cmd_add(argv, i);
-		}
-		if (COMMAND("--build", "b")) {
-			cmd_build(argc, argv, i);
-		}
-		if (COMMAND("--install", "i")) {
-			cmd_install(argc, argv, i);
-		}
-		if (COMMAND("--remove", "r")) {
-			cmd_remove(argc, argv, i);
-		}
-		if (COMMAND("--update", "u")) {
-			panic("not implemented");
-			// update();
-		}
-		if (COMMAND("--declare", "d")) {
-			// declare();
-		}
-		if (COMMAND("--list", "l")) {
-			// pkgs_list();
-		}
-		if (COMMAND("--search", "s")) {
-			// search(argv[i + 1]);
-		}
-		if (COMMAND("--version", "v")) {
-			printf(VERSION "\n");
-		}
-		if (COMMAND("--help", "h")) {
-			help();
-		}
-		if (COMMAND("--check", "c")) {
-			// deps_resolve
-		}
+		if (COMMAND("--add", "a"))		{ cmd_add(argv, i); }
+		if (COMMAND("--build", "b"))	{ cmd_build(argc, argv, i); }
+		if (COMMAND("--install", "i"))	{ cmd_install(argc, argv, i); }
+		if (COMMAND("--remove", "r"))	{ cmd_remove(argc, argv, i); }
+		if (COMMAND("--update", "u"))	{ panic("not implemented"); }
+		if (COMMAND("--declare", "d"))	{ panic("not implemented"); }
+		if (COMMAND("--list", "l"))		{ panic("not implemented"); }
+		if (COMMAND("--search", "s"))	{ panic("not implemented"); }
+		if (COMMAND("--version", "v"))	{ printf(VERSION "\n"); }
+		if (COMMAND("--help", "h"))		{ help(); }
+		if (COMMAND("--check", "c"))	{ panic("not implemented"); }
 	}
 }
 
-void cla_parse(int argc, char **argv) {
+void parse_args(int argc, char **argv) {
 	// default
 	flags.force = false;
 	flags.verbose = true;
@@ -224,6 +174,10 @@ void cla_parse(int argc, char **argv) {
 		help();
 		return;
 	}
-	flags_parse(argc, argv);
-	cmds_parse(argc, argv);
+	parse_flags(argc, argv);
+	parse_cmds(argc, argv);
+}
+
+void str_parse_args(str *args[]) {
+	if (!args[0]) { help(); return; }
 }

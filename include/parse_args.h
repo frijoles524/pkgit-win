@@ -21,6 +21,6 @@
 #ifndef PKGIT_CLA_PARSE_H
 #define PKGIT_CLA_PARSE_H
 
-void cla_parse(int argc, char **argv);
+void parse_args(int argc, char **argv);
 
 #endif

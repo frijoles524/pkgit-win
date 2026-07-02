@@ -45,10 +45,12 @@ static str get_pkgsrc(package_t pkg) {
 }
 
 package_t pkg_create(str_slc arg) {
+	str ver_buf = mstr("HEAD");
 	package_t pkg = {
-		.version = mstr("HEAD"),
+		.version = ver_buf,
 		.is_local = false,
 	};
+	str_free(&ver_buf);
 
 	char cwd[MAX_PATH_LEN];
 	getcwd(cwd, MAX_PATH_LEN);
@@ -95,5 +97,7 @@ package_t pkg_create(str_slc arg) {
 		exit(EXIT_FAILURE);
 	}
 	pkg.src = get_pkgsrc(pkg);
+	str_free(&cwd_str);
+	str_free(&dest_dir);
 	return pkg;
 }
