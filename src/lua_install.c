@@ -53,10 +53,10 @@ void install_dependencies(lua_State *L) {
   }
 }
 
-bool target_loop_install(lua_State *L, char* lua_file, str *target) {
+bool target_install(lua_State *L, char* lua_file, str *target) {
 	if (!lua_try_table(L, lua_file, target->data)) return false;
 	lua_try_function(L, lua_file, "pre_install");
-	lua_try_function(L, lua_file, "install");
+	if (!lua_try_function(L, lua_file, "install")) return false;
 	lua_try_function(L, lua_file, "post_install");
 	lua_pop(L, 1);
 	return true;
@@ -74,9 +74,9 @@ bool repo_install(package_t *pkg) {
 		return false;
 	}
 	if (!lua_try_table(L, "init.lua", "targets")) return false;
-	bool target_loop_success = target_loop_install(L, "init.lua", &pkg->target);
+	bool target_success = target_install(L, "init.lua", &pkg->target);
 	lua_pop(L, 3);
-	return target_loop_success;
+	return target_success;
 }
 
 bool bldit_install(package_t *pkg) {
@@ -90,16 +90,16 @@ bool bldit_install(package_t *pkg) {
 	lua_setglobal(B, "prefix");
 	lua_pop(B, 1);
 	lua_try_table(L, "bldit.lua", "targets");
-	bool target_loop_success = target_loop_install(B, "bldit.lua", &pkg->target);
+	bool target_success = target_install(B, "bldit.lua", &pkg->target);
 	lua_pop(B, 1);
 	lua_close(B);
-	return target_loop_success;
+	return target_success;
 }
 
 bool config_install(package_t *pkg) {
 	lua_getglobal(L, "build_systems");
 	lua_pushnil(L);
-	bool target_loop_success = false;
+	bool target_success = false;
 	while (lua_next(L, -2) != 0) {
 		const char *key = lua_tostring(L, -2);
 		if (!lua_istable(L, -1)) {
@@ -113,11 +113,11 @@ bool config_install(package_t *pkg) {
 		}
 		str_free(&file_path);
 		lua_try_table(L, "init.lua", "targets");
-		target_loop_success = target_loop_install(L, "init.lua", &pkg->target);
+		target_success = target_install(L, "init.lua", &pkg->target);
 		lua_pop(L, 2);
 	}
 	lua_pop(L, 1);
-	return target_loop_success;
+	return target_success;
 }
 
 void pkg_install(package_t *pkg) {
