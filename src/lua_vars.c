@@ -18,10 +18,9 @@
 
 */
 
-#include "lua_vars.h"
+#include "pkgit_lua.h"
 
 #include "globs.h"
-#include "lua_globs.h"
 
 void init_install_directories(void) {
 	init_lua_state();
@@ -54,4 +53,16 @@ void init_install_directories(void) {
 #undef X
 
 	lua_pop(L, 1);
+}
+
+void init_prefix_directory(void) {
+  lua_getglobal(L, "prefix");
+  if (!lua_isstring(L, -1)) {
+//    printf(PRINT_ERROR "init.lua: 'prefix' is not a string.\n");
+    lua_isnt_type("prefix", "string.");
+    return;
+  }
+  inst_dirs.prefix = mstr(lua_tostring(L, -1));
+//  snprintf(prefix_dir, MAX_PATH_LEN, "%s", lua_tostring(L, -1));
+  lua_pop(L, 1);
 }

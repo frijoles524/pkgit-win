@@ -24,7 +24,7 @@
 
 #include "files.h"
 #include "log.h"
-#include "lua_vars.h"
+#include "pkgit_lua.h"
 #include "str.h"
 
 install_dirs_t inst_dirs = {0};
@@ -48,6 +48,7 @@ void init_vars(void) {
 
 	cfg.repos = str_format("%.*s/repos.lua", str_fmt(&cfg.dir));
 	init_install_directories();
+	init_prefix_directory();
 }
 
 void free_vars(void) {

@@ -18,25 +18,18 @@
 
 */
 
-#ifndef PKGIT_LUA_GLOBALS_H
-#define PKGIT_LUA_GLOBALS_H
 
-#include <lua.h>
-#include <lauxlib.h>
-#include <lualib.h>
-#include <stdbool.h>
+#include "globs.h"
 
-extern lua_State *L;
-extern lua_State *B;
-extern bool config_loaded;
-
-void push_lua_path(lua_State *L, const char *new_path);
-void init_lua_state(void);
-void init_bldit(void);
-void free_lua_state(void);
-
-lua_State *get_lua_state(void);
-
-void lua_isnt_type(char* variable, char* type);
-
-#endif
+void debug_print_inst_dirs(void) {
+	printf("PREFIX:\t");
+	str_println(&inst_dirs.prefix);
+	printf("ID_BIN:\t");
+	str_println(&inst_dirs.bin);
+	printf("ID_LIB:\t");
+	str_println(&inst_dirs.lib);
+	printf("ID_INCLUDE:\t");
+	str_println(&inst_dirs.include);
+	printf("ID_SRC:\t");
+	str_println(&inst_dirs.src);
+}

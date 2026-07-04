@@ -19,11 +19,13 @@
 */
 
 #include <stdlib.h>
+#include <string.h>
+
+#include "pkgit_lua.h"
 
 #include "files.h"
 #include "globs.h"
 #include "log.h"
-#include "lua_globs.h"
 #include "str.h"
 
 lua_State *L = NULL;
@@ -67,7 +69,7 @@ void init_lua_state(void) {
 	config_loaded = true;
 }
 
-void init_bldit(void) {
+void init_bldit_state(void) {
 	if (B != NULL)
 		return;
 	B = luaL_newstate();
@@ -88,11 +90,78 @@ void free_lua_state(void) {
 	config_loaded = false;
 }
 
-lua_State *get_lua_state(void) {
-	return L;
+void free_bldit_state(void) {
+	if (L != NULL) {
+		lua_close(L);
+		L = NULL;
+	}
+	config_loaded = false;
 }
+
+lua_State *get_lua_state(void) { return L; }
+lua_State *get_bldit_state(void) { return B; }
 
 void lua_isnt_type(char *variable, char *type) {
 	if (flags.verbose)
 		log_error("init.lua: '%s' is not a %s.", variable, type);
+}
+
+void bldit_isnt_type(char *variable, char *type) {
+	if (flags.verbose)
+		log_error("bldit.lua: '%s' is not a %s.", variable, type);
+}
+
+//bool is_bldit_usable() {
+//  const char* bldit_version = bldit_getver();
+//  if (
+//    strcmp(bldit_version, "") != 0 &&
+//    strcmp(bldit_version, version) == 0
+//  ) return true;
+//  bool prev_pass = false;
+//  for (int i = 0; i < strlen(bldit_version); i++) {
+//    if (bldit_version[i] == '.') continue;
+//    if ((bldit_version[i] - '0') <= (version[i] - '0')) {
+//      prev_pass = ((bldit_version[i] - '0') != (version[i] - '0'));
+//      continue;
+//    } else return prev_pass;
+//  }
+//  return true;
+//}
+
+bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
+	lua_getfield(L, -1, fname);
+	if (!lua_isfunction(L, -1)) {
+		if (strcmp(lua_file, "bldit.lua"))
+			bldit_isnt_type(fname, "function");
+		else
+			lua_isnt_type(fname, "function");
+	} else if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
+		log_warn(
+			"%s: '%s' function borked: %s",
+			lua_file, fname, lua_tostring(L, -1)
+		);
+		return false;
+	}
+	if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) {
+		log_warn(
+			"%s: '%s' failed: %s",
+			lua_file, fname, lua_tostring(L, -1)
+		);
+		return false;
+	}
+	lua_pop(L, 1);
+	return true;
+}
+
+bool lua_try_table(lua_State *L, char *lua_file, char *tname) {
+	lua_getfield(L, -1, tname);
+	if (!lua_istable(L, -1)) {
+		if (strcmp(lua_file, "bldit.lua"))
+			bldit_isnt_type(tname, "table");
+		else
+			lua_isnt_type(tname, "table");
+		return false;
+	}
+	lua_pop(L, 1);
+	return true;
 }

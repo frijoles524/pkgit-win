@@ -18,12 +18,37 @@
 
 */
 
-#ifndef PKGIT_LUA_VARS_H
-#define PKGIT_LUA_VARS_H
+#ifndef PKGIT_LUA_H
+#define PKGIT_LUA_H
 
-#include <lauxlib.h>
 #include <lua.h>
+#include <lauxlib.h>
 #include <lualib.h>
+#include <stdbool.h>
 
+extern lua_State *L;
+extern lua_State *B;
+extern bool config_loaded;
+
+// init
+void push_lua_path(lua_State *L, const char *new_path);
+void init_lua_state(void);
+void init_bldit_state(void);
+void free_lua_state(void);
+void free_bldit_state(void);
+lua_State *get_lua_state(void);
+lua_State *get_bldit_state(void);
+
+// gobal vars
 void init_install_directories(void);
+void init_prefix_directory(void);
+
+// helpers
+void lua_isnt_type(char* variable, char* type);
+bool lua_try_function(lua_State *L, char *lua_file, char *fname);
+bool lua_try_table(lua_State *L, char *lua_file, char *tname);
+
+// install
+void install_dependencies(lua_State *L);
+
 #endif

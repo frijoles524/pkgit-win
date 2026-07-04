@@ -177,7 +177,3 @@ void parse_args(int argc, char **argv) {
 	parse_flags(argc, argv);
 	parse_cmds(argc, argv);
 }
-
-void str_parse_args(str *args[]) {
-	if (!args[0]) { help(); return; }
-}
