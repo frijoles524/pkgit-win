@@ -23,6 +23,7 @@
 
 #include "pkgit_lua.h"
 
+#include "add_repo.h"
 #include "build.h"
 #include "files.h"
 #include "globs.h"
@@ -169,7 +170,7 @@ void pkg_install(package_t *pkg) {
 	if (!repo_exists) {
 		log_info("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
 		if (pkg->url.len > 0) {
-			add_repo(pkg->url, pkg->name);
+			add_repo(pkg);
 			log_info("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
 		}
 	} else {
