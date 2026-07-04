@@ -23,6 +23,7 @@
 
 #include "pkgit_lua.h"
 
+#include "build.h"
 #include "files.h"
 #include "globs.h"
 #include "log.h"

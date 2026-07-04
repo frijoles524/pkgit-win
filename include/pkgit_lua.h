@@ -45,6 +45,7 @@ void init_prefix_directory(void);
 
 // helpers
 void lua_isnt_type(char* variable, char* type);
+void bldit_isnt_type(char* variable, char* type);
 bool lua_try_function(lua_State *L, char *lua_file, char *fname);
 bool lua_try_table(lua_State *L, char *lua_file, char *tname);
 

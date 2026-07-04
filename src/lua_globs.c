@@ -79,6 +79,9 @@ void init_bldit_state(void) {
 			log_warn("cannot run bldit: %s", lua_tostring(B, -1));
 		return;
 	}
+	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
+	lua_setglobal(B, "prefix");
+	lua_pop(B, 1);
 	bldit_loaded = true;
 }
 
