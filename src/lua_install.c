@@ -23,6 +23,7 @@
 
 #include "pkgit_lua.h"
 
+#include "files.h"
 #include "globs.h"
 #include "log.h"
 #include "pkg.h"
@@ -61,28 +62,24 @@ bool target_loop_install(lua_State *L, char* lua_file, str *target) {
 	return true;
 }
 
-bool repo_install(const char *repository, const char* target) {
+bool repo_install(package_t *pkg) {
 	lua_getglobal(L, "repositories");
 	if (!config_loaded || !lua_istable(L, -1)) {
 		lua_isnt_type("repositories", "table");
 		lua_pop(L, 1);
 		return false;
 	}
-	str str_repo = mstr(repository);
-	if (!lua_try_table(L, "init.lua", str_repo.data)) {
+	if (!lua_try_table(L, "init.lua", pkg->name.data)) {
 		lua_pop(L, 1);
 		return false;
 	}
-	str_free(&str_repo);
 	if (!lua_try_table(L, "init.lua", "targets")) return false;
-	str str_target = mstr(target);
-	bool target_loop_success = target_loop_install(L, "init.lua", &str_target);
-	str_free(&str_target);
+	bool target_loop_success = target_loop_install(L, "init.lua", &pkg->target);
 	lua_pop(L, 3);
 	return target_loop_success;
 }
 
-bool bldit_install(const char *target) {
+bool bldit_install(package_t *pkg) {
 	init_bldit_state();
 	//if (!is_bldit_usable()) {
 	//	log_error("bldit version is newer than the installed pkgit version");
@@ -93,15 +90,13 @@ bool bldit_install(const char *target) {
 	lua_setglobal(B, "prefix");
 	lua_pop(B, 1);
 	lua_try_table(L, "bldit.lua", "targets");
-	str str_target = mstr(target);
-	bool target_loop_success = target_loop_install(B, "bldit.lua", &str_target);
-	str_free(&str_target);
+	bool target_loop_success = target_loop_install(B, "bldit.lua", &pkg->target);
 	lua_pop(B, 1);
 	lua_close(B);
 	return target_loop_success;
 }
 
-bool config_install(const char *path, const char *target) {
+bool config_install(package_t *pkg) {
 	lua_getglobal(L, "build_systems");
 	lua_pushnil(L);
 	bool target_loop_success = false;
@@ -111,18 +106,72 @@ bool config_install(const char *path, const char *target) {
 			lua_pop(L, 1);
 			continue;
 		}
-		char file_path[MAX_PATH_LEN];
-		snprintf(file_path, sizeof(file_path), "%s/%s", path, key);
-		if (access(file_path, F_OK) != 0) {
+		str file_path = str_format("%.*s/%s", str_fmt(&pkg->src), key);
+		if (access(file_path.data, F_OK) != 0) {
 			lua_pop(L, 1);
 			continue;
 		}
+		str_free(&file_path);
 		lua_try_table(L, "init.lua", "targets");
-		str str_target = mstr(target);
-		target_loop_success = target_loop_install(L, "init.lua", &str_target);
-		str_free(&str_target);
+		target_loop_success = target_loop_install(L, "init.lua", &pkg->target);
 		lua_pop(L, 2);
 	}
 	lua_pop(L, 1);
 	return target_loop_success;
+}
+
+void pkg_install(package_t *pkg) {
+	if (is_directory(pkg->src.data)) {
+		if (!flags.force) {
+			log_info("%.*s is already installed.", &pkg->name);
+			return;
+		} else {
+			log_warn("%.*s is already installed.", &pkg->name);
+		}
+	}
+	char cwd[MAX_PATH_LEN];
+	getcwd(cwd, MAX_PATH_LEN);
+	if (str_equal_cstr(&pkg->src, cwd)) chdir(pkg->src.data);
+
+	//if (pkg->is_local) {
+	//	cpdir(cwd, pkg->src);
+	//} else {
+		log_info("fetching " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+		fetch_src(pkg);
+		log_info("fetched " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+	//}
+
+	log_info("building " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+	build(pkg);
+	log_info("built " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+
+	bool install_success = false;
+	if (!install_success && repo_install(pkg))
+	install_success = true;
+	if (!install_success && bldit_install(pkg))
+	install_success = true;
+	if (!install_success && config_install(pkg))
+	install_success = true;
+	if (!install_success) {
+		log_error("no install function availible for package: %.*s", str_fmt(&pkg->name));
+		return;
+	}
+	log_success("installed " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+
+	bool repo_exists = false;
+	//for (size_t i = 0; i < cached_repos_count; i++) {
+	//char *repo_name = name_from_url(cached_repos[i].source_key);
+	//if (strcmp(repo_name, pkg.name) == 0) { repo_exists = true; }
+	//free(repo_name);
+	//}
+
+	if (!repo_exists) {
+		log_info("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
+		if (pkg->url.len > 0) {
+			add_repo(pkg->url, pkg->name);
+			log_info("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
+		}
+	} else {
+		log_info("repo already exists, done");
+	}
 }
