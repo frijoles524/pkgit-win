@@ -25,6 +25,7 @@
 
 #include "add_repo.h"
 #include "build.h"
+#include "fetch.h"
 #include "files.h"
 #include "globs.h"
 #include "log.h"
@@ -125,10 +126,10 @@ bool config_install(package_t *pkg) {
 void pkg_install(package_t *pkg) {
 	if (is_directory(pkg->src.data)) {
 		if (!flags.force) {
-			log_info("%.*s is already installed.", &pkg->name);
+			log_info("%.*s is already installed.", str_fmt(&pkg->name));
 			return;
 		} else {
-			log_warn("%.*s is already installed.", &pkg->name);
+			log_warn("%.*s is already installed.", str_fmt(&pkg->name));
 		}
 	}
 	char cwd[MAX_PATH_LEN];
@@ -138,14 +139,14 @@ void pkg_install(package_t *pkg) {
 	//if (pkg->is_local) {
 	//	cpdir(cwd, pkg->src);
 	//} else {
-		log_info("fetching " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
-		fetch_src(pkg);
-		log_info("fetched " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+		log_pkgit("fetching " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+		if (!fetch(pkg)) return;
+		log_pkgit("fetched " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 	//}
 
-	log_info("building " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
-	build(pkg);
-	log_info("built " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+	log_pkgit("building " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+	if (!build(pkg)) return;
+	log_pkgit("built " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 
 	bool install_success = false;
 	if (!install_success && repo_install(pkg))
@@ -168,10 +169,10 @@ void pkg_install(package_t *pkg) {
 	//}
 
 	if (!repo_exists) {
-		log_info("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
+		log_pkgit("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
 		if (pkg->url.len > 0) {
 			add_repo(pkg);
-			log_info("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
+			log_pkgit("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
 		}
 	} else {
 		log_info("repo already exists, done");

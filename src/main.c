@@ -20,28 +20,10 @@
 
 #include "parse_args.h"
 #include "globs.h"
-//#include "pkg.h"
-//#include "str.h"
-//#include "debug.h"
 
 int main(int argc, char **argv) {
 	init_vars();
 	parse_args(argc, argv);
-
-	//package_t pkg = pkg_create(mstrslc(argv[1]));
-	//printf("NAME:\t");
-	//str_println(&pkg.name);
-	//printf("URL:\t");
-	//str_println(&pkg.url);
-	//printf("VER:\t");
-	//str_println(&pkg.version);
-	//printf("TRG:\t");
-	//str_println(&pkg.target);
-	//printf("SRC:\t");
-	//str_println(&pkg.src);
-	//pkg_free(&pkg);
-
-	//debug_print_inst_dirs();
 	free_vars();
 	return 0;
 }

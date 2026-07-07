@@ -23,6 +23,6 @@
 
 #include "pkg.h"
 
-void build(package_t *pkg);
+bool build(package_t *pkg);
 
 #endif

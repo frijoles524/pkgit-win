@@ -23,6 +23,6 @@
 
 #include "pkg.h"
 
-void fetch(package_t *pkg);
+bool fetch(package_t *pkg);
 
 #endif

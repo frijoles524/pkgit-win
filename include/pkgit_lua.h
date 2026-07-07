@@ -26,9 +26,12 @@
 #include <lualib.h>
 #include <stdbool.h>
 
+#include "pkg.h"
+
 extern lua_State *L;
 extern lua_State *B;
 extern bool config_loaded;
+extern bool bldit_loaded;
 
 // init
 void push_lua_path(lua_State *L, const char *new_path);
@@ -51,5 +54,6 @@ bool lua_try_table(lua_State *L, char *lua_file, char *tname);
 
 // install
 void install_dependencies(lua_State *L);
+void pkg_install(package_t *pkg);
 
 #endif

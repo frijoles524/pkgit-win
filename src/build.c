@@ -43,24 +43,30 @@ bool target_build(lua_State *L, char* lua_file, str *target) {
 }
 
 bool repo_build(package_t *pkg) {
-  lua_getglobal(L, "repositories");
-  if (!lua_try_table(L, "init.lua", pkg->name.data)) {
-    lua_pop(L, 2);
-    return false;
-  }
-  if (lua_try_table(L, "init.lua", "dependencies")) {
-    lua_pushnil(L);
-    install_dependencies(L);
-  }
-  lua_pop(L, 1);
-  if (!lua_try_table(L, "init.lua", "targets")) return false;
-  bool target_success = target_build(L, "init.lua", &pkg->target);
-  lua_pop(L, 3);
-  return target_success;
+	lua_getglobal(L, "repositories");
+	if (!lua_try_table(L, "init.lua", pkg->name.data)) {
+		lua_pop(L, 2);
+		return false;
+	}
+	if (lua_try_table(L, "init.lua", "dependencies")) {
+		lua_pushnil(L);
+		install_dependencies(L);
+	}
+	lua_pop(L, 1);
+	printf("test\n");
+	if (!lua_try_table(L, "init.lua", "targets")) {
+		lua_pop(L, 3);
+		printf("testtable\n");
+		return false;
+	}
+	bool target_success = target_build(L, "init.lua", &pkg->target);
+	lua_pop(L, 3);
+	return target_success;
 }
 
 bool bldit(package_t *pkg) {
 	init_bldit_state();
+	if (!bldit_loaded) return false;
 	lua_getglobal(B, "dependencies");
 	if (!lua_istable(B, -1)) {
 		bldit_isnt_type("dependencies", "table");
@@ -72,6 +78,7 @@ bool bldit(package_t *pkg) {
 	lua_getglobal(B, "targets");
 	if (!lua_istable(B, -1)) {
 		bldit_isnt_type("targets", "table");
+		lua_pop(B, 3);
 		lua_close(B);
 		return false;
 	}
@@ -83,11 +90,19 @@ bool bldit(package_t *pkg) {
 
 bool config_build(package_t *pkg) {
 	lua_getglobal(L, "build_systems");
+	if (!lua_istable(L, -1)) {
+		lua_isnt_type("build_systems", "table");
+		lua_pop(L, 1);
+		return false;
+	}
 	bool target_success = false;
 	lua_pushnil(L);
 	while (lua_next(L, -2) != 0) {
 		str key = mstr(lua_tostring(L, -2));
-		if (!lua_try_table(L, "init.lua", key.data)) continue;
+		if (!lua_try_table(L, "init.lua", key.data)) {
+			lua_pop(L, 1);
+			continue;
+		}
 		str file_path = str_format("%.*s/%s", str_fmt(&pkg->src), key.data);
 		if (access(file_path.data, F_OK) != 0) {
 			lua_pop(L, 1);
@@ -97,7 +112,7 @@ bool config_build(package_t *pkg) {
 		str_free(&key);
 		if (!lua_try_table(L, "init.lua", "targets")) continue;
 		target_success = target_build(L, "init.lua", &pkg->target);
-		if (target_success) return true;
+		if (target_success) break;
 		lua_pop(L, 1);
 	}
 	lua_pop(L, 1);
@@ -107,7 +122,8 @@ bool config_build(package_t *pkg) {
 bool build_loop(package_t *pkg) {
 	log_info("attempting init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
 	if (repo_build(pkg)) { return true; }
-	log_warn("failed init.lua: 'repositories.%s.build'", str_fmt(&pkg->name));
+	log_warn("failed init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
+	printf("testmeta\n");
 
 	log_info("attempting bldit.lua");
 	if (bldit(pkg)) { return true; }
@@ -119,12 +135,12 @@ bool build_loop(package_t *pkg) {
 	return false;
 }
 
-void build(package_t *pkg) {
-  char cwd[MAX_PATH_LEN];
-  getcwd(cwd, MAX_PATH_LEN);
-  if (str_equal_cstr(&pkg->src, cwd) && !pkg->is_local) chdir(pkg->src.data);
+bool build(package_t *pkg) {
+	char cwd[MAX_PATH_LEN];
+	getcwd(cwd, MAX_PATH_LEN);
+	if (str_equal_cstr(&pkg->src, cwd) && !pkg->is_local) chdir(pkg->src.data);
 
-  //if (lua_build(pkg->name, pkg->target, pkg->is_local ? cwd : pkg->src)) return;
-  log_error("no usable build system was found for %.*s", str_fmt(&pkg->name));
-  exit(EXIT_FAILURE);
+	if (build_loop(pkg)) return true;
+	log_error("no usable build system was found for %.*s", str_fmt(&pkg->name));
+	return false;
 }

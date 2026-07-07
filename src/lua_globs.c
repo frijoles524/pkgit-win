@@ -158,13 +158,14 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 
 bool lua_try_table(lua_State *L, char *lua_file, char *tname) {
 	lua_getfield(L, -1, tname);
+	bool val = true;
 	if (!lua_istable(L, -1)) {
-		if (strcmp(lua_file, "bldit.lua"))
+		val = false;
+		lua_pop(L, 1);
+		if (!strcmp(lua_file, "bldit.lua"))
 			bldit_isnt_type(tname, "table");
 		else
 			lua_isnt_type(tname, "table");
-		return false;
 	}
-	lua_pop(L, 1);
-	return true;
+	return val;
 }

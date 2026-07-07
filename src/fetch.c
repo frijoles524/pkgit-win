@@ -18,9 +18,86 @@
 
 */
 
-#include <git2.h>
+//#include <git2.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include "fetch.h"
 
+#include "globs.h"
+#include "log.h"
+
+//bool fetch(package_t *pkg) {
+//	git_libgit2_init();
+//	git_clone_options clone_opts = GIT_CLONE_OPTIONS_INIT;
+//	clone_opts.checkout_branch = pkg->version.data;
+//	clone_opts.checkout_opts.checkout_strategy = GIT_CHECKOUT_SAFE;
+//	git_repository *repo = NULL;
+//	int error = git_clone(&repo, pkg->url.data, pkg->src.data, NULL);
+//	if (error < 0) {
+//		const git_error *e = git_error_last();
+//		fprintf(stderr, "clone failed: %s\n",
+//			e && e->message ? e->message : "unknown error");
+//		git_libgit2_shutdown();
+//		return false;
+//	}
+//	git_repository_free(repo);
+//	git_libgit2_shutdown();
+//	return true;
+//}
+
 bool fetch(package_t *pkg) {
+	if (pkg->url.data == NULL || pkg->src.data == NULL) {
+		log_warn("invalid pkg: url or src is NULL");
+		return false;
+	}
+
+	pid_t pid = fork();
+	if (pid < 0) {
+		log_error("fork failed");
+		return false;
+	}
+
+	if (pid == 0) {
+		if (!flags.verbose) {
+			int nullfd = open("/dev/null", O_WRONLY);
+			if (nullfd >= 0) {
+				dup2(nullfd, STDOUT_FILENO);
+				dup2(nullfd, STDERR_FILENO);
+				close(nullfd);
+			}
+		}
+
+		const char *argv[12];
+		int i = 0;
+
+		argv[i++] = "git";
+		argv[i++] = "-c";
+		argv[i++] = "advice.detachedHead=false";
+		argv[i++] = "clone";
+
+		if (pkg->version.data != NULL && !str_equal_cstr(&pkg->version, "HEAD")) {
+			argv[i++] = "--branch";
+			argv[i++] = pkg->version.data;
+		}
+
+		argv[i++] = "--recursive";
+		argv[i++] = pkg->url.data;
+		argv[i++] = pkg->src.data;
+		argv[i] = NULL;
+
+		execvp("git", (char *const *)argv);
+		_exit(127);
+	}
+
+	int status;
+	waitpid(pid, &status, 0);
+
+	bool result = (WEXITSTATUS(status) == 0);
+	if (!result) { log_warn("git clone failed"); }
+
+	return result;
 }

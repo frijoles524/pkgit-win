@@ -34,6 +34,7 @@
 #include "pkg.h"
 // #include "pkg_search.h"
 // #include "pkg_install.h"
+#include "pkgit_lua.h"
 // #include "pkg_list.h"
 // #include "pkg_remove.h"
 // #include "pkgit_globals.h"
@@ -79,9 +80,10 @@ void cmd_install(int argc, char **argv, int i) {
 			if (argv[j][0] == '-')
 				continue;
 			printf("install pkg %s\n", argv[j]);
-			// str_slc arg = mstrslc(argv[j]);
-			// package_t pkg = pkg_create(arg);
-			//  pkg_install(pkg);
+			str_slc arg = mstrslc(argv[j]);
+			package_t pkg = pkg_create(arg);
+			pkg_install(&pkg);
+			pkg_free(&pkg);
 		}
 	} else {
 		NOT_ENOUGH_ARGS(argv[i], "url/pkg");
@@ -148,6 +150,7 @@ void parse_flags(int argc, char **argv) {
 			flags_cmd(argc, argv, i);
 		}
 	}
+	return;
 }
 
 void parse_cmds(int argc, char **argv) {
@@ -176,4 +179,5 @@ void parse_args(int argc, char **argv) {
 	}
 	parse_flags(argc, argv);
 	parse_cmds(argc, argv);
+	return;
 }
