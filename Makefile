@@ -38,7 +38,7 @@ default: pkgit
 
 pkgit: $(OBJS)
 	$(E) "  LINK    " $@
-	$(Q) ${CC} -o $@ $^ $(shell pkg-config --libs luajit) $(shell pkg-config --libs libgit2) $(LDFLAGS)
+	$(Q) ${CC} -o $@ $^ $(shell pkg-config --libs luajit) $(shell pkg-config --libs libgit2) $(LDFLAGS) -g
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)

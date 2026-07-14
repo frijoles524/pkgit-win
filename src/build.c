@@ -19,8 +19,6 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 #include "build.h"
@@ -53,10 +51,8 @@ bool repo_build(package_t *pkg) {
 		install_dependencies(L);
 	}
 	lua_pop(L, 1);
-	printf("test\n");
 	if (!lua_try_table(L, "init.lua", "targets")) {
 		lua_pop(L, 3);
-		printf("testtable\n");
 		return false;
 	}
 	bool target_success = target_build(L, "init.lua", &pkg->target);
@@ -99,13 +95,16 @@ bool config_build(package_t *pkg) {
 	lua_pushnil(L);
 	while (lua_next(L, -2) != 0) {
 		str key = mstr(lua_tostring(L, -2));
-		if (!lua_try_table(L, "init.lua", key.data)) {
+		if (!lua_istable(L, -1)) {
 			lua_pop(L, 1);
+			str_free(&key);
 			continue;
 		}
 		str file_path = str_format("%.*s/%s", str_fmt(&pkg->src), key.data);
 		if (access(file_path.data, F_OK) != 0) {
 			lua_pop(L, 1);
+			str_free(&file_path);
+			str_free(&key);
 			continue;
 		}
 		str_free(&file_path);
@@ -123,7 +122,6 @@ bool build_loop(package_t *pkg) {
 	log_info("attempting init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
 	if (repo_build(pkg)) { return true; }
 	log_warn("failed init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
-	printf("testmeta\n");
 
 	log_info("attempting bldit.lua");
 	if (bldit(pkg)) { return true; }

@@ -138,11 +138,13 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 			bldit_isnt_type(fname, "function");
 		else
 			lua_isnt_type(fname, "function");
+		lua_pop(L, 1);
 	} else if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
 		log_warn(
 			"%s: '%s' function borked: %s",
 			lua_file, fname, lua_tostring(L, -1)
 		);
+		lua_pop(L, 1);
 		return false;
 	}
 	if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) {
@@ -150,6 +152,7 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 			"%s: '%s' failed: %s",
 			lua_file, fname, lua_tostring(L, -1)
 		);
+		lua_pop(L, 1);
 		return false;
 	}
 	lua_pop(L, 1);
@@ -158,14 +161,13 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 
 bool lua_try_table(lua_State *L, char *lua_file, char *tname) {
 	lua_getfield(L, -1, tname);
-	bool val = true;
 	if (!lua_istable(L, -1)) {
-		val = false;
-		lua_pop(L, 1);
 		if (!strcmp(lua_file, "bldit.lua"))
 			bldit_isnt_type(tname, "table");
 		else
 			lua_isnt_type(tname, "table");
+		lua_pop(L, 1);
+		return false;
 	}
-	return val;
+	return true;
 }

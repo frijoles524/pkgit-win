@@ -57,9 +57,18 @@ void install_dependencies(lua_State *L) {
 }
 
 bool target_install(lua_State *L, char* lua_file, str *target) {
-	if (!lua_try_table(L, lua_file, target->data)) return false;
+	if (!lua_try_table(L, lua_file, target->data)) {
+		lua_pop(L, 1);
+		return false;
+	}
+	lua_pop(L, 1);
 	lua_try_function(L, lua_file, "pre_install");
-	if (!lua_try_function(L, lua_file, "install")) return false;
+	lua_pop(L, 1);
+	if (!lua_try_function(L, lua_file, "install")) {
+		lua_pop(L, 1);
+		return false;
+	}
+	lua_pop(L, 1);
 	lua_try_function(L, lua_file, "post_install");
 	lua_pop(L, 1);
 	return true;
@@ -73,7 +82,8 @@ bool repo_install(package_t *pkg) {
 		return false;
 	}
 	if (!lua_try_table(L, "init.lua", pkg->name.data)) {
-		lua_pop(L, 1);
+		lua_isnt_type(pkg->name.data, "table");
+		lua_pop(L, 2);
 		return false;
 	}
 	if (!lua_try_table(L, "init.lua", "targets")) return false;
@@ -92,9 +102,9 @@ bool bldit_install(package_t *pkg) {
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
 	lua_setglobal(B, "prefix");
 	lua_pop(B, 1);
-	lua_try_table(L, "bldit.lua", "targets");
+	if (!lua_try_table(B, "bldit.lua", "targets")) return false;
 	bool target_success = target_install(B, "bldit.lua", &pkg->target);
-	lua_pop(B, 1);
+	lua_pop(B, 2);
 	lua_close(B);
 	return target_success;
 }
@@ -115,7 +125,10 @@ bool config_install(package_t *pkg) {
 			continue;
 		}
 		str_free(&file_path);
-		lua_try_table(L, "init.lua", "targets");
+		if (!lua_try_table(L, "init.lua", "targets")) {
+			lua_pop(L, 2);
+			continue;
+		}
 		target_success = target_install(L, "init.lua", &pkg->target);
 		lua_pop(L, 2);
 	}
@@ -149,10 +162,13 @@ void pkg_install(package_t *pkg) {
 	log_pkgit("built " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 
 	bool install_success = false;
+	log_info("attempting init.lua: 'repositories.%.*s.install'", str_fmt(&pkg->name));
 	if (!install_success && repo_install(pkg))
 	install_success = true;
+	log_info("attempting bldit.lua: 'repositories.%.*s.install'", str_fmt(&pkg->name));
 	if (!install_success && bldit_install(pkg))
 	install_success = true;
+	log_info("attempting init.lua: 'build_systems'", str_fmt(&pkg->name));
 	if (!install_success && config_install(pkg))
 	install_success = true;
 	if (!install_success) {
