@@ -27,14 +27,16 @@
 #include "pkgit_lua.h"
 #include "str.h"
 
-str new_arg_str;
-
-static str get_destdir(str_slc cwd, str_slc arg) {
-	str_slc name = str_slc_from_after_delim(arg, '/');
-	if (str_slc_first(arg) == '.')
-		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&cwd));
-	else
-		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&name));
+static str get_destdir(str *cwd, str *arg) {
+	str result;
+	if (str_first(arg) == '.') {
+		result = str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(cwd));
+	} else {
+		str name = str_from_after_delim(arg, '/');
+		result = str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&name));
+		str_free(&name);
+	}
+	return result;
 }
 
 static str get_pkgsrc(package_t pkg) {
@@ -81,59 +83,54 @@ static void assign_pkg_target(package_t *pkg, str *new_arg_str) {
 	} else pkg->target = mstr("default");
 }
 
-package_t pkg_create(str_slc arg) {
+package_t pkg_create(str *arg) {
 	package_t pkg = { .is_local = false, };
 	char cwd[MAX_PATH_LEN];
 	getcwd(cwd, MAX_PATH_LEN);
 
-	str_slc cwd_slc = mstrslc(cwd);
 	str cwd_str = mstr(cwd);
-	str dest_dir = get_destdir(cwd_slc, arg);
-	str tmp_str = str_from_str_slc(arg);
-	str_copy_into(&new_arg_str, &tmp_str);
-	str_free(&tmp_str);
+	str dest_dir = get_destdir(&cwd_str, arg);
 
 	bool is_installed_locally = is_directory(dest_dir.data);
-	bool is_in_repos = pkg_exists(&new_arg_str);
 
-	assign_pkg_version(&pkg, &new_arg_str);
-	assign_pkg_target(&pkg, &new_arg_str);
-	if (str_find_char(&new_arg_str, '@')) {
-		str tmp = str_from_after_delim(&new_arg_str, '@');
-		new_arg_str.len -= tmp.len + 1;
+	assign_pkg_version(&pkg, arg);
+	assign_pkg_target(&pkg, arg);
+	if (str_find_char(arg, '@')) {
+		str tmp = str_from_after_delim(arg, '@');
+		arg->len -= tmp.len + 1;
 		str_free(&tmp);
-	} if (str_find_char(&new_arg_str, ',')) {
-		str tmp = str_from_after_delim(&new_arg_str, ',');
-		new_arg_str.len -= tmp.len + 1;
+	} if (str_find_char(arg, ',')) {
+		str tmp = str_from_after_delim(arg, ',');
+		arg->len -= tmp.len + 1;
 		str_free(&tmp);
 	}
 
-	if (strncmp(arg.data, "http", 4) == 0 || strncmp(arg.data, "ssh", 3) == 0) {
-		pkg.url = new_arg_str;
-		pkg.name = str_from_after_delim(&new_arg_str, '/');
-	} else if (str_slc_equal_cstr(arg, ".")) {
+	if (strncmp(arg->data, "http", 4) == 0 || strncmp(arg->data, "ssh", 3) == 0) {
+		pkg.url = *arg;
+		pkg.name = str_from_after_delim(arg, '/');
+	} else if (str_equal_cstr(arg, ".")) {
 		pkg.url = mstr("");
 		pkg.name = str_from_after_delim(&cwd_str, '/');
 		pkg.is_local = true;
-	} else if (is_in_repos) {
-		str tmp_url = pkg_get_url(&new_arg_str);
+	} else if (pkg_exists(arg)) {
+		str tmp_url = pkg_get_url(arg);
 		str_copy_into(&pkg.url, &tmp_url);
 		str_free(&tmp_url);
-		pkg.name = new_arg_str;
+		pkg.name = *arg;
 	} else if (is_installed_locally) {
 		pkg.url = mstr("");
 		pkg.name = str_from_after_delim(&dest_dir, '/');
 		pkg.is_local = true;
 	} else {
-		log_error("'%.*s' is not a valid package", str_fmt(&arg));
+		log_error("'%.*s' is not a valid package", str_fmt(arg));
 		str_free(&cwd_str);
 		str_free(&dest_dir);
-		str_free(&new_arg_str);
+		str_free(arg);
 		exit(EXIT_FAILURE);
 	}
 
-	if (str_find_char(&new_arg_str, ',')
-		&& str_find_char(&new_arg_str, '@')
+	if (str_find_char(arg, ',')
+		&& str_find_char(arg, '@')
 	) pkg.name.len--;
 	pkg.src = get_pkgsrc(pkg);
 

@@ -36,13 +36,13 @@ void install_dependencies(lua_State *L) {
     const char *depname = lua_tostring(L, -2);
     if (depname && lua_istable(L, -1)) {
       lua_getfield(L, -1, "url");
-      str_slc dep_url = mstrslc(lua_tostring(L, -1));
+      str dep_url = mstr(lua_tostring(L, -1));
       lua_pop(L, 1);
+      package_t pkg = pkg_create(&dep_url);
+      str_free(&dep_url);
       lua_getfield(L, -1, "version");
-      str_slc dep_version = mstrslc(lua_tostring(L, -1));
+      pkg.version = mstr(lua_tostring(L, -1));
       lua_pop(L, 1);
-      package_t pkg = pkg_create(dep_url);
-      pkg.version = str_from_str_slc(dep_version);
       const int top = lua_gettop(L);
       char cwd[MAX_PATH_LEN];
       if (getcwd(cwd, sizeof(cwd)) != NULL) {
@@ -157,21 +157,33 @@ void pkg_install(package_t *pkg) {
 	//} else {
 		log_pkgit("fetching " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 		if (!fetch(pkg)) return;
-		log_pkgit("fetched " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+		if (flags.verbose) log_pkgit("fetched " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 	//}
 
 	log_pkgit("building " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 	if (!build(pkg)) return;
-	log_pkgit("built " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
+	if (flags.verbose) log_pkgit("built " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 
 	bool install_success = false;
-	log_info("attempting init.lua: 'repositories.%.*s.install'", str_fmt(&pkg->name));
+	if (flags.verbose)
+		log_info(
+			"attempting init.lua: 'repositories.%.*s.install'",
+			str_fmt(&pkg->name)
+		);
 	if (!install_success && repo_install(pkg))
 	install_success = true;
-	log_info("attempting bldit.lua: 'repositories.%.*s.install'", str_fmt(&pkg->name));
+	if (flags.verbose)
+		log_info(
+			"attempting bldit.lua: 'repositories.%.*s.install'",
+			str_fmt(&pkg->name)
+		);
 	if (!install_success && bldit_install(pkg))
 	install_success = true;
-	log_info("attempting init.lua: 'build_systems'", str_fmt(&pkg->name));
+	if (flags.verbose)
+		log_info(
+			"attempting init.lua: 'build_systems'",
+			str_fmt(&pkg->name)
+		);
 	if (!install_success && config_install(pkg))
 	install_success = true;
 	if (!install_success) {

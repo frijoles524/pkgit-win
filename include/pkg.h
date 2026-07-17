@@ -27,7 +27,7 @@ typedef struct {
 	bool is_local;
 } package_t;
 
-package_t pkg_create(str_slc arg);
+package_t pkg_create(str *arg);
 void pkg_free(package_t *pkg);
 
 #endif

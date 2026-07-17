@@ -164,7 +164,7 @@ static int remove_tree(
 	return 0;
 }
 
-void remove_pkg(package_t *pkg) {
+void pkg_remove(package_t *pkg) {
 	if (!is_directory(pkg->src.data)) {
 		log_error("%.*s is not installed!", str_fmt(&pkg->name));
 		return;
@@ -179,11 +179,13 @@ void remove_pkg(package_t *pkg) {
 	if (!uninstall_available) if (config_uninstall(pkg))
 		uninstall_available = true;
 
-	if (!uninstall_available)
+	if (!uninstall_available) {
 		log_error(
 			"no uninstall function availible for package: %.*s",
 			str_fmt(&pkg->name)
 		);
+		return;
+	}
 
 	nftw(pkg->src.data, remove_installed, 64, FTW_PHYS);
 	const char *last_slash = strrchr(pkg->src.data, '/');
@@ -195,5 +197,5 @@ void remove_pkg(package_t *pkg) {
 		snprintf(target, sizeof(target), "%s", pkg->src.data);
 	}
 	nftw(pkg->src.data, remove_tree, 64, FTW_DEPTH | FTW_PHYS);
-	log_success("removed %s", str_fmt(&pkg->name));
+	log_success("removed %.*s", str_fmt(&pkg->name));
 }

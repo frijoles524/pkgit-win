@@ -27,18 +27,11 @@
 #include "globs.h"
 #include "log.h"
 #include "str.h"
-// #include "declare.h"
 // #include "easter_egg.h"
 #include "help.h"
 #include "pkg.h"
-// #include "pkg_search.h"
-// #include "pkg_install.h"
 #include "pkgit_lua.h"
-// #include "pkg_list.h"
-// #include "pkg_remove.h"
-// #include "pkgit_globals.h"
 #include "add_repo.h"
-// #include "update.h"
 
 #define COMMAND(large, small)                                                  \
 	(!strcmp(argv[i], large) || !strcmp(argv[i], small))
@@ -48,9 +41,8 @@
 
 void cmd_add(char **argv, int i) {
 	if (argv[i + 1]) {
-		printf("add repo %s\n", argv[i + 1]);
-		str_slc arg = mstrslc(argv[i + 1]);
-		package_t pkg = pkg_create(arg);
+		str arg = mstr(argv[i + 1]);
+		package_t pkg = pkg_create(&arg);
 		add_repo(&pkg);
 		pkg_free(&pkg);
 	} else {
@@ -63,14 +55,14 @@ void cmd_build(int argc, char **argv, int i) {
 		for (int j = i + 1; j < argc; j++) {
 			if (argv[j][0] == '-')
 				continue;
-			str_slc arg = mstrslc(argv[j]);
-			package_t pkg = pkg_create(arg);
+			str arg = mstr(argv[j]);
+			package_t pkg = pkg_create(&arg);
 			build(&pkg);
 			pkg_free(&pkg);
 		}
 	} else {
-		str_slc arg = mstrslc(".");
-		package_t pkg = pkg_create(arg);
+		str arg = mstr(".");
+		package_t pkg = pkg_create(&arg);
 		build(&pkg);
 		pkg_free(&pkg);
 	}
@@ -81,8 +73,8 @@ void cmd_install(int argc, char **argv, int i) {
 		for (int j = i + 1; j < argc; j++) {
 			if (argv[j][0] == '-')
 				continue;
-			str_slc arg = mstrslc(argv[j]);
-			package_t pkg = pkg_create(arg);
+			str arg = mstr(argv[j]);
+			package_t pkg = pkg_create(&arg);
 			pkg_install(&pkg);
 			pkg_free(&pkg);
 		}
@@ -94,12 +86,11 @@ void cmd_install(int argc, char **argv, int i) {
 void cmd_remove(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-')
-				continue;
-			printf("remove pkg %s\n", argv[j]);
-			// str_slc arg = mstrslc(argv[j]);
-			// package_t pkg = pkg_create(arg);
-			//  pkg_remove(pkg);
+			if (argv[j][0] == '-') continue;
+			str arg = mstr(argv[j]);
+			package_t pkg = pkg_create(&arg);
+			pkg_remove(&pkg);
+			pkg_free(&pkg);
 		}
 	} else {
 		NOT_ENOUGH_ARGS(argv[i], "url/pkg");
@@ -171,7 +162,6 @@ void parse_cmds(int argc, char **argv) {
 }
 
 void parse_args(int argc, char **argv) {
-	// default
 	flags.force = false;
 	flags.verbose = true;
 	if (argc == 1) {
