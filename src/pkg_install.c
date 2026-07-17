@@ -61,15 +61,12 @@ bool target_install(lua_State *L, char* lua_file, str *target) {
 		lua_pop(L, 1);
 		return false;
 	}
-	lua_pop(L, 1);
-	lua_try_function(L, lua_file, "pre_install");
-	lua_pop(L, 1);
+	//lua_try_function(L, lua_file, "pre_install");
 	if (!lua_try_function(L, lua_file, "install")) {
 		lua_pop(L, 1);
 		return false;
 	}
-	lua_pop(L, 1);
-	lua_try_function(L, lua_file, "post_install");
+	//lua_try_function(L, lua_file, "post_install");
 	lua_pop(L, 1);
 	return true;
 }
@@ -94,6 +91,10 @@ bool repo_install(package_t *pkg) {
 
 bool bldit_install(package_t *pkg) {
 	init_bldit_state();
+	if (!bldit_loaded) {
+		lua_close(B);
+		return false;
+	}
 	//if (!is_bldit_usable()) {
 	//	log_error("bldit version is newer than the installed pkgit version");
 	//	log_error("consider updating pkgit");
@@ -122,6 +123,7 @@ bool config_install(package_t *pkg) {
 		str file_path = str_format("%.*s/%s", str_fmt(&pkg->src), key);
 		if (access(file_path.data, F_OK) != 0) {
 			lua_pop(L, 1);
+			str_free(&file_path);
 			continue;
 		}
 		str_free(&file_path);
@@ -131,6 +133,7 @@ bool config_install(package_t *pkg) {
 		}
 		target_success = target_install(L, "init.lua", &pkg->target);
 		lua_pop(L, 2);
+		if (target_success) break;
 	}
 	lua_pop(L, 1);
 	return target_success;
@@ -142,7 +145,7 @@ void pkg_install(package_t *pkg) {
 			log_info("%.*s is already installed.", str_fmt(&pkg->name));
 			return;
 		} else {
-			log_warn("%.*s is already installed.", str_fmt(&pkg->name));
+			if (flags.verbose) log_warn("%.*s is already installed.", str_fmt(&pkg->name));
 		}
 	}
 	char cwd[MAX_PATH_LEN];
@@ -177,20 +180,21 @@ void pkg_install(package_t *pkg) {
 	}
 	log_success("installed " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 
-	bool repo_exists = false;
+	//bool repo_exists = false;
+
 	//for (size_t i = 0; i < cached_repos_count; i++) {
 	//char *repo_name = name_from_url(cached_repos[i].source_key);
 	//if (strcmp(repo_name, pkg.name) == 0) { repo_exists = true; }
 	//free(repo_name);
 	//}
 
-	if (!repo_exists) {
-		log_pkgit("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
-		if (pkg->url.len > 0) {
-			add_repo(pkg);
-			log_pkgit("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
-		}
-	} else {
-		log_info("repo already exists, done");
-	}
+	//if (!repo_exists) {
+	//	log_pkgit("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
+	//	if (pkg->url.len > 0) {
+	//		add_repo(pkg);
+	//		log_pkgit("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
+	//	}
+	//} else {
+	//	log_info("repo already exists, done");
+	//}
 }

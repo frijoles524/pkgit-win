@@ -61,7 +61,7 @@ void init_lua_state(void) {
 	}
 	if (file_exists(cfg.repos.data)) {
 		if (luaL_loadfile(L, cfg.repos.data) || lua_pcall(L, 0, 0, 0)) {
-			log_warn("cannot load repository file: %s", lua_tostring(L, -1));
+			if (flags.verbose) log_warn("cannot load repository file: %s", lua_tostring(L, -1));
 			lua_pop(L, 1);
 		}
 	}
@@ -76,7 +76,7 @@ void init_bldit_state(void) {
 	luaL_openlibs(B);
 	if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
 		if (flags.verbose)
-			log_warn("cannot run bldit: %s", lua_tostring(B, -1));
+			if (flags.verbose) log_warn("cannot run bldit: %s", lua_tostring(B, -1));
 		return;
 	}
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
@@ -140,7 +140,7 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 			lua_isnt_type(fname, "function");
 		lua_pop(L, 1);
 	} else if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
-		log_warn(
+		if (flags.verbose) log_warn(
 			"%s: '%s' function borked: %s",
 			lua_file, fname, lua_tostring(L, -1)
 		);
@@ -148,7 +148,7 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 		return false;
 	}
 	if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) {
-		log_warn(
+		if (flags.verbose) log_warn(
 			"%s: '%s' failed: %s",
 			lua_file, fname, lua_tostring(L, -1)
 		);
@@ -166,7 +166,6 @@ bool lua_try_table(lua_State *L, char *lua_file, char *tname) {
 			bldit_isnt_type(tname, "table");
 		else
 			lua_isnt_type(tname, "table");
-		lua_pop(L, 1);
 		return false;
 	}
 	return true;

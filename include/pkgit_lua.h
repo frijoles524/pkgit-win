@@ -51,9 +51,17 @@ void lua_isnt_type(char* variable, char* type);
 void bldit_isnt_type(char* variable, char* type);
 bool lua_try_function(lua_State *L, char *lua_file, char *fname);
 bool lua_try_table(lua_State *L, char *lua_file, char *tname);
+bool pkg_exists(str *name);
+str pkg_get_url(str *name);
 
 // install
 void install_dependencies(lua_State *L);
 void pkg_install(package_t *pkg);
+
+// remove
+bool repo_uninstall(package_t *pkg);
+bool bldit_uninstall(package_t *pkg);
+bool config_uninstall(package_t *pkg);
+void pkg_remove(package_t *pkg);
 
 #endif

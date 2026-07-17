@@ -51,7 +51,7 @@
 
 bool fetch(package_t *pkg) {
 	if (pkg->url.data == NULL || pkg->src.data == NULL) {
-		log_warn("invalid pkg: url or src is NULL");
+		if (flags.verbose) log_warn("invalid pkg: url or src is NULL");
 		return false;
 	}
 
@@ -97,7 +97,7 @@ bool fetch(package_t *pkg) {
 	waitpid(pid, &status, 0);
 
 	bool result = (WEXITSTATUS(status) == 0);
-	if (!result) { log_warn("git clone failed"); }
+	if (!result) { log_error("git clone failed"); }
 
 	return result;
 }

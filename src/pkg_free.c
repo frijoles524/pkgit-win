@@ -1,4 +1,5 @@
 #include "pkg.h"
+#include "globs.h"
 
 void pkg_free(package_t *pkg) {
 	str_free(&pkg->name);
@@ -6,4 +7,5 @@ void pkg_free(package_t *pkg) {
 	str_free(&pkg->version);
 	str_free(&pkg->target);
 	str_free(&pkg->src);
+	str_free(&new_arg_str);
 }

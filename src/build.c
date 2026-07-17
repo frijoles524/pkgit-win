@@ -12,7 +12,6 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
@@ -35,8 +34,7 @@ bool target_build(lua_State *L, char* lua_file, str *target) {
 		install_dependencies(L);
 	}
 	lua_pop(L, 1);
-	if (!lua_try_function(L, lua_file, "build"))
-	lua_pop(L, 2);
+	if (!lua_try_function(L, lua_file, "build")) return false;
 	return true;
 }
 
@@ -56,7 +54,7 @@ bool repo_build(package_t *pkg) {
 		return false;
 	}
 	bool target_success = target_build(L, "init.lua", &pkg->target);
-	lua_pop(L, 3);
+	lua_pop(L, 4);
 	return target_success;
 }
 
@@ -119,24 +117,24 @@ bool config_build(package_t *pkg) {
 }
 
 bool build_loop(package_t *pkg) {
-	log_info("attempting init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
+	if (flags.verbose) log_info("attempting init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
 	if (repo_build(pkg)) { return true; }
-	log_warn("failed init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
+	if (flags.verbose) log_warn("failed init.lua: 'repositories.%.*s.build'", str_fmt(&pkg->name));
 
-	log_info("attempting bldit.lua");
+	if (flags.verbose) log_info("attempting bldit.lua");
 	if (bldit(pkg)) { return true; }
-	log_warn("failed bldit.lua");
+	if (flags.verbose) log_warn("failed bldit.lua");
 
-	log_info("attempting init.lua: 'build_systems'");
+	if (flags.verbose) log_info("attempting init.lua: 'build_systems'");
 	if (config_build(pkg)) { return true; }
-	log_warn("failed init.lua: 'build_systems'");
+	if (flags.verbose) log_warn("failed init.lua: 'build_systems'");
 	return false;
 }
 
 bool build(package_t *pkg) {
 	char cwd[MAX_PATH_LEN];
 	getcwd(cwd, MAX_PATH_LEN);
-	if (str_equal_cstr(&pkg->src, cwd) && !pkg->is_local) chdir(pkg->src.data);
+	if (!str_equal_cstr(&pkg->src, cwd) && !pkg->is_local) chdir(pkg->src.data);
 
 	if (build_loop(pkg)) return true;
 	log_error("no usable build system was found for %.*s", str_fmt(&pkg->name));

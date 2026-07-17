@@ -24,7 +24,7 @@
 
 #include "str.h"
 
-#define VERSION "1.4.0_INDEV"
+#define VERSION "1.2.0_INDEV"
 #define RED "\x1b[0;31m"
 #define GREEN "\x1b[0;32m"
 #define YELLOW "\x1b[0;33m"
@@ -121,6 +121,7 @@ typedef struct {
 extern cli_flags_t flags;
 extern config_t cfg;
 extern install_dirs_t inst_dirs;
+extern str new_arg_str;
 
 void init_vars(void);
 void free_vars(void);

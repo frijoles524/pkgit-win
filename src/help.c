@@ -21,7 +21,6 @@
 #include <stdio.h>
 
 #include "help.h"
-
 #include "globs.h"
 
 void help(void) {
@@ -70,7 +69,7 @@ void help(void) {
 
 	printf(RED "subcommand flags" COLOR_RESET ":\n");
 	for (size_t i = 0; i < LENGTH(cmd_flags); i++) {
-		printf(COLOR_RESET "\t" GREEN "%-2s" COLOR_RESET ", " YELLOW
+		printf(COLOR_RESET "  " GREEN "%-2s" COLOR_RESET ", " YELLOW
 						   "%-12s" BLUE "%-16s" GRAY "# %s\n" COLOR_RESET,
 			   cmd_flags[i].short_flag, cmd_flags[i].long_flag,
 			   cmd_flags[i].arg, cmd_flags[i].desc);
@@ -78,7 +77,7 @@ void help(void) {
 
 	printf("\n" RED "modifier flags" COLOR_RESET ":\n");
 	for (size_t i = 0; i < LENGTH(mod_flags); i++) {
-		printf(COLOR_RESET "\t" GREEN "%-2s" COLOR_RESET ", " YELLOW
+		printf(COLOR_RESET "  " GREEN "%-2s" COLOR_RESET ", " YELLOW
 						   "%-12s" BLUE "%-16s" GRAY "# %s\n" COLOR_RESET,
 			   mod_flags[i].short_flag, mod_flags[i].long_flag,
 			   mod_flags[i].arg, mod_flags[i].desc);

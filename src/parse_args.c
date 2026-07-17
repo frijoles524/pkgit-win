@@ -23,14 +23,13 @@
 
 #include "parse_args.h"
 
+#include "build.h"
 #include "globs.h"
 #include "log.h"
 #include "str.h"
 // #include "declare.h"
 // #include "easter_egg.h"
 #include "help.h"
-// #include "name_from_url.h"
-// #include "pkg_build.h"
 #include "pkg.h"
 // #include "pkg_search.h"
 // #include "pkg_install.h"
@@ -38,7 +37,7 @@
 // #include "pkg_list.h"
 // #include "pkg_remove.h"
 // #include "pkgit_globals.h"
-// #include "repo_add.h"
+#include "add_repo.h"
 // #include "update.h"
 
 #define COMMAND(large, small)                                                  \
@@ -50,7 +49,10 @@
 void cmd_add(char **argv, int i) {
 	if (argv[i + 1]) {
 		printf("add repo %s\n", argv[i + 1]);
-		// repo_add(argv[i + 1], name_from_url(argv[i + 1]));
+		str_slc arg = mstrslc(argv[i + 1]);
+		package_t pkg = pkg_create(arg);
+		add_repo(&pkg);
+		pkg_free(&pkg);
 	} else {
 		NOT_ENOUGH_ARGS(argv[i], "url");
 	}
@@ -61,16 +63,16 @@ void cmd_build(int argc, char **argv, int i) {
 		for (int j = i + 1; j < argc; j++) {
 			if (argv[j][0] == '-')
 				continue;
-			printf("build pkg %s\n", argv[j]);
-			// str_slc arg = mstrslc(argv[j]);
-			// package_t pkg = pkg_create(arg);
-			//  pkg_build(pkg);
+			str_slc arg = mstrslc(argv[j]);
+			package_t pkg = pkg_create(arg);
+			build(&pkg);
+			pkg_free(&pkg);
 		}
 	} else {
-		printf("build pkg .\n");
-		// str_slc arg = mstrslc(".");
-		// package_t pkg = pkg_create(arg);
-		//  pkg_build(pkg);
+		str_slc arg = mstrslc(".");
+		package_t pkg = pkg_create(arg);
+		build(&pkg);
+		pkg_free(&pkg);
 	}
 }
 
@@ -79,7 +81,6 @@ void cmd_install(int argc, char **argv, int i) {
 		for (int j = i + 1; j < argc; j++) {
 			if (argv[j][0] == '-')
 				continue;
-			printf("install pkg %s\n", argv[j]);
 			str_slc arg = mstrslc(argv[j]);
 			package_t pkg = pkg_create(arg);
 			pkg_install(&pkg);
