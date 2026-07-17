@@ -12,22 +12,17 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
+  
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
-#ifndef PKGIT_FILES_H
-#define PKGIT_FILES_H
+#ifndef PKGIT_IS_UPDATED_H
+#define PKGIT_IS_UPDATED_H
 
 #include <stdbool.h>
-
 #include "str.h"
-
-bool file_exists(const char *path);
-bool is_directory(const char *path);
-str cmd_out(const char *cmd);
-void cpdir(const char *src_path, const char *dst_path);
+bool is_updated(str *src);
 
 #endif

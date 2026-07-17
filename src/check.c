@@ -1,6 +1,5 @@
 /*
-
-  pkgit - package it!
+pkgit - package it!
 
   Copyright (C) 2026 dacctal
   This program is free software: you can redistribute it and/or modify
@@ -18,16 +17,27 @@
 
 */
 
-#ifndef PKGIT_FILES_H
-#define PKGIT_FILES_H
+#include <stdio.h>
+#include <unistd.h>
 
-#include <stdbool.h>
+#include "check.h"
 
-#include "str.h"
+void check(void) {
+	const char *frame_top = "  (c _c)";
+	const char *frame1_bot = "_/      \\-";
+	const char *frame2_bot = "-/      \\_";
 
-bool file_exists(const char *path);
-bool is_directory(const char *path);
-str cmd_out(const char *cmd);
-void cpdir(const char *src_path, const char *dst_path);
+	printf("\033[2J\033[H");
+	printf("Unfortunately due to budget issues, we could not afford a progress bar. Enjoy this instead:\n\n");
 
-#endif
+	for (int i = 0; i < 16; i++) {
+		printf("%s\n%s\n", frame_top, i % 2 == 0 ? frame1_bot : frame2_bot);
+		for (int j = 0; j <= i; j++) printf(".");
+		printf("\n");
+		fflush(stdout);
+		sleep(1);
+		if (i < 15) printf("\033[3A");
+	}
+	printf("\n");
+	printf("Dependencies resolved! (this does nothing)\n");
+}

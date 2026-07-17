@@ -114,23 +114,6 @@ void bldit_isnt_type(char *variable, char *type) {
 		log_error("bldit.lua: '%s' is not a %s.", variable, type);
 }
 
-//bool is_bldit_usable() {
-//  const char* bldit_version = bldit_getver();
-//  if (
-//    strcmp(bldit_version, "") != 0 &&
-//    strcmp(bldit_version, version) == 0
-//  ) return true;
-//  bool prev_pass = false;
-//  for (int i = 0; i < strlen(bldit_version); i++) {
-//    if (bldit_version[i] == '.') continue;
-//    if ((bldit_version[i] - '0') <= (version[i] - '0')) {
-//      prev_pass = ((bldit_version[i] - '0') != (version[i] - '0'));
-//      continue;
-//    } else return prev_pass;
-//  }
-//  return true;
-//}
-
 bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 	lua_getfield(L, -1, fname);
 	if (!lua_isfunction(L, -1)) {
@@ -168,5 +151,57 @@ bool lua_try_table(lua_State *L, char *lua_file, char *tname) {
 			lua_isnt_type(tname, "table");
 		return false;
 	}
+	return true;
+}
+
+str bldit_getver(void) {
+	init_bldit_state();
+	if (!bldit_loaded) {
+		return mstr("");
+	}
+	lua_getglobal(B, "bldit_version");
+	if (!lua_isstring(B, -1)) {
+		if (flags.verbose)
+			log_warn("bldit.lua: 'bldit_version' is not a string.");
+		lua_pop(B, 1);
+		return mstr("");
+	}
+	str bldit_version = mstr(lua_tostring(B, -1));
+	lua_pop(B, 1);
+	return bldit_version;
+}
+
+str bldit_pkg_getver(void) {
+	init_bldit_state();
+	lua_getglobal(B, "package_version");
+	if (!lua_isstring(B, -1)) {
+		if (flags.verbose)
+			log_warn("bldit.lua: 'package_version' is not a string.");
+		lua_pop(B, 1);
+		return mstr("");
+	}
+	str package_version = mstr(lua_tostring(B, -1));
+	lua_pop(B, 1);
+	return package_version;
+}
+
+bool is_bldit_usable(void) {
+	str bldit_version = bldit_getver();
+	if (
+		strcmp(bldit_version.data, "") != 0 &&
+		strcmp(bldit_version.data, VERSION) == 0
+	) return true;
+	bool prev_pass = false;
+	for (size_t i = 0; i < bldit_version.len; i++) {
+		if (bldit_version.data[i] == '.') continue;
+		if ((bldit_version.data[i] - '0') <= (VERSION[i] - '0')) {
+			prev_pass = ((bldit_version.data[i] - '0') != (VERSION[i] - '0'));
+			continue;
+		} else {
+			str_free(&bldit_version);
+			return prev_pass;
+		}
+	}
+	str_free(&bldit_version);
 	return true;
 }

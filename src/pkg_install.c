@@ -18,7 +18,7 @@
 
 */
 
-
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "pkgit_lua.h"
@@ -46,7 +46,7 @@ void install_dependencies(lua_State *L) {
       const int top = lua_gettop(L);
       char cwd[MAX_PATH_LEN];
       if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        //install_pkg(pkg);
+        pkg_install(&pkg);
         chdir(cwd);
       }
       lua_settop(L, top);
@@ -92,14 +92,13 @@ bool repo_install(package_t *pkg) {
 bool bldit_install(package_t *pkg) {
 	init_bldit_state();
 	if (!bldit_loaded) {
-		lua_close(B);
 		return false;
 	}
-	//if (!is_bldit_usable()) {
-	//	log_error("bldit version is newer than the installed pkgit version");
-	//	log_error("consider updating pkgit");
-	//	if (!flags.force) return false;
-	//}
+	if (!is_bldit_usable()) {
+		log_error("bldit version is newer than the installed pkgit version");
+		log_error("consider updating pkgit");
+		if (!flags.force) return false;
+	}
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
 	lua_setglobal(B, "prefix");
 	lua_pop(B, 1);
@@ -145,68 +144,57 @@ void pkg_install(package_t *pkg) {
 			log_info("%.*s is already installed.", str_fmt(&pkg->name));
 			return;
 		} else {
-			if (flags.verbose) log_warn("%.*s is already installed.", str_fmt(&pkg->name));
+			if (flags.verbose) log_warn("%.*s is already installed. reinstalling...", str_fmt(&pkg->name));
 		}
+	} else {
+		mkdir(pkg->src.data, 0755);
+		chdir(inst_dirs.src.data);
 	}
 	char cwd[MAX_PATH_LEN];
 	getcwd(cwd, MAX_PATH_LEN);
 	if (str_equal_cstr(&pkg->src, cwd)) chdir(pkg->src.data);
 
-	//if (pkg->is_local) {
-	//	cpdir(cwd, pkg->src);
-	//} else {
+	if (pkg->is_local) {
+		cpdir(cwd, pkg->src.data);
+	} else {
 		log_pkgit("fetching " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 		if (!fetch(pkg)) return;
 		if (flags.verbose) log_pkgit("fetched " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
-	//}
+	}
 
 	log_pkgit("building " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 	if (!build(pkg)) return;
 	if (flags.verbose) log_pkgit("built " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 
 	bool install_success = false;
-	if (flags.verbose)
-		log_info(
+	if (flags.verbose) log_info(
 			"attempting init.lua: 'repositories.%.*s.install'",
 			str_fmt(&pkg->name)
 		);
-	if (!install_success && repo_install(pkg))
-	install_success = true;
-	if (flags.verbose)
-		log_info(
+	if (!install_success && repo_install(pkg)) install_success = true;
+	if (flags.verbose) log_info(
 			"attempting bldit.lua: 'repositories.%.*s.install'",
 			str_fmt(&pkg->name)
 		);
-	if (!install_success && bldit_install(pkg))
-	install_success = true;
-	if (flags.verbose)
-		log_info(
+	if (!install_success && bldit_install(pkg)) install_success = true;
+	if (flags.verbose) log_info(
 			"attempting init.lua: 'build_systems'",
 			str_fmt(&pkg->name)
 		);
-	if (!install_success && config_install(pkg))
-	install_success = true;
+	if (!install_success && config_install(pkg)) install_success = true;
 	if (!install_success) {
 		log_error("no install function availible for package: %.*s", str_fmt(&pkg->name));
 		return;
 	}
 	log_success("installed " GREEN "%.*s" COLOR_RESET , str_fmt(&pkg->name));
 
-	//bool repo_exists = false;
-
-	//for (size_t i = 0; i < cached_repos_count; i++) {
-	//char *repo_name = name_from_url(cached_repos[i].source_key);
-	//if (strcmp(repo_name, pkg.name) == 0) { repo_exists = true; }
-	//free(repo_name);
-	//}
-
-	//if (!repo_exists) {
-	//	log_pkgit("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
-	//	if (pkg->url.len > 0) {
-	//		add_repo(pkg);
-	//		log_pkgit("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
-	//	}
-	//} else {
-	//	log_info("repo already exists, done");
-	//}
+	if (!pkg_exists(&pkg->name)) {
+		log_pkgit("adding " GREEN "%.*s" COLOR_RESET , &pkg->name);
+		if (pkg->url.len > 0) {
+			add_repo(pkg);
+			log_pkgit("added " GREEN "%.*s" COLOR_RESET , &pkg->name);
+		}
+	} else {
+		log_info("repo already exists, done");
+	}
 }

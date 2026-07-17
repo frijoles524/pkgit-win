@@ -27,7 +27,7 @@
 #include "globs.h"
 #include "log.h"
 #include "str.h"
-// #include "easter_egg.h"
+#include "check.h"
 #include "help.h"
 #include "pkg.h"
 #include "pkgit_lua.h"
@@ -45,6 +45,7 @@ void cmd_add(char **argv, int i) {
 		package_t pkg = pkg_create(&arg);
 		add_repo(&pkg);
 		pkg_free(&pkg);
+		if (str_is_valid(&arg)) str_free(&arg);
 	} else {
 		NOT_ENOUGH_ARGS(argv[i], "url");
 	}
@@ -59,27 +60,45 @@ void cmd_build(int argc, char **argv, int i) {
 			package_t pkg = pkg_create(&arg);
 			build(&pkg);
 			pkg_free(&pkg);
+			if (str_is_valid(&arg)) str_free(&arg);
 		}
 	} else {
 		str arg = mstr(".");
 		package_t pkg = pkg_create(&arg);
 		build(&pkg);
 		pkg_free(&pkg);
+		if (str_is_valid(&arg)) str_free(&arg);
 	}
 }
 
 void cmd_install(int argc, char **argv, int i) {
 	if (argv[i + 1]) {
 		for (int j = i + 1; j < argc; j++) {
-			if (argv[j][0] == '-')
-				continue;
+			if (argv[j][0] == '-') continue;
 			str arg = mstr(argv[j]);
 			package_t pkg = pkg_create(&arg);
+			if (flags.force) pkg_remove(&pkg);
 			pkg_install(&pkg);
 			pkg_free(&pkg);
+			if (str_is_valid(&arg)) str_free(&arg);
 		}
 	} else {
 		NOT_ENOUGH_ARGS(argv[i], "url/pkg");
+	}
+}
+
+void cmd_update(int argc, char **argv, int i) {
+	if (argv[i + 1]) {
+		for (int j = i + 1; j < argc; j++) {
+			if (argv[j][0] == '-') continue;
+			str arg = mstr(argv[j]);
+			package_t pkg = pkg_create(&arg);
+			pkg_update(&pkg);
+			pkg_free(&pkg);
+			if (str_is_valid(&arg)) str_free(&arg);
+		}
+	} else {
+		all_update();
 	}
 }
 
@@ -91,6 +110,7 @@ void cmd_remove(int argc, char **argv, int i) {
 			package_t pkg = pkg_create(&arg);
 			pkg_remove(&pkg);
 			pkg_free(&pkg);
+			if (str_is_valid(&arg)) str_free(&arg);
 		}
 	} else {
 		NOT_ENOUGH_ARGS(argv[i], "url/pkg");
@@ -117,11 +137,11 @@ void flags_cmd(int argc, char **argv, int i) {
 		switch (argv[i][j]) {
 		case 'a':	cmd_add(argv, i);			break;
 		case 'b':	cmd_build(argc, argv, i);	break;
-		case 'c':	panic("not implemented");	printf("easter_egg\n");	break;
+		case 'c':	check();					break;
 		case 'd':	panic("not implemented");	printf("declare\n");	break;
 		case 'i':	cmd_install(argc, argv, i);	break;
 		case 'r':	cmd_remove(argc, argv, i);	break;
-		case 'u':	panic("not implemented");	printf("update\n");		break;
+		case 'u':	cmd_update(argc, argv, i);	break;
 		case 'l':	panic("not implemented");	printf("list\n");		break;
 		case 's':	panic("not implemented");	printf("search\n");		break;
 		case 'v':	printf("%s\n", VERSION);	break;
@@ -151,13 +171,13 @@ void parse_cmds(int argc, char **argv) {
 		if (COMMAND("--build", "b"))	{ cmd_build(argc, argv, i); }
 		if (COMMAND("--install", "i"))	{ cmd_install(argc, argv, i); }
 		if (COMMAND("--remove", "r"))	{ cmd_remove(argc, argv, i); }
-		if (COMMAND("--update", "u"))	{ panic("not implemented"); }
+		if (COMMAND("--update", "u"))	{ cmd_update(argc, argv, i); }
 		if (COMMAND("--declare", "d"))	{ panic("not implemented"); }
 		if (COMMAND("--list", "l"))		{ panic("not implemented"); }
 		if (COMMAND("--search", "s"))	{ panic("not implemented"); }
 		if (COMMAND("--version", "v"))	{ printf(VERSION "\n"); }
 		if (COMMAND("--help", "h"))		{ help(); }
-		if (COMMAND("--check", "c"))	{ panic("not implemented"); }
+		if (COMMAND("--check", "c"))	{ check(); }
 	}
 }
 

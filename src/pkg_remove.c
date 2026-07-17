@@ -66,11 +66,11 @@ bool bldit_uninstall(package_t *pkg) {
 		lua_close(B);
 		return false;
 	}
-	//if (!is_bldit_usable()) {
-	//	log_error("bldit version is newer than the installed pkgit version");
-	//	log_error("consider updating pkgit");
-	//	if (!flags.force) return false;
-	//}
+	if (!is_bldit_usable()) {
+		log_error("bldit version is newer than the installed pkgit version");
+		log_error("consider updating pkgit");
+		if (!flags.force) return false;
+	}
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
 	lua_setglobal(B, "prefix");
 	lua_pop(B, 1);
@@ -120,8 +120,7 @@ static int remove_installed(
 	if (typeflag == FTW_F) {
 		const char *filename = src_path + ftwbuf->base;
 		const char *ext = strrchr(filename, '.');
-		if (!ext)
-		ext = "";
+		if (!ext) ext = "";
 
 		if (strncmp(ext, ".so", 3) == 0) {
 			char dest[MAX_PATH_LEN];

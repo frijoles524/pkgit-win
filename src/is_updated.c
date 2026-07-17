@@ -18,16 +18,31 @@
 
 */
 
-#ifndef PKGIT_FILES_H
-#define PKGIT_FILES_H
-
+#include <string.h>
 #include <stdbool.h>
+#include <unistd.h>
 
+#include "is_updated.h"
+
+#include "files.h"
 #include "str.h"
+#include "pkgit_lua.h"
 
-bool file_exists(const char *path);
-bool is_directory(const char *path);
-str cmd_out(const char *cmd);
-void cpdir(const char *src_path, const char *dst_path);
-
-#endif
+bool is_updated(str *src) {
+	bool result = false;
+	if (str_is_valid(src) && src->len > 0 && chdir(src->data) != 0) return result;
+	str bldit_pkgver = bldit_pkg_getver();
+	str git_tag = cmd_out("git tag | tail -n 1");
+	result = (strstr(git_tag.data, bldit_pkgver.data) != NULL && bldit_pkgver.len != 0);
+	if (result) {
+		str_free(&bldit_pkgver);
+		str_free(&git_tag);
+		return result;
+	}
+	str git_pull = cmd_out("git pull");
+	result = (strstr(git_pull.data, "Already up to date.") != NULL);
+	str_free(&git_tag);
+	str_free(&git_pull);
+	str_free(&bldit_pkgver);
+	return result;
+}

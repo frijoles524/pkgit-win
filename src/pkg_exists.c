@@ -1,8 +1,7 @@
 /*
 
   pkgit - package it!
-
-  Copyright (C) 2026 dacctal
+Copyright (C) 2026 dacctal
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 2 of the License, or
@@ -27,7 +26,10 @@ bool pkg_exists(str *name) {
 		lua_pop(L, 1);
 		return false;
 	}
-	if (!lua_try_table(L, "init.lua", name->data)) {
+	str_slc new_name = {name->data, name->len};
+	char* name_cstr = (char*)new_name.data;
+	name_cstr[new_name.len] = '\0';
+	if (!lua_try_table(L, "init.lua", name_cstr)) {
 		lua_pop(L, 2);
 		return false;
 	}

@@ -1,9 +1,9 @@
 If:
   PathMatch: .*\.h
 CompileFlags:
-  Add: [-std=c99,-xc-header,-Wall,-Werror,-pedantic,-Wvla,-Iinclude,-I../include,-I../../include/]
+  Add: [-std=c99,-xc-header,-Wall,-Werror,-pedantic,-Wvla,-Iinclude,-I../include,-I/usr/include/luajit-2.1]
 ---
 If:
   PathMatch: .*\.c
 CompileFlags:
-  Add: [-std=c99,-xc-header,-Wall,-Werror,-pedantic,-Wvla,-Iinclude,-I../include,-I../../include/]
+  Add: [-std=c99,-xc-header,-Wall,-Werror,-pedantic,-Wvla,-Iinclude,-I../include,-I/usr/include/luajit-2.1]

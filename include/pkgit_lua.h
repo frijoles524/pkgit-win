@@ -53,6 +53,9 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname);
 bool lua_try_table(lua_State *L, char *lua_file, char *tname);
 bool pkg_exists(str *name);
 str pkg_get_url(str *name);
+str bldit_getver(void);
+str bldit_pkg_getver(void);
+bool is_bldit_usable(void);
 
 // install
 void install_dependencies(lua_State *L);
@@ -63,5 +66,9 @@ bool repo_uninstall(package_t *pkg);
 bool bldit_uninstall(package_t *pkg);
 bool config_uninstall(package_t *pkg);
 void pkg_remove(package_t *pkg);
+
+// update
+void pkg_update(package_t *pkg);
+void all_update(void);
 
 #endif

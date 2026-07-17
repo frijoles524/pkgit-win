@@ -13,8 +13,7 @@
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
+	along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 #include <string.h>
 #include <unistd.h>
@@ -29,10 +28,12 @@
 
 static str get_destdir(str *cwd, str *arg) {
 	str result;
-	if (str_first(arg) == '.') {
+	if (str_first(arg) == '.' && arg->len == 1) {
 		result = str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(cwd));
 	} else {
-		str name = str_from_after_delim(arg, '/');
+		str name;
+		if (str_find_char(arg, '/') != 0) name = str_from_after_delim(arg, '/');
+		else str_copy_into(&name, arg);
 		result = str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&name));
 		str_free(&name);
 	}
@@ -85,13 +86,6 @@ static void assign_pkg_target(package_t *pkg, str *new_arg_str) {
 
 package_t pkg_create(str *arg) {
 	package_t pkg = { .is_local = false, };
-	char cwd[MAX_PATH_LEN];
-	getcwd(cwd, MAX_PATH_LEN);
-
-	str cwd_str = mstr(cwd);
-	str dest_dir = get_destdir(&cwd_str, arg);
-
-	bool is_installed_locally = is_directory(dest_dir.data);
 
 	assign_pkg_version(&pkg, arg);
 	assign_pkg_target(&pkg, arg);
@@ -105,20 +99,24 @@ package_t pkg_create(str *arg) {
 		str_free(&tmp);
 	}
 
+	char cwd[MAX_PATH_LEN];
+	getcwd(cwd, MAX_PATH_LEN);
+	str cwd_str = mstr(cwd);
+	str dest_dir = get_destdir(&cwd_str, arg);
+	bool is_installed_locally = is_directory(dest_dir.data);
+
 	if (strncmp(arg->data, "http", 4) == 0 || strncmp(arg->data, "ssh", 3) == 0) {
-		pkg.url = *arg;
+		str_copy_into(&pkg.url, arg);
 		pkg.name = str_from_after_delim(arg, '/');
 	} else if (str_equal_cstr(arg, ".")) {
-		pkg.url = mstr("");
+		str_copy_cstr_into(&pkg.url, "");
 		pkg.name = str_from_after_delim(&cwd_str, '/');
 		pkg.is_local = true;
 	} else if (pkg_exists(arg)) {
-		str tmp_url = pkg_get_url(arg);
-		str_copy_into(&pkg.url, &tmp_url);
-		str_free(&tmp_url);
-		pkg.name = *arg;
+		str_copy_into(&pkg.name, arg);
+		pkg.url = pkg_get_url(&pkg.name);
 	} else if (is_installed_locally) {
-		pkg.url = mstr("");
+		str_copy_cstr_into(&pkg.url, "");
 		pkg.name = str_from_after_delim(&dest_dir, '/');
 		pkg.is_local = true;
 	} else {
@@ -126,6 +124,7 @@ package_t pkg_create(str *arg) {
 		str_free(&cwd_str);
 		str_free(&dest_dir);
 		str_free(arg);
+		free_vars();
 		exit(EXIT_FAILURE);
 	}
 
@@ -136,5 +135,6 @@ package_t pkg_create(str *arg) {
 
 	str_free(&cwd_str);
 	str_free(&dest_dir);
+	if (pkg.is_local) str_free(arg);
 	return pkg;
 }
