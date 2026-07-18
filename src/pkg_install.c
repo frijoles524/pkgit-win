@@ -42,7 +42,9 @@ void install_dependencies(lua_State *L) {
 			package_t pkg = pkg_create(&dep_url);
 			str_free(&dep_url);
 			lua_getfield(L, -1, "version");
-			pkg.version = mstr(lua_tostring(L, -1));
+			str_free(&pkg.version);
+			const char *ver = lua_tostring(L, -1);
+			pkg.version = ver ? mstr(ver) : mstr("HEAD");
 			lua_pop(L, 1);
 			const int top = lua_gettop(L);
 			char cwd[MAX_PATH_LEN];
