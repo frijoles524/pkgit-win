@@ -27,11 +27,11 @@
 #include "str.h"
 
 static str get_destdir(str *cwd, str *arg) {
-	str result;
+	str result = {0};
 	if (str_first(arg) == '.' && arg->len == 1) {
 		result = str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(cwd));
 	} else {
-		str name;
+		str name = {0};
 		if (str_find_char(arg, '/') != 0) name = str_from_after_delim(arg, '/');
 		else str_copy_into(&name, arg);
 		result = str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&name));
