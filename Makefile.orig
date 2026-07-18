@@ -14,9 +14,9 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-.PHONY: default debug install defconfig rmconfig clean uninstall
+.PHONY: default debug install defconfig clean
 
-CC       ?= cc
+CC       ?= clang
 RM       = rm -f
 PREFIX   ?= /usr/local
 OBJDIR   = obj
@@ -27,24 +27,24 @@ CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncatio
 # pretty print for compilation. To enable verbose (show commands), run with
 # `make V=1`
 ifeq ($(strip $(V)),)
-	E = echo
+	E = @echo
 	Q = @
 else
-	E = :
+	E = @\#
 	Q =
 endif
 
 default: pkgit
 
 pkgit: $(OBJS)
-	$(Q) echo "  LINK    " $@
-	$(Q) ${CC} -o $@ $^ $(shell pkg-config --libs luajit) $(LDFLAGS) -g
+	$(E) "  LINK    " $@
+	$(Q) ${CC} -o $@ $^ $(shell pkg-config --libs luajit) $(shell pkg-config --libs libgit2) $(LDFLAGS) -g
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 
 $(OBJDIR)/%.o: src/%.c | $(OBJDIR)
-	$(Q) echo "  CC      " $@
+	$(E) "  CC      " $@
 	$(Q) ${CC} $(CFLAGS) -c -o $@ $<
 
 gdb: CFLAGS += -g -O0 -Wall -Wextra -Werror -Wvla -pedantic
@@ -55,30 +55,30 @@ debug: LDFLAGS += -fsanitize=address
 debug: pkgit
 
 install: pkgit
-	$(Q) echo "  INSTALL " ${DESTDIR}${PREFIX}
+	$(E)  "  INSTALL" ${DESTDIR}${PREFIX}
 	$(Q) install -d ${DESTDIR}${PREFIX}/bin
 	$(Q) install -m 755 pkgit ${DESTDIR}${PREFIX}/bin/pkgit
 	$(Q) install -d ${DESTDIR}${PREFIX}/share/man/man1
 	$(Q) install -m 644 docs/pkgit.1 ${DESTDIR}${PREFIX}/share/man/man1/pkgit.1
 
-uninstall:
-	$(Q) echo "  UNINSTALL " ${DESTDIR}${PREFIX}
+uninstall: ${DESTDIR}${PREFIX}/bin/pkgit
+	$(E)  "  UNINSTALL" ${DESTDIR}${PREFIX}
 	$(Q) ${RM} ${DESTDIR}${PREFIX}/bin/pkgit
 	$(Q) ${RM} ${DESTDIR}${PREFIX}/share/man/man1/pkgit.1
-
+ 
 defconfig:
-	$(Q) if [ "$$(id -u)" -eq 0 ]; then dir=/etc/pkgit; else dir="$$HOME/.config/pkgit"; fi; \
-	echo "installing default config to $$dir ..."; \
-	mkdir -p "$$dir"; \
-	cp -r ./config/* "$$dir/"; \
-	echo "default config installed"
-
+	$(Q) @if [ "$$(id -u)" -eq 0 ]; then dir=/etc/pkgit; else dir=~/.config/pkgit; fi; \
+	$(Q) echo "installing default config to $$dir ..."; \
+	$(Q) mkdir -p $$dir; \
+	$(Q) cp -r ./config/* $$dir/; \
+	$(Q) echo "default config installed"
+ 
 rmconfig:
-	$(Q) if [ "$$(id -u)" -eq 0 ]; then dir=/etc/pkgit; else dir="$$HOME/.config/pkgit"; fi; \
-	echo "removing config from $$dir ..."; \
-	rm -rf "$$dir"; \
-	echo "config successfully removed"
-
+	$(Q) @if [ "$$(id -u)" -eq 0 ]; then dir=/etc/pkgit; else dir=~/.config/pkgit; fi; \
+	$(Q) echo "removing config from $$dir ..."; \
+	$(Q) rm -rf $$dir; \
+	$(Q) echo "config successfully removed"
+ 
 clean:
-	$(Q) echo "  CLEAN"
+	$(E) "  CLEAN"
 	$(Q) ${RM} -r $(OBJDIR) pkgit

@@ -4,3 +4,4 @@ patches/
 *.patch
 demo
 demo*
+core*
