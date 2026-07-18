@@ -32,6 +32,7 @@
 #include "pkg.h"
 #include "pkgit_lua.h"
 #include "add_repo.h"
+#include "search.h"
 
 #define COMMAND(large, small)                                                  \
 	(!strcmp(argv[i], large) || !strcmp(argv[i], small))
@@ -117,6 +118,17 @@ void cmd_remove(int argc, char **argv, int i) {
 	}
 }
 
+void cmd_search(int argc, char **argv, int i) {
+	if (argv[i + 1]) {
+		for (int j = i + 1; j < argc; j++) {
+			if (argv[j][0] == '-') continue;
+			search(argv[j]);
+		}
+	} else {
+		search("");
+	}
+}
+
 void flags_mod(char **argv, int i) {
 	for (size_t j = 1; j < strlen(argv[i]); j++) {
 		switch (argv[i][j]) {
@@ -142,8 +154,8 @@ void flags_cmd(int argc, char **argv, int i) {
 		case 'i':	cmd_install(argc, argv, i);	break;
 		case 'r':	cmd_remove(argc, argv, i);	break;
 		case 'u':	cmd_update(argc, argv, i);	break;
-		case 'l':	panic("not implemented");	printf("list\n");		break;
-		case 's':	panic("not implemented");	printf("search\n");		break;
+		case 'l':	list_installed();			break;
+		case 's':	cmd_search(argc, argv, i);	break;
 		case 'v':	printf("%s\n", VERSION);	break;
 		case 'h':	help();						break;
 		default:	break;
@@ -173,8 +185,8 @@ void parse_cmds(int argc, char **argv) {
 		if (COMMAND("--remove", "r"))	{ cmd_remove(argc, argv, i); }
 		if (COMMAND("--update", "u"))	{ cmd_update(argc, argv, i); }
 		if (COMMAND("--declare", "d"))	{ declare(); }
-		if (COMMAND("--list", "l"))		{ panic("not implemented"); }
-		if (COMMAND("--search", "s"))	{ panic("not implemented"); }
+		if (COMMAND("--list", "l"))		{ list_installed(); }
+		if (COMMAND("--search", "s"))	{ cmd_search(argc, argv, i); }
 		if (COMMAND("--version", "v"))	{ printf(VERSION "\n"); }
 		if (COMMAND("--help", "h"))		{ help(); }
 		if (COMMAND("--check", "c"))	{ check(); }

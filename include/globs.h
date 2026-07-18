@@ -68,11 +68,12 @@
 			panic("allocation of `%s` failed", #ptr);                          \
 	} while (0)
 
-#define panic(...)                                                             \
+#define panic(...)                                                            \
 	do {                                                                       \
+		char *tmp = strrchr(__FILE__, '/');                                    \
 		eprintf(BOLD RED "panic:" COLOR_RESET " line %d, func \"%s\" in file " \
 						 "\"%s\": ",                                           \
-				__LINE__, __func__, __FILE_NAME__);                            \
+				__LINE__, __func__, tmp ? tmp + 1 : __FILE__);                 \
 		eprintf(__VA_ARGS__);                                                  \
 		eprintf("\n");                                                         \
 		fflush(stderr);                                                        \
