@@ -29,5 +29,6 @@ bool file_exists(const char *path);
 bool is_directory(const char *path);
 str cmd_out(const char *cmd);
 void cpdir(const char *src_path, const char *dst_path);
+int remove_tree(const char *path);
 
 #endif

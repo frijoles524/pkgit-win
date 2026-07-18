@@ -12,28 +12,43 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 */
 
 #include <fcntl.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include "fetch.h"
-
+#include "files.h"
 #include "globs.h"
 #include "log.h"
+#include "str.h"
 
 bool fetch(package_t *pkg) {
 	if (pkg->url.data == NULL || pkg->src.data == NULL) {
-		if (flags.verbose) log_warn("invalid pkg: url or src is NULL");
+		if (flags.verbose)
+			log_warn("invalid pkg: url or src is NULL");
 		return false;
 	}
+
+	str s = str_dupe(&pkg->src);
+	s.len -= pkg->version.len + 1;
+	s.data[s.len] = 0;
+
+	if (is_directory(s.data) && flags.force) {
+		return true;
+		if (remove_tree(s.data)) {
+			log_error("could not remove %.*s", str_fmt(&s));
+			return false;
+		}
+	}
+
+	str_free(&s);
+
 	pid_t pid = fork();
 	if (pid < 0) {
 		log_error("fork failed");
@@ -56,11 +71,12 @@ bool fetch(package_t *pkg) {
 		argv[i++] = "-c";
 		argv[i++] = "advice.detachedHead=false";
 		argv[i++] = "clone";
-		if (pkg->version.data != NULL && !str_equal_cstr(&pkg->version, "HEAD")) {
+		if (pkg->version.data != NULL &&
+			!str_equal_cstr(&pkg->version, "HEAD")) {
 			argv[i++] = "--branch";
 			argv[i++] = pkg->version.data;
 		}
-		
+
 		argv[i++] = "--recursive";
 		argv[i++] = pkg->url.data;
 		argv[i++] = pkg->src.data;
@@ -72,7 +88,9 @@ bool fetch(package_t *pkg) {
 	waitpid(pid, &status, 0);
 
 	bool result = (WEXITSTATUS(status) == 0);
-	if (!result) { log_error("git clone failed"); }
+	if (!result) {
+		log_error("git clone failed");
+	}
 
 	return result;
 }

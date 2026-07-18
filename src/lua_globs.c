@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "lua.h"
 #include "pkgit_lua.h"
 
 #include "files.h"
@@ -61,7 +62,9 @@ void init_lua_state(void) {
 	}
 	if (file_exists(cfg.repos.data)) {
 		if (luaL_loadfile(L, cfg.repos.data) || lua_pcall(L, 0, 0, 0)) {
-			if (flags.verbose) log_warn("cannot load repository file: %s", lua_tostring(L, -1));
+			if (flags.verbose)
+				log_warn("cannot load repository file: %s",
+						 lua_tostring(L, -1));
 			lua_pop(L, 1);
 		}
 	}
@@ -69,6 +72,7 @@ void init_lua_state(void) {
 	config_loaded = true;
 }
 
+// FIXME: ensure this is called ONCE for clarity
 void init_bldit_state(void) {
 	if (B != NULL)
 		return;
@@ -95,14 +99,19 @@ void free_lua_state(void) {
 
 void free_bldit_state(void) {
 	if (B != NULL) {
-		lua_close(L);
+		lua_close(B);
 		B = NULL;
 	}
 	bldit_loaded = false;
 }
 
-lua_State *get_lua_state(void) { return L; }
-lua_State *get_bldit_state(void) { return B; }
+lua_State *get_lua_state(void) {
+	return L;
+}
+
+lua_State *get_bldit_state(void) {
+	return B;
+}
 
 void lua_isnt_type(char *variable, char *type) {
 	if (flags.verbose)
@@ -123,18 +132,16 @@ bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 			lua_isnt_type(fname, "function");
 		lua_pop(L, 1);
 	} else if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
-		if (flags.verbose) log_warn(
-			"%s: '%s' function borked: %s",
-			lua_file, fname, lua_tostring(L, -1)
-		);
+		if (flags.verbose)
+			log_warn("%s: '%s' function borked: %s", lua_file, fname,
+					 lua_tostring(L, -1));
 		lua_pop(L, 1);
 		return false;
 	}
 	if (!lua_isnumber(L, -1) || lua_tonumber(L, -1) != 0) {
-		if (flags.verbose) log_warn(
-			"%s: '%s' failed: %s",
-			lua_file, fname, lua_tostring(L, -1)
-		);
+		if (flags.verbose)
+			log_warn("%s: '%s' failed: %s", lua_file, fname,
+					 lua_tostring(L, -1));
 		lua_pop(L, 1);
 		return false;
 	}
@@ -187,13 +194,12 @@ str bldit_pkg_getver(void) {
 
 bool is_bldit_usable(void) {
 	str bldit_version = bldit_getver();
-	if (
-		strcmp(bldit_version.data, "") != 0 &&
-		strcmp(bldit_version.data, VERSION) == 0
-	) return true;
+	if (bldit_version.len && str_equal_cstr(&bldit_version, VERSION))
+		return true;
 	bool prev_pass = false;
 	for (size_t i = 0; i < bldit_version.len; i++) {
-		if (bldit_version.data[i] == '.') continue;
+		if (bldit_version.data[i] == '.')
+			continue;
 		if ((bldit_version.data[i] - '0') <= (VERSION[i] - '0')) {
 			prev_pass = ((bldit_version.data[i] - '0') != (VERSION[i] - '0'));
 			continue;

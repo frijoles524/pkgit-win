@@ -22,7 +22,7 @@ PREFIX   ?= /usr/local
 OBJDIR   = obj
 SRCS     = $(wildcard src/*.c)
 OBJS     = $(SRCS:src/%.c=$(OBJDIR)/%.o)
-CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99 -D_XOPEN_SOURCE=700 
+CFLAGS  += $(shell pkg-config --cflags luajit) -I./include -Wno-format-truncation -std=c99
 
 # pretty print for compilation. To enable verbose (show commands), run with
 # `make V=1`
@@ -46,6 +46,9 @@ $(OBJDIR):
 $(OBJDIR)/%.o: src/%.c | $(OBJDIR)
 	$(E) "  CC      " $@
 	$(Q) ${CC} $(CFLAGS) -c -o $@ $<
+
+gdb: CFLAGS += -g -O0 -Wall -Wextra -Werror -Wvla -pedantic
+gdb: pkgit
 
 debug: CFLAGS += -g -O0 -Wall -Wextra -Werror -Wvla -pedantic -fsanitize=address
 debug: LDFLAGS += -fsanitize=address

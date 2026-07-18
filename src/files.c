@@ -18,19 +18,22 @@
 
 */
 
-#include "files.h"
-
-#include "str.h"
+#define _XOPEN_SOURCE 700
 
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <ftw.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include "files.h"
+#include "log.h"
+#include "str.h"
 
 bool file_exists(const char *path) {
 	struct stat buffer;
@@ -49,46 +52,48 @@ FILE *popen(const char *command, const char *type);
 int pclose(FILE *stream);
 
 str cmd_out(const char *cmd) {
-    FILE *pipe = popen(cmd, "r");
-    if (!pipe) return mstr("");
+	FILE *pipe = popen(cmd, "r");
+	if (!pipe)
+		return mstr("");
 
-    char buffer[128];
-    size_t total_size = 0;
-    size_t capacity = 256;
-    char *result = malloc(capacity);
-    if (!result) {
-        pclose(pipe);
-        return mstr("");
-    }
-    result[0] = '\0';
+	char buffer[128];
+	size_t total_size = 0;
+	size_t capacity = 256;
+	char *result = malloc(capacity);
+	if (!result) {
+		pclose(pipe);
+		return mstr("");
+	}
+	result[0] = '\0';
 
-    while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
-        size_t len = strlen(buffer);
-        // Ensure enough space for the new chunk + 1 byte for '\0'
-        if (total_size + len + 1 > capacity) {
-            capacity *= 2;
-            char *new_result = realloc(result, capacity);
-            if (!new_result) {
-                free(result);
-                pclose(pipe);
-		        return mstr("");
-            }
-            result = new_result;
-        }
- 
-        snprintf(result + total_size, capacity - total_size, "%s", buffer);
-        total_size += len;
-    }
+	while (fgets(buffer, sizeof(buffer), pipe) != NULL) {
+		size_t len = strlen(buffer);
+		// Ensure enough space for the new chunk + 1 byte for '\0'
+		if (total_size + len + 1 > capacity) {
+			capacity *= 2;
+			char *new_result = realloc(result, capacity);
+			if (!new_result) {
+				free(result);
+				pclose(pipe);
+				return mstr("");
+			}
+			result = new_result;
+		}
 
-    pclose(pipe);
-    str str_result = mstr(result);
-    free(result);
-    return str_result;
+		snprintf(result + total_size, capacity - total_size, "%s", buffer);
+		total_size += len;
+	}
+
+	pclose(pipe);
+	str str_result = mstr(result);
+	free(result);
+	return str_result;
 }
 
 const char *get_filename_ext(const char *filename) {
 	const char *dot = strrchr(filename, '.');
-	if (!dot || dot == filename) return "";
+	if (!dot || dot == filename)
+		return "";
 	return dot + 1;
 }
 
@@ -124,7 +129,8 @@ static int copy_file_content(int src_fd, int dst_fd) {
 	return 0;
 }
 
-static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd, const char *dst_path);
+static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd,
+				   const char *dst_path);
 
 static int copy_dir_content(int src_fd, int dst_fd) {
 	int ret = -1;
@@ -159,13 +165,14 @@ static int copy_dir_content(int src_fd, int dst_fd) {
 
 	ret = 0;
 
-	cleanup1:
-		closedir(src_dir);
-	cleanup0:
-		return ret;
+cleanup1:
+	closedir(src_dir);
+cleanup0:
+	return ret;
 }
 
-static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd, const char *dst_path) {
+static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd,
+				   const char *dst_path) {
 	int ret = -1;
 	int src_fd = openat(src_dir_fd, src_path, O_NOFOLLOW | O_RDONLY);
 	if (src_fd < 0) {
@@ -198,25 +205,42 @@ static int copy_at(int src_dir_fd, const char *src_path, int dst_dir_fd, const c
 	}
 
 	switch (stat.st_mode & S_IFMT) {
-		case S_IFDIR:
-			ret = copy_dir_content(src_fd, dst_fd);
-			break;
-		case S_IFREG:
-			ret = copy_file_content(src_fd, dst_fd);
-			break;
-		default:
-			fprintf(stderr, "copy_at: unsupported file inode type\n");
+	case S_IFDIR:
+		ret = copy_dir_content(src_fd, dst_fd);
+		break;
+	case S_IFREG:
+		ret = copy_file_content(src_fd, dst_fd);
+		break;
+	default:
+		fprintf(stderr, "copy_at: unsupported file inode type\n");
 	}
 	goto cleanup2;
 
-	cleanup2:
-		close(dst_fd);
-	cleanup1:
-		close(src_fd);
-	cleanup0:
-		return ret;
+cleanup2:
+	close(dst_fd);
+cleanup1:
+	close(src_fd);
+cleanup0:
+	return ret;
 }
 
 void cpdir(const char *src_path, const char *dst_path) {
 	copy_at(AT_FDCWD, src_path, AT_FDCWD, dst_path);
+}
+
+static int _remove_callback(const char *fpath, const struct stat *sb,
+							int typeflag, struct FTW *ftwbuf) {
+	(void)sb;
+	(void)typeflag;
+	(void)ftwbuf;
+
+	int res = remove(fpath);
+	if (res) {
+		log_warn("could not remove: %s", fpath);
+	}
+	return 0;
+}
+
+int remove_tree(const char *path) {
+	return nftw(path, _remove_callback, 256, FTW_DEPTH | FTW_PHYS);
 }
