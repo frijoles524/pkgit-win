@@ -35,6 +35,7 @@ bool target_build(lua_State *L, char* lua_file, str *target) {
 	}
 	lua_pop(L, 1);
 	if (!lua_try_function(L, lua_file, "build")) return false;
+	lua_pop(L, 1);
 	return true;
 }
 

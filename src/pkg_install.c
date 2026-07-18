@@ -32,28 +32,28 @@
 #include "pkg.h"
 
 void install_dependencies(lua_State *L) {
-  while (lua_next(L, -2) != 0) {
-    const char *depname = lua_tostring(L, -2);
-    if (depname && lua_istable(L, -1)) {
-      lua_getfield(L, -1, "url");
-      str dep_url = mstr(lua_tostring(L, -1));
-      lua_pop(L, 1);
-      package_t pkg = pkg_create(&dep_url);
-      str_free(&dep_url);
-      lua_getfield(L, -1, "version");
-      pkg.version = mstr(lua_tostring(L, -1));
-      lua_pop(L, 1);
-      const int top = lua_gettop(L);
-      char cwd[MAX_PATH_LEN];
-      if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        pkg_install(&pkg);
-        chdir(cwd);
-      }
-      lua_settop(L, top);
-      pkg_free(&pkg);
-    }
-    lua_pop(L, 1);
-  }
+	while (lua_next(L, -2) != 0) {
+		const char *depname = lua_tostring(L, -2);
+		if (depname && lua_istable(L, -1)) {
+			lua_getfield(L, -1, "url");
+			str dep_url = mstr(lua_tostring(L, -1));
+			lua_pop(L, 1);
+			package_t pkg = pkg_create(&dep_url);
+			str_free(&dep_url);
+			lua_getfield(L, -1, "version");
+			pkg.version = mstr(lua_tostring(L, -1));
+			lua_pop(L, 1);
+			const int top = lua_gettop(L);
+			char cwd[MAX_PATH_LEN];
+			if (getcwd(cwd, sizeof(cwd)) != NULL) {
+				pkg_install(&pkg);
+				chdir(cwd);
+			}
+			lua_settop(L, top);
+			pkg_free(&pkg);
+		}
+		lua_pop(L, 1);
+	}
 }
 
 bool target_install(lua_State *L, char* lua_file, str *target) {

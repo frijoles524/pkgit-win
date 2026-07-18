@@ -76,7 +76,7 @@ void init_bldit_state(void) {
 	luaL_openlibs(B);
 	if (luaL_loadfile(B, "bldit.lua") || lua_pcall(B, 0, 0, 0)) {
 		if (flags.verbose)
-			if (flags.verbose) log_warn("cannot run bldit: %s", lua_tostring(B, -1));
+			log_warn("cannot run bldit: %s", lua_tostring(B, -1));
 		return;
 	}
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
@@ -94,11 +94,11 @@ void free_lua_state(void) {
 }
 
 void free_bldit_state(void) {
-	if (L != NULL) {
+	if (B != NULL) {
 		lua_close(L);
-		L = NULL;
+		B = NULL;
 	}
-	config_loaded = false;
+	bldit_loaded = false;
 }
 
 lua_State *get_lua_state(void) { return L; }

@@ -71,4 +71,7 @@ void pkg_remove(package_t *pkg);
 void pkg_update(package_t *pkg);
 void all_update(void);
 
+// declare
+void declare(void);
+
 #endif

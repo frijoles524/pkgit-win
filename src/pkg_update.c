@@ -17,10 +17,37 @@ pkgit - package it!
 #include <dirent.h>
 #include <string.h>
 
+#include "files.h"
 #include "globs.h"
 #include "is_updated.h"
 #include "log.h"
 #include "pkgit_lua.h"
+
+lua_State *U = NULL;
+
+void init_update_state(void) {
+	if (U != NULL)
+		return;
+	U = luaL_newstate();
+	luaL_openlibs(U);
+	str lua_path = str_format("%.*s/?.lua", str_fmt(&cfg.dir));
+	push_lua_path(U, lua_path.data);
+	if (luaL_loadfile(U, cfg.name.data) || lua_pcall(U, 0, 0, 0)) {
+		log_error("cannot run configuration script: %s", lua_tostring(U, -1));
+		log_pkgit("to generate a configuration file, head into the");
+		log_pkgit(
+			"root directory of the pkgit source and run `make defconfig`");
+		exit(EXIT_FAILURE);
+	}
+	if (file_exists(cfg.repos.data)) {
+		if (luaL_loadfile(U, cfg.repos.data) || lua_pcall(U, 0, 0, 0)) {
+			if (flags.verbose) log_warn("cannot load repository file: %s", lua_tostring(U, -1));
+			lua_pop(U, 1);
+		}
+	}
+	str_free(&lua_path);
+	config_loaded = true;
+}
 
 bool on_pkg_update(lua_State *L, package_t *pkg) {
 	lua_getglobal(L, "repositories");
@@ -117,4 +144,31 @@ void all_update(void) {
 	closedir(dir_ptr);
 	if (!on_all_update(L))
 		log_warn("init.lua: 'on_update' function failed");
+}
+
+void declare(void) {
+	init_update_state();
+	lua_getglobal(U, "repositories");
+	if (!lua_istable(U, -1)) {
+		lua_isnt_type("repositories", "table");
+		lua_pop(U, 1);
+		return;
+	}
+	lua_pushnil(U);
+	while (lua_next(U, -2) != 0) {
+		str key = mstr(lua_tostring(U, -2));
+		if (!lua_istable(U, -1)) {
+			lua_pop(U, 1);
+			str_free(&key);
+			continue;
+		}
+		package_t pkg = pkg_create(&key);
+		pkg_install(&pkg);
+		pkg_free(&pkg);
+		if (str_is_valid(&key)) str_free(&key);
+		lua_pop(U, 1);
+	}
+	if (!on_all_update(L))
+		log_warn("init.lua: 'on_update' function failed");
+	lua_pop(U, 1);
 }

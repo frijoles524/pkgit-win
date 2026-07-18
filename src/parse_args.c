@@ -138,7 +138,7 @@ void flags_cmd(int argc, char **argv, int i) {
 		case 'a':	cmd_add(argv, i);			break;
 		case 'b':	cmd_build(argc, argv, i);	break;
 		case 'c':	check();					break;
-		case 'd':	panic("not implemented");	printf("declare\n");	break;
+		case 'd':	declare();					break;
 		case 'i':	cmd_install(argc, argv, i);	break;
 		case 'r':	cmd_remove(argc, argv, i);	break;
 		case 'u':	cmd_update(argc, argv, i);	break;
@@ -172,7 +172,7 @@ void parse_cmds(int argc, char **argv) {
 		if (COMMAND("--install", "i"))	{ cmd_install(argc, argv, i); }
 		if (COMMAND("--remove", "r"))	{ cmd_remove(argc, argv, i); }
 		if (COMMAND("--update", "u"))	{ cmd_update(argc, argv, i); }
-		if (COMMAND("--declare", "d"))	{ panic("not implemented"); }
+		if (COMMAND("--declare", "d"))	{ declare(); }
 		if (COMMAND("--list", "l"))		{ panic("not implemented"); }
 		if (COMMAND("--search", "s"))	{ panic("not implemented"); }
 		if (COMMAND("--version", "v"))	{ printf(VERSION "\n"); }
