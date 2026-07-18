@@ -42,7 +42,7 @@ static str get_destdir(str *cwd, str *arg) {
 
 static str get_pkgsrc(package_t pkg) {
 	if (pkg.is_local == 1)
-		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), pkg.name);
+		return str_format("%.*s/%.*s", str_fmt(&inst_dirs.src), str_fmt(&pkg.name));
 	else
 		return str_format("%.*s/%.*s/%.*s", str_fmt(&inst_dirs.src),
 			str_fmt(&pkg.name), str_fmt(&pkg.version));
@@ -62,7 +62,7 @@ static void assign_pkg_version(package_t *pkg, str *new_arg_str) {
 		if (str_find_char(&pkg->version, ',')) pkg->version.len--;
 		str_free(&tmp_arg);
 		pkg->name.len -= pkg->version.len + 1;
-	} else pkg->version = mstr("HEAD");
+	} else str_copy_cstr_into(&pkg->version, "HEAD");;
 }
 
 static void assign_pkg_target(package_t *pkg, str *new_arg_str) {
@@ -80,8 +80,8 @@ static void assign_pkg_target(package_t *pkg, str *new_arg_str) {
 		str_free(&tmp_arg);
 		pkg->name.len -= pkg->target.len + 1;
 	} else if (!flags.verbose) {
-		pkg->target = mstr("quiet");
-	} else pkg->target = mstr("default");
+		str_copy_cstr_into(&pkg->target, "quiet");
+	} else str_copy_cstr_into(&pkg->target, "quiet");
 }
 
 package_t pkg_create(str *arg) {

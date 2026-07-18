@@ -69,6 +69,7 @@ bool bldit(package_t *pkg) {
 	lua_getglobal(B, "dependencies");
 	if (!lua_istable(B, -1)) {
 		bldit_isnt_type("dependencies", "table");
+		lua_pop(B, 1);
 	} else {
 		lua_pushnil(B);
 		install_dependencies(B);
@@ -77,14 +78,14 @@ bool bldit(package_t *pkg) {
 	lua_getglobal(B, "targets");
 	if (!lua_istable(B, -1)) {
 		bldit_isnt_type("targets", "table");
-		lua_pop(B, 3);
+		lua_pop(B, 1);
 		lua_close(B);
+		B = NULL;
+		bldit_loaded = false;
 		return false;
 	}
 	bool target_success = target_build(B, "bldit.lua", &pkg->target);
 	lua_pop(B, 1);
-	// lua_pop(B, 2);
-	//  lua_close(B);
 	return target_success;
 }
 
@@ -155,7 +156,10 @@ bool build_loop(package_t *pkg) {
 
 bool build(package_t *pkg) {
 	char cwd[MAX_PATH_LEN];
-	getcwd(cwd, MAX_PATH_LEN);
+	if (getcwd(cwd, sizeof(cwd)) == NULL) {
+		log_error("getcwd failed");
+		return false;
+	}
 	if (!str_equal_cstr(&pkg->src, cwd) && !pkg->is_local)
 		chdir(pkg->src.data);
 

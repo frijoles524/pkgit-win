@@ -5,3 +5,4 @@ patches/
 demo
 demo*
 core*
+*.scm

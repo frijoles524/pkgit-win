@@ -72,7 +72,6 @@ void init_lua_state(void) {
 	config_loaded = true;
 }
 
-// FIXME: ensure this is called ONCE for clarity
 void init_bldit_state(void) {
 	if (B != NULL)
 		return;
@@ -85,7 +84,6 @@ void init_bldit_state(void) {
 	}
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
 	lua_setglobal(B, "prefix");
-	lua_pop(B, 1);
 	bldit_loaded = true;
 }
 
@@ -126,11 +124,12 @@ void bldit_isnt_type(char *variable, char *type) {
 bool lua_try_function(lua_State *L, char *lua_file, char *fname) {
 	lua_getfield(L, -1, fname);
 	if (!lua_isfunction(L, -1)) {
-		if (strcmp(lua_file, "bldit.lua"))
+		if (!strcmp(lua_file, "bldit.lua"))
 			bldit_isnt_type(fname, "function");
 		else
 			lua_isnt_type(fname, "function");
 		lua_pop(L, 1);
+		return false;
 	} else if (lua_pcall(L, 0, 1, 0) != LUA_OK) {
 		if (flags.verbose)
 			log_warn("%s: '%s' function borked: %s", lua_file, fname,

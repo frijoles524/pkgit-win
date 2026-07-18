@@ -62,12 +62,10 @@ bool target_install(lua_State *L, char *lua_file, str *target) {
 		lua_pop(L, 1);
 		return false;
 	}
-	// lua_try_function(L, lua_file, "pre_install");
 	if (!lua_try_function(L, lua_file, "install")) {
 		lua_pop(L, 1);
 		return false;
 	}
-	// lua_try_function(L, lua_file, "post_install");
 	lua_pop(L, 1);
 	return true;
 }
@@ -105,14 +103,12 @@ bool bldit_install(package_t *pkg) {
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
 	lua_setglobal(B, "prefix");
 	lua_getglobal(B, "targets");
-	if (!lua_istable(L, -1)) {
-		// FIXME: change da message
+	if (!lua_istable(B, -1)) {
 		log_error("targets is not a table in bldit.lua!");
 		return false;
 	}
 	bool target_success = target_install(B, "bldit.lua", &pkg->target);
-	lua_pop(B, 2);
-	lua_close(B);
+	lua_pop(B, 1);
 	return target_success;
 }
 

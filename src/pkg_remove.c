@@ -76,12 +76,10 @@ bool bldit_uninstall(package_t *pkg) {
 	}
 	lua_pushfstring(B, "%s", inst_dirs.prefix.data);
 	lua_setglobal(B, "prefix");
-	lua_pop(B, 1);
 	if (!lua_try_table(B, "bldit.lua", "targets"))
 		return false;
 	bool target_success = target_uninstall(B, "bldit.lua", &pkg->target);
-	lua_pop(B, 2);
-	lua_close(B);
+	lua_pop(B, 1);
 	return target_success;
 }
 
@@ -176,7 +174,6 @@ void pkg_remove(package_t *pkg) {
 		return;
 	}
 
-	// TODO: refactor this
 	nftw(pkg->src.data, remove_installed, 64, FTW_PHYS);
 	const char *last_slash = strrchr(pkg->src.data, '/');
 	char target[MAX_PATH_LEN];
