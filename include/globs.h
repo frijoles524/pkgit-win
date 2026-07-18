@@ -24,7 +24,7 @@
 
 #include "str.h"
 
-#define VERSION "1.2.0_INDEV"
+#define VERSION "1.2.0"
 #define RED "\x1b[0;31m"
 #define GREEN "\x1b[0;32m"
 #define YELLOW "\x1b[0;33m"
