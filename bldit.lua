@@ -21,7 +21,7 @@
 bldit_version   = "1.2.0"
 package_version = "1.2.0"
 
-global_dependencies = {
+dependencies = {
   luajit = {
     url = "https://luajit.org/git/luajit.git",
     version = "v2.1",
