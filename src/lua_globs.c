@@ -195,7 +195,7 @@ str bldit_pkg_getver(void) {
 bool is_bldit_usable(void) {
 	str bldit_version = bldit_getver();
 	if (bldit_version.len && str_equal_cstr(&bldit_version, VERSION))
-		return true;
+		goto done;
 	bool prev_pass = false;
 	for (size_t i = 0; i < bldit_version.len; i++) {
 		if (bldit_version.data[i] == '.')
@@ -208,6 +208,7 @@ bool is_bldit_usable(void) {
 			return prev_pass;
 		}
 	}
+done:
 	str_free(&bldit_version);
 	return true;
 }

@@ -40,7 +40,6 @@ bool fetch(package_t *pkg) {
 	s.data[s.len] = 0;
 
 	if (is_directory(s.data) && flags.force) {
-		return true;
 		if (remove_tree(s.data)) {
 			log_error("could not remove %.*s", str_fmt(&s));
 			return false;
