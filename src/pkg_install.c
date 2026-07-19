@@ -156,7 +156,7 @@ void pkg_install(package_t *pkg) {
 		}
 	} else {
 		mkdir(pkg->src.data, 0755);
-		chdir(inst_dirs.src.data);
+		chdir(pkg->src.data);
 	}
 	char cwd[MAX_PATH_LEN];
 	getcwd(cwd, MAX_PATH_LEN);
