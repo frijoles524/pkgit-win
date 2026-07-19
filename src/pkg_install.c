@@ -202,10 +202,10 @@ void pkg_install(package_t *pkg) {
 	log_success("installed " GREEN "%.*s" COLOR_RESET, str_fmt(&pkg->name));
 
 	if (!pkg_exists(&pkg->name)) {
-		log_pkgit("adding " GREEN "%.*s" COLOR_RESET, &pkg->name);
+		log_pkgit("adding " GREEN "%.*s" COLOR_RESET, str_fmt(&pkg->name));
 		if (pkg->url.len > 0) {
 			add_repo(pkg);
-			log_pkgit("added " GREEN "%.*s" COLOR_RESET, &pkg->name);
+			log_pkgit("added " GREEN "%.*s" COLOR_RESET, str_fmt(&pkg->name));
 		}
 	} else {
 		log_info("repo already exists, done");
