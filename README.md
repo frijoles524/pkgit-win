@@ -40,6 +40,22 @@ You can also run this with root using sudo/doas to genereate the config in /etc/
 sudo make defconfig
 ```
 
+## Building for windows
+
+This port is intended to add windows compat using cygwin without breaking normal compilation. While it's not best practice to upload dlls to github, I really couldn't come up with a better way to do this.
+
+The build requires cygwin to be installed with the following packages: gcc-core, git, luajit-devel and/or luajit, make, zip, pkg-config, pkgconf (idk about those last 2 but better safe than sorry)
+
+A quick note: luajit appears to be unmaintained for cygwin, consider yourself informed of how sketchy this is. To build a portable zip file:
+
+```
+make windows
+```
+
+You can also download a release. I will be maintaining this repo here and there so add an issue if anything is wrong.
+
+Now, run with `./pkgit`. To edit init.lua, it is located in cygwin/home/.config/pkgit.
+
 # Install pkgit
 After compiling, run the following with root privilages:
 ```
