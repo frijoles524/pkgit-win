@@ -28,6 +28,7 @@
 #include "globs.h"
 #include "log.h"
 #include "str.h"
+#include "win.h"
 
 lua_State *L = NULL;
 lua_State *B = NULL;

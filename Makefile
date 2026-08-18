@@ -54,6 +54,14 @@ debug: CFLAGS += -g -O0 -Wall -Wextra -Werror -Wvla -pedantic -fsanitize=address
 debug: LDFLAGS += -fsanitize=address
 debug: pkgit
 
+.PHONY: windows
+windows: pkgit # package into a zip file with a cygwin root
+	mkdir -p pkgit_win_portable
+	cp -r win_dist/. pkgit_win_portable/
+	mv pkgit.exe pkgit_win_portable/pkgit_bin.exe
+	zip -r -m pkgit_win_portable.zip pkgit_win_portable/
+	$(Q) echo "Compiled to pkgit_win_portable.zip"
+
 install: pkgit
 	$(Q) echo "  INSTALL " ${DESTDIR}${PREFIX}
 	$(Q) install -d ${DESTDIR}${PREFIX}/bin
@@ -82,3 +90,4 @@ rmconfig:
 clean:
 	$(Q) echo "  CLEAN"
 	$(Q) ${RM} -r $(OBJDIR) pkgit
+	$(Q) ${RM} pkgit_win_portable.zip

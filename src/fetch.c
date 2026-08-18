@@ -27,6 +27,7 @@
 #include "globs.h"
 #include "log.h"
 #include "str.h"
+#include "win.h"
 
 bool fetch(package_t *pkg) {
 	if (pkg->url.data == NULL || pkg->src.data == NULL) {
@@ -78,7 +79,16 @@ bool fetch(package_t *pkg) {
 
 		argv[i++] = "--recursive";
 		argv[i++] = pkg->url.data;
+		#ifdef __CYGWIN__ // this is unreadable as fuck I know
+		char *win_path = to_windows_path(pkg->src.data);
+		if (win_path == NULL) {
+			log_error("path conversion failed");
+			_exit(127);
+		}
+		argv[i++] = win_path;
+		#else
 		argv[i++] = pkg->src.data;
+		#endif
 		argv[i] = NULL;
 		execvp("git", (char *const *)argv);
 		_exit(127);

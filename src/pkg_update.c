@@ -22,6 +22,7 @@ pkgit - package it!
 #include "is_updated.h"
 #include "log.h"
 #include "pkgit_lua.h"
+#include "win.h"
 
 lua_State *U = NULL;
 
